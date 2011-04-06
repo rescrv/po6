@@ -25,6 +25,9 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
+// POSIX
+#include <errno.h>
+
 // Google Test
 #include <gtest/gtest.h>
 
@@ -74,6 +77,18 @@ TEST(LogicErrorTest, ThrowInProgressDeathTest)
     catch (...)
     {
     }
+}
+
+// Test the copying and assigning of errors
+TEST(ErrorTest, CopyingAndAssigning)
+{
+    po6::error e0;
+    po6::error e1(EBUSY);
+    po6::error e2(e1);
+
+    ASSERT_EQ(e0, 0);
+    e0 = e2;
+    ASSERT_EQ(e0, e1);
 }
 
 } // namespace
