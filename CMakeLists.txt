@@ -34,11 +34,16 @@ set(CMAKE_CXX_FLAGS "${po6_wanal} ${CMAKE_CXX_FLAGS}")
 # Set the test sources
 set(po6_test_srcs
     test/error.cc
+    test/threads/mutex.cc
 )
 
 # Installed headers
 set(po6_headers
     include/po6/error.h
+)
+
+set(po6_threads_headers
+    include/po6/threads/mutex.h
 )
 
 # Setup the include paths
@@ -59,5 +64,11 @@ add_test(LogicErrorTest testrunner --gtest_filter=LogicErrorTest.*)
 install(
     FILES ${po6_headers}
     DESTINATION  include/po6
+    COMPONENT development
+)
+
+install(
+    FILES ${po6_threads_headers}
+    DESTINATION  include/po6/threads
     COMPONENT development
 )
