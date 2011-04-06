@@ -58,7 +58,9 @@ target_link_libraries(testrunner
     gtest
 )
 
+add_test(MutexTest testrunner --gtest_filter=MutexTest.*)
 add_test(LogicErrorTest testrunner --gtest_filter=LogicErrorTest.*)
+add_test(ErrorTest testrunner --gtest_filter=ErrorTest.*)
 
 # Installation targets.
 install(
