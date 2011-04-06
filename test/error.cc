@@ -34,10 +34,11 @@
 // po6
 #include "po6/error.h"
 
+#pragma GCC diagnostic ignored "-Wswitch-default"
+
 namespace
 {
 
-#pragma GCC diagnostic ignored "-Wswitch-default"
 // logic_error should normally throw a std::logic_error
 TEST(LogicErrorTest, NormallyThrows)
 {
