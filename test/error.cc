@@ -35,6 +35,7 @@ namespace
 {
 
 #pragma GCC diagnostic ignored "-Wswitch-default"
+// logic_error should normally throw a std::logic_error
 TEST(LogicErrorTest, NormallyThrows)
 {
     bool caught = false;
@@ -51,6 +52,28 @@ TEST(LogicErrorTest, NormallyThrows)
     }
 
     ASSERT_TRUE(caught);
+}
+
+class LogicErrorTestThrowInProgressDeathTest
+{
+    public:
+        LogicErrorTestThrowInProgressDeathTest() {}
+        ~LogicErrorTestThrowInProgressDeathTest() { po6::logic_error("msg"); }
+};
+
+// If there is a throw in-progress, logic_error must abort
+TEST(LogicErrorTest, ThrowInProgressDeathTest)
+{
+    try
+    {
+        ASSERT_DEATH(
+            LogicErrorTestThrowInProgressDeathTest l;
+            throw std::exception();
+        , "");
+    }
+    catch (...)
+    {
+    }
 }
 
 } // namespace
