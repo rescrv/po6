@@ -32,7 +32,7 @@
 #include <gtest/gtest.h>
 
 // po6
-#include "error.h"
+#include "po6/error.h"
 
 namespace
 {
