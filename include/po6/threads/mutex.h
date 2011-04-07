@@ -104,6 +104,12 @@ class mutex
         }
 
     private:
+        mutex(const mutex&);
+
+    private:
+        mutex& operator = (const mutex&);
+
+    private:
         pthread_mutex_t m_mutex;
 };
 
