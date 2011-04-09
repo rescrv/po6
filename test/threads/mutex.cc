@@ -25,13 +25,48 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
+// C++
+#include <tr1/functional>
+
 // Google Test
 #include <gtest/gtest.h>
 
 // po6
 #include "po6/threads/mutex.h"
+#include "po6/threads/thread.h"
 
 #pragma GCC diagnostic ignored "-Wswitch-default"
+
+class MutexTestThread
+{
+    public:
+        MutexTestThread(po6::threads::mutex* mtx)
+            : m_mtx(mtx)
+        {
+        }
+
+        ~MutexTestThread()
+        {
+        }
+
+        void operator () ()
+        {
+            for (int i = 0; i < 1000000; ++i)
+            {
+                m_mtx->lock();
+                m_mtx->unlock();
+            }
+        }
+
+    private:
+        MutexTestThread(const MutexTestThread&);
+
+    private:
+        MutexTestThread& operator = (const MutexTestThread&);
+
+    private:
+        po6::threads::mutex* m_mtx;
+};
 
 namespace
 {
@@ -71,6 +106,19 @@ TEST(MutexTest, LockAndDtorThrows)
     }
 
     ASSERT_TRUE(caught);
+}
+
+TEST(MutexTest, TwoThreads)
+{
+    po6::threads::mutex mtx;
+    MutexTestThread mtt(&mtx);
+    po6::threads::thread t1(std::tr1::ref(mtt));
+    po6::threads::thread t2(std::tr1::ref(mtt));
+
+    t1.start();
+    t2.start();
+    t1.join();
+    t2.join();
 }
 
 } // namespace
