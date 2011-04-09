@@ -35,6 +35,7 @@ set(CMAKE_CXX_FLAGS "${po6_wanal} ${CMAKE_CXX_FLAGS}")
 set(po6_test_srcs
     test/error.cc
     test/threads/mutex.cc
+    test/threads/thread.cc
 )
 
 # Installed headers
@@ -44,6 +45,7 @@ set(po6_headers
 
 set(po6_threads_headers
     include/po6/threads/mutex.h
+    include/po6/threads/thread.h
 )
 
 # Setup the include paths
@@ -58,9 +60,10 @@ target_link_libraries(testrunner
     gtest
 )
 
-add_test(MutexTest testrunner --gtest_filter=MutexTest.*)
 add_test(LogicErrorTest testrunner --gtest_filter=LogicErrorTest.*)
 add_test(ErrorTest testrunner --gtest_filter=ErrorTest.*)
+add_test(MutexTest testrunner --gtest_filter=MutexTest.*)
+add_test(ThreadTest testrunner --gtest_filter=ThreadTest.*)
 
 # Installation targets.
 install(
