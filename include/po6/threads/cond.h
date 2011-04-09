@@ -25,8 +25,8 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef po6_threads_mutex_h_
-#define po6_threads_mutex_h_
+#ifndef po6_threads_cond_h_
+#define po6_threads_cond_h_
 
 // POSIX
 #include <errno.h>
@@ -34,19 +34,21 @@
 
 // po6
 #include "po6/error.h"
+#include "po6/threads/mutex.h"
 
 namespace po6
 {
 namespace threads
 {
 
-class mutex
+class cond
 {
     public:
-        mutex()
-            : m_mutex()
+        cond(mutex* mtx)
+            : m_mtx(mtx)
+            , m_cond()
         {
-            int ret = pthread_mutex_init(&m_mutex, NULL);
+            int ret = pthread_cond_init(&m_cond, NULL);
 
             if (ret != 0)
             {
@@ -54,48 +56,55 @@ class mutex
             }
         }
 
-        ~mutex()
+        ~cond()
         {
-            int ret = pthread_mutex_destroy(&m_mutex);
+            int ret = pthread_cond_destroy(&m_cond);
 
             if (ret != 0)
             {
-                po6::logic_error("Could not destroy mutex.");
+                po6::logic_error("Could not destroy cond.");
             }
         }
 
     public:
         void lock()
         {
-            int ret = pthread_mutex_lock(&m_mutex);
-
-            if (ret != 0)
-            {
-                throw po6::error(ret);
-            }
+            m_mtx->lock();
         }
 
-        bool trylock()
+        void trylock()
         {
-            int ret = pthread_mutex_trylock(&m_mutex);
-
-            if (ret == 0)
-            {
-                return true;
-            }
-            else if (ret == EBUSY)
-            {
-                return false;
-            }
-            else
-            {
-                throw po6::error(ret);
-            }
+            m_mtx->trylock();
         }
 
         void unlock()
         {
-            int ret = pthread_mutex_unlock(&m_mutex);
+            m_mtx->unlock();
+        }
+
+        void wait()
+        {
+            int ret = pthread_cond_wait(&m_cond, &m_mtx->m_mutex);
+
+            if (ret != 0)
+            {
+                throw po6::error(ret);
+            }
+        }
+
+        void signal()
+        {
+            int ret = pthread_cond_signal(&m_cond);
+
+            if (ret != 0)
+            {
+                throw po6::error(ret);
+            }
+        }
+
+        void broadcast()
+        {
+            int ret = pthread_cond_broadcast(&m_cond);
 
             if (ret != 0)
             {
@@ -104,19 +113,17 @@ class mutex
         }
 
     private:
-        friend class cond;
+        cond(const cond&);
 
     private:
-        mutex(const mutex&);
+        cond& operator = (const cond&);
 
     private:
-        mutex& operator = (const mutex&);
-
-    private:
-        pthread_mutex_t m_mutex;
+        mutex* m_mtx;
+        pthread_cond_t m_cond;
 };
 
 } // namespace threads
 } // namespace po6
 
-#endif // po6_threads_mutex_h_
+#endif // po6_threads_cond_h_

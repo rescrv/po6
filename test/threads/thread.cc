@@ -113,4 +113,22 @@ TEST(ThreadTest, JoinWithoutStart)
     ASSERT_TRUE(caught);
 }
 
+TEST(ThreadTest, StartAndDtorThrows)
+{
+    std::tr1::function<void (void)> f = &func;
+    bool caught = false;
+
+    try
+    {
+        po6::threads::thread t(f);
+        t.start();
+    }
+    catch (std::logic_error& e)
+    {
+        caught = true;
+    }
+
+    ASSERT_TRUE(caught);
+}
+
 } // namespace

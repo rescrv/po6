@@ -25,98 +25,89 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef po6_threads_mutex_h_
-#define po6_threads_mutex_h_
+// C++
+#include <tr1/functional>
 
-// POSIX
-#include <errno.h>
-#include <pthread.h>
+// Google Test
+#include <gtest/gtest.h>
 
 // po6
-#include "po6/error.h"
+#include "po6/threads/cond.h"
+#include "po6/threads/mutex.h"
+#include "po6/threads/thread.h"
 
-namespace po6
-{
-namespace threads
-{
+#pragma GCC diagnostic ignored "-Wswitch-default"
 
-class mutex
+class CondTestSimpleCond
 {
     public:
-        mutex()
-            : m_mutex()
+        CondTestSimpleCond(po6::threads::cond* cnd)
+            : i(0)
+            , m_cnd(cnd)
         {
-            int ret = pthread_mutex_init(&m_mutex, NULL);
-
-            if (ret != 0)
-            {
-                throw po6::error(ret);
-            }
-        }
-
-        ~mutex()
-        {
-            int ret = pthread_mutex_destroy(&m_mutex);
-
-            if (ret != 0)
-            {
-                po6::logic_error("Could not destroy mutex.");
-            }
         }
 
     public:
-        void lock()
+        void operator () ()
         {
-            int ret = pthread_mutex_lock(&m_mutex);
+            m_cnd->lock();
 
-            if (ret != 0)
+            while (i < 1000000)
             {
-                throw po6::error(ret);
+                m_cnd->wait();
             }
+
+            m_cnd->unlock();
         }
 
-        bool trylock()
-        {
-            int ret = pthread_mutex_trylock(&m_mutex);
-
-            if (ret == 0)
-            {
-                return true;
-            }
-            else if (ret == EBUSY)
-            {
-                return false;
-            }
-            else
-            {
-                throw po6::error(ret);
-            }
-        }
-
-        void unlock()
-        {
-            int ret = pthread_mutex_unlock(&m_mutex);
-
-            if (ret != 0)
-            {
-                throw po6::error(ret);
-            }
-        }
+    public:
+        int i;
 
     private:
-        friend class cond;
+        CondTestSimpleCond(const CondTestSimpleCond&);
 
     private:
-        mutex(const mutex&);
+        CondTestSimpleCond& operator = (const CondTestSimpleCond&);
 
     private:
-        mutex& operator = (const mutex&);
-
-    private:
-        pthread_mutex_t m_mutex;
+        po6::threads::cond* m_cnd;
 };
 
-} // namespace threads
-} // namespace po6
+namespace
+{
 
-#endif // po6_threads_mutex_h_
+TEST(CondTest, CtorAndDtor)
+{
+    po6::threads::mutex mtx;
+    po6::threads::cond cnd(&mtx);
+}
+
+TEST(CondTest, SimpleCond)
+{
+    po6::threads::mutex mtx;
+    po6::threads::cond cnd(&mtx);
+    CondTestSimpleCond ctsc(&cnd);
+    po6::threads::thread t(std::tr1::ref(ctsc));
+    t.start();
+
+    for (int i = 0; i <= 1000000; ++i)
+    {
+        cnd.lock();
+        ctsc.i = i;
+
+        if (i % 2 == 0)
+        {
+            cnd.signal();
+        }
+        else
+        {
+            cnd.broadcast();
+        }
+
+        cnd.unlock();
+    }
+
+    t.join();
+}
+
+} // namespace

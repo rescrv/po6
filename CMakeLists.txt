@@ -34,6 +34,7 @@ set(CMAKE_CXX_FLAGS "${po6_wanal} ${CMAKE_CXX_FLAGS}")
 # Set the test sources
 set(po6_test_srcs
     test/error.cc
+    test/threads/cond.cc
     test/threads/mutex.cc
     test/threads/thread.cc
 )
@@ -44,6 +45,7 @@ set(po6_headers
 )
 
 set(po6_threads_headers
+    include/po6/threads/cond.h
     include/po6/threads/mutex.h
     include/po6/threads/thread.h
 )
@@ -62,6 +64,7 @@ target_link_libraries(testrunner
 
 add_test(LogicErrorTest testrunner --gtest_filter=LogicErrorTest.*)
 add_test(ErrorTest testrunner --gtest_filter=ErrorTest.*)
+add_test(CondTest testrunner --gtest_filter=CondTest.*)
 add_test(MutexTest testrunner --gtest_filter=MutexTest.*)
 add_test(ThreadTest testrunner --gtest_filter=ThreadTest.*)
 
