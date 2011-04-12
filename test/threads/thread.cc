@@ -128,6 +128,25 @@ TEST(ThreadTest, StartAndDtorThrows)
         caught = true;
     }
 
+    for (int i = 0; i < 1000000; ++i)
+    {
+        // THIS IS A RACE CONDITION
+        //
+        // The purpose of this test is to test for broken behavior (that is,
+        // creating a thread and then destructing the thread without first
+        // joining it), and so I'm happy letting this race condition sit, as the
+        // alternative is to muck around with the thread API, and that seems
+        // more messy than an occasionally failed test.
+        //
+        // The key to this race condition, is that the other thread needs to
+        // exit before this one does.  The above loop probably does this on most
+        // fast processors.
+        //
+        // If you feel this test needs to be stronger, you should really examine
+        // whether the underlying behavior of the test is even worth testing.  I
+        // could just make it undefined and remove this test altogether.
+    }
+
     ASSERT_TRUE(caught);
 }
 
