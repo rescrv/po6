@@ -34,6 +34,7 @@ set(CMAKE_CXX_FLAGS "${po6_wanal} ${CMAKE_CXX_FLAGS}")
 # Set the test sources
 set(po6_test_srcs
     test/error.cc
+    test/io/fd.cc
     test/threads/cond.cc
     test/threads/mutex.cc
     test/threads/thread.cc
@@ -42,6 +43,10 @@ set(po6_test_srcs
 # Installed headers
 set(po6_headers
     include/po6/error.h
+)
+
+set(po6_io_headers
+    include/po6/io/fd.h
 )
 
 set(po6_threads_headers
@@ -78,11 +83,21 @@ add_test(CondTest.SimpleCond testrunner --gtest_filter=CondTest.SimpleCond)
 add_test(LogicErrorTest.NormallyThrows testrunner --gtest_filter=LogicErrorTest.NormallyThrows)
 add_test(LogicErrorTest.ThrowInProgressDeathTest testrunner --gtest_filter=LogicErrorTest.ThrowInProgressDeathTest)
 add_test(ErrorTest.CopyingAndAssigning testrunner --gtest_filter=ErrorTest.CopyingAndAssigning)
+add_test(FdTest.CtorAndDtor testrunner --gtest_filter=FdTest.CtorAndDtor)
+add_test(FdTest.OpenAndExplicitClose testrunner --gtest_filter=FdTest.OpenAndExplicitClose)
+add_test(FdTest.OpenAndImplicitClose testrunner --gtest_filter=FdTest.OpenAndImplicitClose)
+add_test(FdTest.OpenReadWriteClose testrunner --gtest_filter=FdTest.OpenReadWriteClose)
 
 # Installation targets.
 install(
     FILES ${po6_headers}
     DESTINATION  include/po6
+    COMPONENT development
+)
+
+install(
+    FILES ${po6_io_headers}
+    DESTINATION  include/po6/io
     COMPONENT development
 )
 
