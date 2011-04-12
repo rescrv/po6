@@ -62,11 +62,22 @@ target_link_libraries(testrunner
     gtest
 )
 
-add_test(LogicErrorTest testrunner --gtest_filter=LogicErrorTest.*)
-add_test(ErrorTest testrunner --gtest_filter=ErrorTest.*)
-add_test(CondTest testrunner --gtest_filter=CondTest.*)
-add_test(MutexTest testrunner --gtest_filter=MutexTest.*)
-add_test(ThreadTest testrunner --gtest_filter=ThreadTest.*)
+add_test(ThreadTest.CtorAndDtor testrunner --gtest_filter=ThreadTest.CtorAndDtor)
+add_test(ThreadTest.StartAndJoin testrunner --gtest_filter=ThreadTest.StartAndJoin)
+add_test(ThreadTest.DoubleStart testrunner --gtest_filter=ThreadTest.DoubleStart)
+add_test(ThreadTest.DoubleJoin testrunner --gtest_filter=ThreadTest.DoubleJoin)
+add_test(ThreadTest.JoinWithoutStart testrunner --gtest_filter=ThreadTest.JoinWithoutStart)
+add_test(ThreadTest.StartAndDtorThrows testrunner --gtest_filter=ThreadTest.StartAndDtorThrows)
+add_test(MutexTest.CtorAndDtor testrunner --gtest_filter=MutexTest.CtorAndDtor)
+add_test(MutexTest.LockAndUnlock testrunner --gtest_filter=MutexTest.LockAndUnlock)
+add_test(MutexTest.TryLock testrunner --gtest_filter=MutexTest.TryLock)
+add_test(MutexTest.LockAndDtorThrows testrunner --gtest_filter=MutexTest.LockAndDtorThrows)
+add_test(MutexTest.TwoThreads testrunner --gtest_filter=MutexTest.TwoThreads)
+add_test(CondTest.CtorAndDtor testrunner --gtest_filter=CondTest.CtorAndDtor)
+add_test(CondTest.SimpleCond testrunner --gtest_filter=CondTest.SimpleCond)
+add_test(LogicErrorTest.NormallyThrows testrunner --gtest_filter=LogicErrorTest.NormallyThrows)
+add_test(LogicErrorTest.ThrowInProgressDeathTest testrunner --gtest_filter=LogicErrorTest.ThrowInProgressDeathTest)
+add_test(ErrorTest.CopyingAndAssigning testrunner --gtest_filter=ErrorTest.CopyingAndAssigning)
 
 # Installation targets.
 install(
