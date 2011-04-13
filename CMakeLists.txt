@@ -35,6 +35,7 @@ set(CMAKE_CXX_FLAGS "${po6_wanal} ${CMAKE_CXX_FLAGS}")
 set(po6_test_srcs
     test/error.cc
     test/io/fd.cc
+    test/net/ipaddr.cc
     test/threads/cond.cc
     test/threads/mutex.cc
     test/threads/thread.cc
@@ -47,6 +48,10 @@ set(po6_headers
 
 set(po6_io_headers
     include/po6/io/fd.h
+)
+
+set(po6_net_headers
+    include/po6/net/ipaddr.h
 )
 
 set(po6_threads_headers
@@ -87,6 +92,12 @@ add_test(FdTest.CtorAndDtor testrunner --gtest_filter=FdTest.CtorAndDtor)
 add_test(FdTest.OpenAndExplicitClose testrunner --gtest_filter=FdTest.OpenAndExplicitClose)
 add_test(FdTest.OpenAndImplicitClose testrunner --gtest_filter=FdTest.OpenAndImplicitClose)
 add_test(FdTest.OpenReadWriteClose testrunner --gtest_filter=FdTest.OpenReadWriteClose)
+add_test(IpaddrTest.CreateAndCompare testrunner --gtest_filter=IpaddrTest.CreateAndCompare)
+add_test(IpaddrTest.Assignment testrunner --gtest_filter=IpaddrTest.Assignment)
+add_test(IpaddrTest.SelfAssignment testrunner --gtest_filter=IpaddrTest.SelfAssignment)
+add_test(IpaddrTest.PackV4 testrunner --gtest_filter=IpaddrTest.PackV4)
+add_test(IpaddrTest.PackV6 testrunner --gtest_filter=IpaddrTest.PackV6)
+
 
 # Installation targets.
 install(
@@ -98,6 +109,12 @@ install(
 install(
     FILES ${po6_io_headers}
     DESTINATION  include/po6/io
+    COMPONENT development
+)
+
+install(
+    FILES ${po6_net_headers}
+    DESTINATION  include/po6/net
     COMPONENT development
 )
 
