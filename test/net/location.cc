@@ -44,14 +44,56 @@ TEST(LocationTest, CtorAndDtor)
 
 TEST(LocationTest, Comparison)
 {
-    po6::net::location locA("128.84.84.128", 1234);
-    po6::net::location locB("128.213.213.128", 1234);
+    // The addresses in this test were chosen to compare the same independent of
+    // bite-order.
+    po6::net::location locA("127.0.0.127", 1234);
+    po6::net::location locB("127.1.1.127", 1234);
 
     EXPECT_LT(locA, locB);
-    locA.address = "128.213.213.128";
+    locA.address = "127.1.1.127";
     EXPECT_EQ(locA, locB);
     ++ locB.port;
     EXPECT_LT(locA, locB);
+}
+
+TEST(LocationTest, FromSockaddrIn)
+{
+    po6::net::ipaddr ip("127.0.0.1");
+    sockaddr_in sa;
+    ip.pack(&sa, 1234);
+
+    po6::net::location loc(&sa);
+    EXPECT_EQ(loc, po6::net::location("127.0.0.1", 1234));
+}
+
+TEST(LocationTest, FromSockaddrIn6)
+{
+    po6::net::ipaddr ip("::1");
+    sockaddr_in6 sa;
+    ip.pack(&sa, 1234);
+
+    po6::net::location loc(&sa);
+    EXPECT_EQ(loc, po6::net::location("::1", 1234));
+}
+
+TEST(LocationTest, FromSockaddrInCasted)
+{
+    po6::net::ipaddr ip("127.0.0.1");
+    sockaddr_in sa;
+    ip.pack(&sa, 1234);
+
+    po6::net::location loc(reinterpret_cast<sockaddr*>(&sa), sizeof(sockaddr_in));
+    EXPECT_EQ(loc, po6::net::location("127.0.0.1", 1234));
+}
+
+TEST(LocationTest, FromSockaddrIn6Casted)
+{
+    po6::net::ipaddr ip("::1");
+    sockaddr_in6 sa;
+    ip.pack(&sa, 1234);
+
+    po6::net::location loc(reinterpret_cast<sockaddr*>(&sa), sizeof(sockaddr_in6));
+    EXPECT_EQ(loc, po6::net::location("::1", 1234));
 }
 
 } // namespace

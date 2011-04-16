@@ -101,6 +101,10 @@ add_test(IpaddrTest.PackV4 testrunner --gtest_filter=IpaddrTest.PackV4)
 add_test(IpaddrTest.PackV6 testrunner --gtest_filter=IpaddrTest.PackV6)
 add_test(LocationTest.CtorAndDtor testrunner --gtest_filter=LocationTest.CtorAndDtor)
 add_test(LocationTest.Comparison testrunner --gtest_filter=LocationTest.Comparison)
+add_test(LocationTest.FromSockaddrIn testrunner --gtest_filter=LocationTest.FromSockaddrIn)
+add_test(LocationTest.FromSockaddrIn6 testrunner --gtest_filter=LocationTest.FromSockaddrIn6)
+add_test(LocationTest.FromSockaddrInCasted testrunner --gtest_filter=LocationTest.FromSockaddrInCasted)
+add_test(LocationTest.FromSockaddrIn6Casted testrunner --gtest_filter=LocationTest.FromSockaddrIn6Casted)
 
 # Installation targets.
 install(

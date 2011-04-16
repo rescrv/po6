@@ -44,17 +44,69 @@ class location
 {
     public:
         location()
-            : address(), port()
+            : address()
+            , port()
         {
         }
 
-        location(const ipaddr& _address, in_port_t _port)
-            : address(_address), port(_port)
+        location(const ipaddr& _address, in_port_t _port = 0)
+            : address(_address)
+            , port(_port)
         {
+        }
+
+        location(const sockaddr* sa, socklen_t salen)
+            : address()
+            , port()
+        {
+            set(sa, salen);
+        }
+
+        location(const sockaddr_in* sa)
+            : address()
+            , port()
+        {
+            set(sa);
+        }
+
+        location(const sockaddr_in6* sa)
+            : address()
+            , port()
+        {
+            set(sa);
         }
 
         ~location()
         {
+        }
+
+    public:
+        void set(const sockaddr* sa, socklen_t salen)
+        {
+            if (sa->sa_family == AF_INET && salen >= sizeof(sockaddr_in))
+            {
+                set(reinterpret_cast<const sockaddr_in*>(sa));
+            }
+            else if (sa->sa_family == AF_INET6 && salen >= sizeof(sockaddr_in6))
+            {
+                set(reinterpret_cast<const sockaddr_in6*>(sa));
+            }
+            else
+            {
+                throw std::runtime_error("Socket address family unknown (or sockaddr too small).");
+            }
+        }
+
+        void set(const sockaddr_in* sa)
+        {
+            address = sa->sin_addr;
+            port = ntohs(sa->sin_port);
+        }
+
+        void set(const sockaddr_in6* sa)
+        {
+            address = sa->sin6_addr;
+            port = ntohs(sa->sin6_port);
         }
 
     public:
