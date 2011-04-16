@@ -36,6 +36,7 @@ set(po6_test_srcs
     test/error.cc
     test/io/fd.cc
     test/net/ipaddr.cc
+    test/net/location.cc
     test/threads/cond.cc
     test/threads/mutex.cc
     test/threads/thread.cc
@@ -52,6 +53,7 @@ set(po6_io_headers
 
 set(po6_net_headers
     include/po6/net/ipaddr.h
+    include/po6/net/location.h
 )
 
 set(po6_threads_headers
@@ -97,7 +99,8 @@ add_test(IpaddrTest.Assignment testrunner --gtest_filter=IpaddrTest.Assignment)
 add_test(IpaddrTest.SelfAssignment testrunner --gtest_filter=IpaddrTest.SelfAssignment)
 add_test(IpaddrTest.PackV4 testrunner --gtest_filter=IpaddrTest.PackV4)
 add_test(IpaddrTest.PackV6 testrunner --gtest_filter=IpaddrTest.PackV6)
-
+add_test(LocationTest.CtorAndDtor testrunner --gtest_filter=LocationTest.CtorAndDtor)
+add_test(LocationTest.Comparison testrunner --gtest_filter=LocationTest.Comparison)
 
 # Installation targets.
 install(
