@@ -97,24 +97,42 @@ class ipaddr
             }
             else if (m_family == AF_INET && *addrlen >= sizeof(sockaddr_in))
             {
-                sockaddr_in* addr4 = reinterpret_cast<sockaddr_in*>(addr);
-                addr4->sin_family = AF_INET;
-                addr4->sin_port = htons(port);
-                memmove(&addr4->sin_addr, &m_ip.v4, sizeof(in_addr));
+                pack(reinterpret_cast<sockaddr_in*>(addr), port);
                 *addrlen = sizeof(sockaddr_in);
             }
             else if (m_family == AF_INET6 && *addrlen >= sizeof(sockaddr_in6))
             {
-                sockaddr_in6* addr6 = reinterpret_cast<sockaddr_in6*>(addr);
-                addr6->sin6_family = AF_INET6;
-                addr6->sin6_port = htons(port);
-                memmove(&addr6->sin6_addr, &m_ip.v6, sizeof(in6_addr));
+                pack(reinterpret_cast<sockaddr_in6*>(addr), port);
                 *addrlen = sizeof(sockaddr_in6);
             }
             else
             {
                 throw std::length_error("insufficiently sized sockaddr");
             }
+        }
+
+        void pack(struct sockaddr_in* addr, in_port_t port) const
+        {
+            if (m_family != AF_INET)
+            {
+                po6::logic_error("Cannot pack non-AF_INET sockaddr into sockaddr_in.");
+            }
+
+            addr->sin_family = AF_INET;
+            addr->sin_port = htons(port);
+            memmove(&addr->sin_addr, &m_ip.v4, sizeof(in_addr));
+        }
+
+        void pack(struct sockaddr_in6* addr, in_port_t port) const
+        {
+            if (m_family != AF_INET6)
+            {
+                po6::logic_error("Cannot pack non-AF_INET6 sockaddr into sockaddr_in6.");
+            }
+
+            addr->sin6_family = AF_INET6;
+            addr->sin6_port = htons(port);
+            memmove(&addr->sin6_addr, &m_ip.v6, sizeof(in6_addr));
         }
 
         int compare(const ipaddr& rhs) const
