@@ -55,6 +55,8 @@ logic_error(const std::string& message)
     }
 }
 
+#define PO6_ERROR_MSG_LEN 1024
+
 class error : public std::exception
 {
     public:
@@ -78,6 +80,19 @@ class error : public std::exception
         }
 
     public:
+        const char* what() const throw ()
+        {
+#ifdef _GNU_SOURCE
+            if (_GNU_SOURCE)
+            {
+                return strerror_r(m_errno, m_msg, PO6_ERROR_MSG_LEN);
+            }
+#endif
+            strerror_r(m_errno, m_msg, PO6_ERROR_MSG_LEN);
+            return m_msg;
+        }
+
+    public:
         operator int () const
         {
             return m_errno;
@@ -91,7 +106,10 @@ class error : public std::exception
 
     private:
         int m_errno;
+        mutable char m_msg[PO6_ERROR_MSG_LEN];
 };
+
+#undef PO6_ERROR_MSG_LEN
 
 } // namespace po6
 
