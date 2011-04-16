@@ -37,6 +37,7 @@ set(po6_test_srcs
     test/io/fd.cc
     test/net/ipaddr.cc
     test/net/location.cc
+    test/net/socket.cc
     test/threads/cond.cc
     test/threads/mutex.cc
     test/threads/thread.cc
@@ -54,6 +55,7 @@ set(po6_io_headers
 set(po6_net_headers
     include/po6/net/ipaddr.h
     include/po6/net/location.h
+    include/po6/net/socket.h
 )
 
 set(po6_threads_headers
@@ -105,6 +107,7 @@ add_test(LocationTest.FromSockaddrIn testrunner --gtest_filter=LocationTest.From
 add_test(LocationTest.FromSockaddrIn6 testrunner --gtest_filter=LocationTest.FromSockaddrIn6)
 add_test(LocationTest.FromSockaddrInCasted testrunner --gtest_filter=LocationTest.FromSockaddrInCasted)
 add_test(LocationTest.FromSockaddrIn6Casted testrunner --gtest_filter=LocationTest.FromSockaddrIn6Casted)
+add_test(SocketTest.ClientAndServer testrunner --gtest_filter=SocketTest.ClientAndServer)
 
 # Installation targets.
 install(
