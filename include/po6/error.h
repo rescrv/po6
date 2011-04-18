@@ -32,6 +32,7 @@
 #include <cstdlib>
 
 // C++
+#include <iostream>
 #include <exception>
 #include <stdexcept>
 
@@ -46,7 +47,8 @@ logic_error(const std::string& message)
     // If we are already processing an exception.
     if (std::uncaught_exception())
     {
-        std::cerr << message << std::endl;
+        std::cerr << "Uncaught exception:  " << message << std::endl;
+        std::cerr << "Cannot throw logic error; instead, abort." << std::endl;
         abort();
     }
     else
