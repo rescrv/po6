@@ -171,6 +171,16 @@ class socket : public po6::io::fd
             return location(sa, salen);
         }
 
+        void reuseaddr(bool setting)
+        {
+            int yes = setting ? 1 : 0;
+
+            if (setsockopt(get(), SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) < 0)
+            {
+                throw po6::error(errno);
+            }
+        }
+
     public:
         socket& operator = (int f)
         {
