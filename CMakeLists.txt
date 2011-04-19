@@ -40,6 +40,7 @@ set(po6_test_srcs
     test/net/socket.cc
     test/threads/cond.cc
     test/threads/mutex.cc
+    test/threads/rwlock.cc
     test/threads/thread.cc
 )
 
@@ -61,6 +62,7 @@ set(po6_net_headers
 set(po6_threads_headers
     include/po6/threads/cond.h
     include/po6/threads/mutex.h
+    include/po6/threads/rwlock.h
     include/po6/threads/thread.h
 )
 
@@ -82,6 +84,9 @@ add_test(ThreadTest.DoubleStart testrunner --gtest_filter=ThreadTest.DoubleStart
 add_test(ThreadTest.DoubleJoin testrunner --gtest_filter=ThreadTest.DoubleJoin)
 add_test(ThreadTest.JoinWithoutStart testrunner --gtest_filter=ThreadTest.JoinWithoutStart)
 add_test(ThreadTest.StartAndDtorThrows testrunner --gtest_filter=ThreadTest.StartAndDtorThrows)
+add_test(RwlockTest.CtorAndDtor testrunner --gtest_filter=RwlockTest.CtorAndDtor)
+add_test(RwlockTest.LockAndUnlock testrunner --gtest_filter=RwlockTest.LockAndUnlock)
+add_test(RwlockTest.TwoThreads testrunner --gtest_filter=RwlockTest.TwoThreads)
 add_test(MutexTest.CtorAndDtor testrunner --gtest_filter=MutexTest.CtorAndDtor)
 add_test(MutexTest.LockAndUnlock testrunner --gtest_filter=MutexTest.LockAndUnlock)
 add_test(MutexTest.TryLock testrunner --gtest_filter=MutexTest.TryLock)
