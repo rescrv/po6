@@ -118,6 +118,23 @@ class socket : public po6::io::fd
             }
         }
 
+        void accept(socket* newsock)
+        {
+            if (newsock->get() != -1)
+            {
+                po6::logic_error("Accepting would overwrite preexisting socket.");
+            }
+
+            int ret;
+
+            if ((ret = ::accept(get(), NULL, NULL)) < 0)
+            {
+                throw po6::error(errno);
+            }
+
+            *newsock = ret;
+        };
+
         void shutdown(int how)
         {
             if (::shutdown(get(), how) < 0)
