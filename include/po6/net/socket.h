@@ -42,6 +42,12 @@ namespace net
 class socket : public po6::io::fd
 {
     public:
+        // The only use for sockets from this constructor are to assign to with accept.
+        socket()
+            : fd(-1)
+        {
+        }
+
         socket(int domain, int type, int protocol)
             : fd(::socket(domain, type, protocol))
         {
