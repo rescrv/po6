@@ -126,6 +126,20 @@ class socket : public po6::io::fd
             }
         }
 
+        location getpeername()
+        {
+            sockaddr_in6 sa6;
+            socklen_t salen = sizeof(sa6);
+            sockaddr* sa = reinterpret_cast<sockaddr*>(&sa6);
+
+            if (::getpeername(get(), sa, &salen) < 0)
+            {
+                throw po6::error(errno);
+            }
+
+            return location(sa, salen);
+        }
+
         location getsockname()
         {
             sockaddr_in6 sa6;
