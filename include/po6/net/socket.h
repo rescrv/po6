@@ -139,6 +139,18 @@ class socket : public po6::io::fd
 
             return location(sa, salen);
         }
+
+    public:
+        socket& operator = (int f)
+        {
+            if (get() >= 0)
+            {
+                throw std::logic_error("Cannot assign to sock which represents an open socket.");
+            }
+
+            *dynamic_cast<fd*>(this) = f;
+            return *this;
+        }
 };
 
 } // namespace net
