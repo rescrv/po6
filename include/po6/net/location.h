@@ -81,6 +81,11 @@ class location
         }
 
     public:
+        void pack(struct sockaddr* addr, socklen_t* addrlen) const
+        {
+            address.pack(addr, addrlen, port);
+        }
+
         void set(const sockaddr* sa, socklen_t salen)
         {
             if (sa->sa_family == AF_INET && salen >= sizeof(sockaddr_in))
