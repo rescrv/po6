@@ -38,6 +38,7 @@ set(po6_test_srcs
     test/net/ipaddr.cc
     test/net/location.cc
     test/net/socket.cc
+    test/pathname.cc
     test/threads/cond.cc
     test/threads/mutex.cc
     test/threads/rwlock.cc
@@ -113,6 +114,10 @@ add_test(LocationTest.FromSockaddrIn6 testrunner --gtest_filter=LocationTest.Fro
 add_test(LocationTest.FromSockaddrInCasted testrunner --gtest_filter=LocationTest.FromSockaddrInCasted)
 add_test(LocationTest.FromSockaddrIn6Casted testrunner --gtest_filter=LocationTest.FromSockaddrIn6Casted)
 add_test(SocketTest.ClientAndServer testrunner --gtest_filter=SocketTest.ClientAndServer)
+add_test(PathnameTest.CtorAndDtor testrunner --gtest_filter=PathnameTest.CtorAndDtor)
+add_test(PathnameTest.Equality testrunner --gtest_filter=PathnameTest.Equality)
+add_test(PathnameTest.Basename testrunner --gtest_filter=PathnameTest.Basename)
+add_test(PathnameTest.Dirname testrunner --gtest_filter=PathnameTest.Dirname)
 
 # Installation targets.
 install(
