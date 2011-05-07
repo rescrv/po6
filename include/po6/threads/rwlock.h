@@ -43,6 +43,55 @@ namespace threads
 class rwlock
 {
     public:
+        class rdhold
+        {
+            public:
+                rdhold(rwlock* rwl)
+                    : m_rwl(rwl)
+                {
+                    m_rwl->rdlock();
+                }
+
+                ~rdhold()
+                {
+                    m_rwl->unlock();
+                }
+
+            private:
+                rdhold(const rdhold&);
+
+            private:
+                rdhold& operator = (const rdhold&);
+
+            private:
+                rwlock* m_rwl;
+        };
+
+        class wrhold
+        {
+            public:
+                wrhold(rwlock* rwl)
+                    : m_rwl(rwl)
+                {
+                    m_rwl->rdlock();
+                }
+
+                ~wrhold()
+                {
+                    m_rwl->unlock();
+                }
+
+            private:
+                wrhold(const wrhold&);
+
+            private:
+                wrhold& operator = (const wrhold&);
+
+            private:
+                rwlock* m_rwl;
+        };
+
+    public:
         rwlock()
             : m_rwlock()
         {

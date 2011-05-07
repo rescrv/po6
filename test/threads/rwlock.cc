@@ -112,4 +112,19 @@ TEST(RwlockTest, TwoThreads)
     t3.join();
 }
 
+TEST(RwlockTest, Holding)
+{
+    po6::threads::rwlock rwl;
+
+    {
+        po6::threads::rwlock::rdhold h(&rwl);
+    }
+
+    {
+        po6::threads::rwlock::wrhold h(&rwl);
+    }
+
+    rwl.unlock();
+}
+
 } // namespace

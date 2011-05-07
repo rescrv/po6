@@ -88,6 +88,7 @@ add_test(ThreadTest.StartAndDtorThrows testrunner --gtest_filter=ThreadTest.Star
 add_test(RwlockTest.CtorAndDtor testrunner --gtest_filter=RwlockTest.CtorAndDtor)
 add_test(RwlockTest.LockAndUnlock testrunner --gtest_filter=RwlockTest.LockAndUnlock)
 add_test(RwlockTest.TwoThreads testrunner --gtest_filter=RwlockTest.TwoThreads)
+add_test(RwlockTest.Holding testrunner --gtest_filter=RwlockTest.Holding)
 add_test(MutexTest.CtorAndDtor testrunner --gtest_filter=MutexTest.CtorAndDtor)
 add_test(MutexTest.LockAndUnlock testrunner --gtest_filter=MutexTest.LockAndUnlock)
 add_test(MutexTest.TryLock testrunner --gtest_filter=MutexTest.TryLock)
