@@ -43,6 +43,31 @@ namespace threads
 class mutex
 {
     public:
+        class hold
+        {
+            public:
+                hold(mutex* mtx)
+                    : m_mtx(mtx)
+                {
+                    m_mtx->lock();
+                }
+
+                ~hold()
+                {
+                    m_mtx->unlock();
+                }
+
+            private:
+                hold(const hold&);
+
+            private:
+                hold& operator = (const hold&);
+
+            private:
+                mutex* m_mtx;
+        };
+
+    public:
         mutex()
             : m_mutex()
         {

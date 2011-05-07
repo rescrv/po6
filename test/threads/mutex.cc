@@ -121,4 +121,17 @@ TEST(MutexTest, TwoThreads)
     t2.join();
 }
 
+TEST(MutexTest, Holding)
+{
+    po6::threads::mutex mtx;
+
+    {
+        po6::threads::mutex::hold h(&mtx);
+        EXPECT_FALSE(mtx.trylock());
+    }
+
+    EXPECT_TRUE(mtx.trylock());
+    mtx.unlock();
+}
+
 } // namespace

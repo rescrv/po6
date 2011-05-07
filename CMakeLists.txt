@@ -93,6 +93,7 @@ add_test(MutexTest.LockAndUnlock testrunner --gtest_filter=MutexTest.LockAndUnlo
 add_test(MutexTest.TryLock testrunner --gtest_filter=MutexTest.TryLock)
 add_test(MutexTest.LockAndDtorThrows testrunner --gtest_filter=MutexTest.LockAndDtorThrows)
 add_test(MutexTest.TwoThreads testrunner --gtest_filter=MutexTest.TwoThreads)
+add_test(MutexTest.Holding testrunner --gtest_filter=MutexTest.Holding)
 add_test(CondTest.CtorAndDtor testrunner --gtest_filter=CondTest.CtorAndDtor)
 add_test(CondTest.SimpleCond testrunner --gtest_filter=CondTest.SimpleCond)
 add_test(LogicErrorTest.NormallyThrows testrunner --gtest_filter=LogicErrorTest.NormallyThrows)
