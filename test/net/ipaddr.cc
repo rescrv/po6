@@ -25,6 +25,9 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
+// C++
+#include <sstream>
+
 // Google Test
 #include <gtest/gtest.h>
 
@@ -113,6 +116,29 @@ TEST(IpaddrTest, PackV6)
     EXPECT_EQ(sa.sin6_family, AF_INET6);
     EXPECT_EQ(sa.sin6_port, htons(1234));
     EXPECT_EQ(memcmp(&sa.sin6_addr, &ipv6, sizeof(in6_addr)), 0);
+}
+
+TEST(IpaddrTest, OutputStream)
+{
+    po6::net::ipaddr a("127.0.0.1");
+    po6::net::ipaddr b("0:0:0:0:0:0:0:0");
+    po6::net::ipaddr c("1:0:0:0:0:0:0:8");
+    po6::net::ipaddr d("0:0:0:0:0:FFFF:204.152.189.116");
+
+    std::ostringstream sa;
+    std::ostringstream sb;
+    std::ostringstream sc;
+    std::ostringstream sd;
+
+    sa << a;
+    sb << b;
+    sc << c;
+    sd << d;
+
+    EXPECT_EQ("127.0.0.1", sa.str());
+    EXPECT_EQ("::", sb.str());
+    EXPECT_EQ("1::8", sc.str());
+    EXPECT_EQ("::ffff:204.152.189.116", sd.str());
 }
 
 } // namespace
