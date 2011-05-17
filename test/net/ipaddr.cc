@@ -141,4 +141,46 @@ TEST(IpaddrTest, OutputStream)
     EXPECT_EQ("::ffff:204.152.189.116", sd.str());
 }
 
+TEST(IpaddrTest, InputStream)
+{
+    std::istringstream sa("127.0.0.1");
+    std::istringstream sb("0:0:0:0:0:0:0:0");
+    std::istringstream sc("1:0:0:0:0:0:0:8");
+    std::istringstream sd("0:0:0:0:0:FFFF:204.152.189.116");
+
+    po6::net::ipaddr a;
+    po6::net::ipaddr b;
+    po6::net::ipaddr c;
+    po6::net::ipaddr d;
+
+    sa >> a;
+    sb >> b;
+    sc >> c;
+    sd >> d;
+
+    EXPECT_EQ(po6::net::ipaddr("127.0.0.1"), a);
+    EXPECT_EQ(po6::net::ipaddr("::"), b);
+    EXPECT_EQ(po6::net::ipaddr("1::8"), c);
+    EXPECT_EQ(po6::net::ipaddr("::ffff:204.152.189.116"), d);
+}
+
+TEST(IpaddrTest, InputStreamErrors)
+{
+    std::istringstream sa("127:0.0.1");
+    std::istringstream sb("0:0::0:0::0:0");
+    std::istringstream sc("dead beef");
+
+    po6::net::ipaddr a;
+    po6::net::ipaddr b;
+    po6::net::ipaddr c;
+
+    sa >> a;
+    sb >> b;
+    sc >> c;
+
+    EXPECT_FALSE(sa.good());
+    EXPECT_FALSE(sb.good());
+    EXPECT_FALSE(sc.good());
+}
+
 } // namespace

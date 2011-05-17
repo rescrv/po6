@@ -33,6 +33,9 @@
 #include <errno.h>
 #include <sys/socket.h>
 
+// STL
+#include <string>
+
 // po6
 #include <po6/error.h>
 
@@ -51,6 +54,13 @@ class ipaddr
         }
 
         ipaddr(const char* addr)
+            : m_family(AF_UNSPEC)
+            , m_ip()
+        {
+            set(addr);
+        }
+
+        ipaddr(const std::string& addr)
             : m_family(AF_UNSPEC)
             , m_ip()
         {
@@ -185,6 +195,11 @@ class ipaddr
             }
         }
 
+        void set(const std::string& s)
+        {
+            set(s.c_str());
+        }
+
         void set(const in_addr& ipv4)
         {
             m_family = AF_INET;
@@ -264,6 +279,27 @@ operator << (std::ostream& lhs, const ipaddr& rhs)
         }
 
         lhs << std::string(repr);
+    }
+
+    return lhs;
+}
+
+inline std::istream&
+operator >> (std::istream& lhs, ipaddr& rhs)
+{
+    try
+    {
+        std::string s;
+        lhs >> s;
+        rhs.set(s);
+    }
+    catch (po6::error& e)
+    {
+        lhs.setstate(std::istream::failbit);
+    }
+    catch (std::invalid_argument& e)
+    {
+        lhs.setstate(std::istream::failbit);
     }
 
     return lhs;
