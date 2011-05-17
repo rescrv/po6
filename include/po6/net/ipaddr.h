@@ -174,7 +174,7 @@ class ipaddr
             }
             else
             {
-                if (errno != 0)
+                if (errno != 0 && errno != EAFNOSUPPORT)
                 {
                     throw po6::error(errno);
                 }
