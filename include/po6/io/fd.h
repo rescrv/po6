@@ -205,6 +205,13 @@ class fd
             }
         }
 
+        void swap(fd* other) throw ()
+        {
+            int tmp = this->m_fd;
+            this->m_fd = other->m_fd;
+            other->m_fd = tmp;
+        }
+
     public:
         fd& operator = (int f)
         {
