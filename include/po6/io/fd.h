@@ -118,6 +118,38 @@ class fd
             return ret;
         }
 
+        size_t xread(void* buf, size_t size)
+        {
+            size_t rem;
+            ssize_t amt;
+            amt = 0;
+            rem = size;
+
+            while (rem > 0)
+            {
+                if ((amt = ::read(m_fd, buf, rem)) < 0)
+                {
+                    if (rem == size)
+                    {
+                        throw po6::error(errno);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                else if (amt == 0)
+                {
+                    break;
+                }
+
+                rem -= amt;
+                buf = static_cast<char*>(buf) + amt;
+            }
+
+            return size - rem;
+        }
+
         size_t write(const void* buf, size_t size)
         {
             ssize_t ret = ::write(m_fd, buf, size);
@@ -128,6 +160,38 @@ class fd
             }
 
             return ret;
+        }
+
+        size_t xwrite(const void* buf, size_t size)
+        {
+            size_t rem;
+            ssize_t amt;
+            amt = 0;
+            rem = size;
+
+            while (rem > 0)
+            {
+                if ((amt = ::write(m_fd, buf, rem)) < 0)
+                {
+                    if (rem == size)
+                    {
+                        throw po6::error(errno);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                else if (amt == 0)
+                {
+                    break;
+                }
+
+                rem -= amt;
+                buf = static_cast<const char*>(buf) + amt;
+            }
+
+            return size - rem;
         }
 
     public:
