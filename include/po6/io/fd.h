@@ -218,6 +218,12 @@ class fd
         }
 
     private:
+        fd(const fd&);
+
+    private:
+        fd& operator = (const fd&);
+
+    private:
         int m_fd;
 };
 

@@ -192,6 +192,12 @@ class socket : public po6::io::fd
             *dynamic_cast<fd*>(this) = f;
             return *this;
         }
+
+    private:
+        socket(const socket&);
+
+    private:
+        socket& operator = (const socket&);
 };
 
 } // namespace net
