@@ -30,6 +30,7 @@
 
 // POSIX
 #include <errno.h>
+#include <fcntl.h>
 
 // po6
 #include "po6/error.h"
@@ -192,6 +193,16 @@ class fd
             }
 
             return size - rem;
+        }
+
+        void nonblocking()
+        {
+            long flags = O_NONBLOCK;
+
+            if (fcntl(get(), F_SETFL, flags) < 0)
+            {
+                throw po6::error(errno);
+            }
         }
 
     public:
