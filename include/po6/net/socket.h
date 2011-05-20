@@ -143,6 +143,12 @@ class socket : public po6::io::fd
             }
         }
 
+        void reset(int domain, int type, int protocol)
+        {
+            socket s(domain, type, protocol);
+            this->swap(&s);
+        }
+
         location getpeername()
         {
             sockaddr_in6 sa6;
