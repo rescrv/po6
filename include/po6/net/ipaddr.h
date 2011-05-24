@@ -47,6 +47,9 @@ namespace net
 class ipaddr
 {
     public:
+        static ipaddr ANY() { return ipaddr(INADDR_ANY); }
+
+    public:
         ipaddr()
             : m_family(AF_UNSPEC)
             , m_ip()
@@ -72,6 +75,14 @@ class ipaddr
             , m_ip()
         {
             set(ipv4);
+        }
+        ipaddr(const in_addr_t& ipv4)
+            : m_family(AF_UNSPEC)
+            , m_ip()
+        {
+            in_addr ia;
+            ia.s_addr = ipv4;
+            set(ia);
         }
 
         ipaddr(const in6_addr& ipv6)
