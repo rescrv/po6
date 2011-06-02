@@ -57,7 +57,7 @@ class socket : public po6::io::fd
             }
         }
 
-        ~socket()
+        ~socket() throw ()
         {
         }
 
@@ -122,7 +122,7 @@ class socket : public po6::io::fd
         {
             if (newsock->get() != -1)
             {
-                po6::logic_error("Accepting would overwrite preexisting socket.");
+                throw std::logic_error("Accepting would overwrite preexisting socket.");
             }
 
             int ret;

@@ -98,7 +98,7 @@ class ipaddr
         {
         }
 
-        ~ipaddr()
+        ~ipaddr() throw ()
         {
         }
 
@@ -136,7 +136,7 @@ class ipaddr
         {
             if (m_family != AF_INET)
             {
-                po6::logic_error("Cannot pack non-AF_INET sockaddr into sockaddr_in.");
+                throw std::logic_error("Cannot pack non-AF_INET sockaddr into sockaddr_in.");
             }
 
             addr->sin_family = AF_INET;
@@ -148,7 +148,7 @@ class ipaddr
         {
             if (m_family != AF_INET6)
             {
-                po6::logic_error("Cannot pack non-AF_INET6 sockaddr into sockaddr_in6.");
+                throw std::logic_error("Cannot pack non-AF_INET6 sockaddr into sockaddr_in6.");
             }
 
             addr->sin6_family = AF_INET6;
@@ -275,7 +275,7 @@ operator << (std::ostream& lhs, const ipaddr& rhs)
 
         if (!inet_ntop(AF_INET, &rhs.m_ip.v4, repr, INET_ADDRSTRLEN))
         {
-            po6::logic_error("inet_ntop failed, but should never fail.");
+            throw std::logic_error("inet_ntop failed, but should never fail.");
         }
 
         lhs << std::string(repr);
@@ -286,7 +286,7 @@ operator << (std::ostream& lhs, const ipaddr& rhs)
 
         if (!inet_ntop(AF_INET6, &rhs.m_ip.v6, repr, INET6_ADDRSTRLEN))
         {
-            po6::logic_error("inet_ntop failed, but should never fail.");
+            throw std::logic_error("inet_ntop failed, but should never fail.");
         }
 
         lhs << std::string(repr);

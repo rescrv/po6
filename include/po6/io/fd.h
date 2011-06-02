@@ -60,31 +60,21 @@ class fd
         {
         }
 
-        // I don't recommend letting the destructor handle the close, but it
-        // needs to do something.  The alternatives were to: do nothing and leak
-        // file descriptors; crash with an error (or throw a logic error); or
-        // throw a po6 error, but abort when an exception is already being
-        // thrown.  I opted for the last option.
-        //
-        // This is obviously undesirable under some circumstances.  To fix this,
-        // you can define the PO6_IO_CLOSE_ACTION preprocessor macro which is
-        // called with the exception that would be thrown.
-        virtual ~fd()
+        virtual ~fd() throw ()
         {
-            if (std::uncaught_exception())
+            try
+            {
+                close();
+            }
+            catch (...)
             {
                 try
                 {
-                    close();
+                    PO6_DTOR_ERROR("Unable to close file descriptor.");
                 }
-                catch (po6::error& e)
+                catch (...)
                 {
-                    PO6_IO_CLOSE_ACTION(e);
                 }
-            }
-            else
-            {
-                close();
             }
         }
 

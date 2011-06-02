@@ -52,9 +52,22 @@ class rwlock
                     m_rwl->rdlock();
                 }
 
-                ~rdhold()
+                ~rdhold() throw ()
                 {
-                    m_rwl->unlock();
+                    try
+                    {
+                        m_rwl->unlock();
+                    }
+                    catch (...)
+                    {
+                        try
+                        {
+                            PO6_DTOR_ERROR("Unable to release reader-writer lock with RAII.");
+                        }
+                        catch (...)
+                        {
+                        }
+                    }
                 }
 
             private:
@@ -76,9 +89,22 @@ class rwlock
                     m_rwl->rdlock();
                 }
 
-                ~wrhold()
+                ~wrhold() throw ()
                 {
-                    m_rwl->unlock();
+                    try
+                    {
+                        m_rwl->unlock();
+                    }
+                    catch (...)
+                    {
+                        try
+                        {
+                            PO6_DTOR_ERROR("Unable to release reader-writer lock with RAII.");
+                        }
+                        catch (...)
+                        {
+                        }
+                    }
                 }
 
             private:
@@ -103,13 +129,19 @@ class rwlock
             }
         }
 
-        ~rwlock()
+        ~rwlock() throw ()
         {
             int ret = pthread_rwlock_destroy(&m_rwlock);
 
             if (ret != 0)
             {
-                po6::logic_error("Could not destroy rwlock.");
+                try
+                {
+                    PO6_DTOR_ERROR("Could not destroy reader-writer lock");
+                }
+                catch (...)
+                {
+                }
             }
         }
 

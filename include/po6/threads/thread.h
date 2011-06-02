@@ -50,11 +50,17 @@ class thread
         {
         }
 
-        ~thread()
+        ~thread() throw ()
         {
             if (m_started && !m_joined)
             {
-                po6::logic_error("Destructing unjoined thread.");
+                try
+                {
+                    PO6_DTOR_ERROR("Destructing unjoind thread.");
+                }
+                catch (...)
+                {
+                }
             }
         }
 
@@ -63,7 +69,7 @@ class thread
         {
             if (m_started)
             {
-                po6::logic_error("Cannot start thread twice.");
+                throw std::logic_error("Cannot start thread twice.");
             }
 
             int ret = pthread_create(&m_thread, NULL, thread::start_routine, &m_func);
@@ -80,12 +86,12 @@ class thread
         {
             if (!m_started)
             {
-                po6::logic_error("Cannot join unstarted thread.");
+                throw std::logic_error("Cannot join unstarted thread.");
             }
 
             if (m_joined)
             {
-                po6::logic_error("Cannot join already-joined thread.");
+                throw std::logic_error("Cannot join already-joined thread.");
             }
 
             int ret = pthread_join(m_thread, NULL);

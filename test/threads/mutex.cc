@@ -91,23 +91,6 @@ TEST(MutexTest, TryLock)
     mtx.unlock();
 }
 
-TEST(MutexTest, LockAndDtorThrows)
-{
-    bool caught = false;
-
-    try
-    {
-        po6::threads::mutex mtx;
-        mtx.lock();
-    }
-    catch (std::logic_error e)
-    {
-        caught = true;
-    }
-
-    ASSERT_TRUE(caught);
-}
-
 TEST(MutexTest, TwoThreads)
 {
     po6::threads::mutex mtx;

@@ -56,13 +56,19 @@ class cond
             }
         }
 
-        ~cond()
+        ~cond() throw ()
         {
             int ret = pthread_cond_destroy(&m_cond);
 
             if (ret != 0)
             {
-                po6::logic_error("Could not destroy cond.");
+                try
+                {
+                    PO6_DTOR_ERROR("Could not destroy condition variable.");
+                }
+                catch (...)
+                {
+                }
             }
         }
 

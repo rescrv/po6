@@ -52,9 +52,22 @@ class mutex
                     m_mtx->lock();
                 }
 
-                ~hold()
+                ~hold() throw ()
                 {
-                    m_mtx->unlock();
+                    try
+                    {
+                        m_mtx->unlock();
+                    }
+                    catch (...)
+                    {
+                        try
+                        {
+                            PO6_DTOR_ERROR("Unable to release mutex with RAII.");
+                        }
+                        catch (...)
+                        {
+                        }
+                    }
                 }
 
             private:
@@ -79,13 +92,19 @@ class mutex
             }
         }
 
-        ~mutex()
+        ~mutex() throw ()
         {
             int ret = pthread_mutex_destroy(&m_mutex);
 
             if (ret != 0)
             {
-                po6::logic_error("Could not destroy mutex.");
+                try
+                {
+                    PO6_DTOR_ERROR("Could not destroy mutex.");
+                }
+                catch (...)
+                {
+                }
             }
         }
 

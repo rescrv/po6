@@ -39,47 +39,6 @@
 namespace
 {
 
-// logic_error should normally throw a std::logic_error
-TEST(LogicErrorTest, NormallyThrows)
-{
-    bool caught = false;
-    std::string msg = "message describing the logic error";
-
-    try
-    {
-        po6::logic_error(msg);
-    }
-    catch (std::logic_error e)
-    {
-        EXPECT_EQ(msg, e.what());
-        caught = true;
-    }
-
-    ASSERT_TRUE(caught);
-}
-
-class LogicErrorTestThrowInProgressDeathTest
-{
-    public:
-        LogicErrorTestThrowInProgressDeathTest() {}
-        ~LogicErrorTestThrowInProgressDeathTest() { po6::logic_error("msg"); }
-};
-
-// If there is a throw in-progress, logic_error must abort
-TEST(LogicErrorTest, ThrowInProgressDeathTest)
-{
-    try
-    {
-        ASSERT_DEATH(
-            LogicErrorTestThrowInProgressDeathTest l;
-            throw std::exception();
-        , "");
-    }
-    catch (...)
-    {
-    }
-}
-
 // Test the copying and assigning of errors
 TEST(ErrorTest, CopyingAndAssigning)
 {
