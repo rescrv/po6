@@ -139,4 +139,13 @@ TEST(PathnameTest, Dirname)
     EXPECT_EQ(po6::pathname("foo/bar/.").dirname(), po6::pathname("foo/bar"));
 }
 
+TEST(PathnameTest, Join)
+{
+    EXPECT_EQ(po6::pathname("foo/bar"), po6::join(po6::pathname("foo"), po6::pathname("bar")));
+    EXPECT_EQ(po6::pathname("/bar"), po6::join(po6::pathname("foo"), po6::pathname("/bar")));
+    EXPECT_EQ(po6::pathname("./bar"), po6::join(po6::pathname(""), po6::pathname("bar")));
+    EXPECT_EQ(po6::pathname("foo/bar"), po6::join(po6::pathname("foo/"), po6::pathname("bar")));
+    EXPECT_EQ(po6::pathname("foo/bar/baz"), po6::join(po6::pathname("foo"), po6::pathname("bar"), po6::pathname("baz")));
+}
+
 } // namespace

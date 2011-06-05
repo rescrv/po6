@@ -189,6 +189,7 @@ class pathname
 
     private:
         friend std::ostream& operator << (std::ostream& lhs, const pathname& rhs);
+        friend po6::pathname join(const pathname& a, const pathname& b);
 
     private:
         void initialize(const char* path)
@@ -211,6 +212,56 @@ class pathname
     private:
         char m_path[PATH_MAX];
 };
+
+inline po6::pathname
+join(const pathname& a, const pathname& b)
+{
+    if (b.m_path[0] == '/')
+    {
+        return b;
+    }
+
+    pathname ret(a);
+
+    if (ret == "")
+    {
+        ret = ".";
+    }
+
+    size_t size_ret = strlen(ret.m_path);
+    size_t size_b = strlen(b.m_path);
+
+    if (size_ret + 1 + size_b >= PATH_MAX)
+    {
+        throw po6::error(ENAMETOOLONG);
+    }
+
+    char* end_of_ret = ret.m_path + size_ret - 1;
+
+    // Remove trailing slashes
+    while (end_of_ret > ret.m_path && *end_of_ret == '/')
+    {
+        -- end_of_ret;
+    }
+
+    ++ end_of_ret;
+    *end_of_ret = '/';
+    ++ end_of_ret;
+    strncpy(end_of_ret, b.m_path, PATH_MAX - size_ret);
+    return ret;
+}
+
+inline po6::pathname
+join(const pathname& a, const pathname& b, const pathname& c)
+{
+    return join(join(a, b), c);
+}
+
+inline po6::pathname
+join(const pathname& a, const pathname& b, const pathname& c, const pathname& d)
+{
+    return join(join(a, b, c), d);
+}
 
 std::ostream&
 operator << (std::ostream& lhs, const pathname& rhs)

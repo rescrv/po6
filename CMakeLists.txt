@@ -48,6 +48,7 @@ set(po6_test_srcs
 # Installed headers
 set(po6_headers
     include/po6/error.h
+    include/po6/pathname.h
 )
 
 set(po6_io_headers
