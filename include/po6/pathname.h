@@ -266,7 +266,7 @@ join(const pathname& a, const pathname& b, const pathname& c, const pathname& d)
     return join(join(a, b, c), d);
 }
 
-std::ostream&
+inline std::ostream&
 operator << (std::ostream& lhs, const pathname& rhs)
 {
     lhs << rhs.m_path;
