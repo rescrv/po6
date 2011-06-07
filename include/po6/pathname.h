@@ -29,6 +29,7 @@
 #define po6_pathname_h_
 
 // POSIX
+#include <errno.h>
 #include <limits.h>
 
 // C++
