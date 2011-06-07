@@ -165,6 +165,9 @@ class pathname
         }
 
     public:
+        const char* get() const { return m_path; }
+
+    public:
         bool operator == (const pathname& rhs) const
         {
             const pathname& lhs(*this);
