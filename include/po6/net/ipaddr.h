@@ -48,6 +48,27 @@ class ipaddr
 {
     public:
         static ipaddr ANY() { return ipaddr(INADDR_ANY); }
+        static uint64_t hash(const ipaddr& ip)
+        {
+            uint64_t ret = 0;
+
+            if (ip.m_family == AF_INET)
+            {
+                ret = ip.m_ip.v4.s_addr;
+            }
+            else if (ip.m_family == AF_INET6)
+            {
+                const uint8_t* addr = &ip.m_ip.v6.s6_addr[0];
+                uint64_t low = 0;
+                uint64_t high = 0;
+                memmove(&low, addr, sizeof(uint64_t));
+                memmove(&high, addr + 8, sizeof(uint64_t));
+                return low ^ high;
+            }
+
+            return ret;
+        }
+
 
     public:
         ipaddr()
