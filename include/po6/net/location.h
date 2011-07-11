@@ -43,6 +43,13 @@ namespace net
 class location
 {
     public:
+        static uint64_t hash(const location& loc)
+        {
+            uint64_t ip_hash = ipaddr::hash(loc.address);
+            return ip_hash ^ loc.port;
+        }
+
+    public:
         location()
             : address()
             , port()
