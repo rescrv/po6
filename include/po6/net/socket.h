@@ -28,6 +28,9 @@
 #ifndef po6_net_socket_h_
 #define po6_net_socket_h_
 
+// POSIX
+#include <netinet/tcp.h>
+
 // po6
 #include <po6/error.h>
 #include <po6/io/fd.h>
@@ -182,6 +185,16 @@ class socket : public po6::io::fd
             int yes = setting ? 1 : 0;
 
             if (setsockopt(get(), SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) < 0)
+            {
+                throw po6::error(errno);
+            }
+        }
+
+        void tcp_nodelay(bool setting)
+        {
+            int yes = setting ? 1 : 0;
+
+            if (setsockopt(get(), IPPROTO_TCP, TCP_NODELAY, &yes, sizeof(yes)) < 0)
             {
                 throw po6::error(errno);
             }
