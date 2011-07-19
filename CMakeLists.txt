@@ -42,6 +42,7 @@ set(po6_test_srcs
     test/threads/cond.cc
     test/threads/mutex.cc
     test/threads/rwlock.cc
+    test/threads/spinlock.cc
     test/threads/thread.cc
 )
 
@@ -65,6 +66,7 @@ set(po6_threads_headers
     include/po6/threads/cond.h
     include/po6/threads/mutex.h
     include/po6/threads/rwlock.h
+    include/po6/threads/spinlock.h
     include/po6/threads/thread.h
 )
 
