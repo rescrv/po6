@@ -86,7 +86,7 @@ class rwlock
                 wrhold(rwlock* rwl)
                     : m_rwl(rwl)
                 {
-                    m_rwl->rdlock();
+                    m_rwl->wrlock();
                 }
 
                 ~wrhold() throw ()
