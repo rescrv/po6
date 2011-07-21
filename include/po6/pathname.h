@@ -40,6 +40,7 @@
 
 // po6
 #include <po6/error.h>
+#include <po6/io/fd.h>
 
 namespace po6
 {
@@ -194,6 +195,7 @@ class pathname
     private:
         friend std::ostream& operator << (std::ostream& lhs, const pathname& rhs);
         friend po6::pathname join(const pathname& a, const pathname& b);
+        friend bool mkstemp(po6::io::fd* fd, po6::pathname* prefix);
 
     private:
         void initialize(const char* path)
@@ -272,6 +274,34 @@ operator << (std::ostream& lhs, const pathname& rhs)
 {
     lhs << rhs.m_path;
     return lhs;
+}
+
+// Unlike mkstemp, XXXXXX will be appended to prefix.  If there is not space to
+// append XXXXXX to prefix, errno will be set to ENAMETOOLONG.  Unlike mkstemp,
+// prefix will be unaltered in the case of an error.
+inline bool
+mkstemp(po6::io::fd* fd, po6::pathname* prefix)
+{
+    size_t len = strnlen(prefix->m_path, PATH_MAX);
+
+    if (len + 6 >= PATH_MAX)
+    {
+        return ENAMETOOLONG;
+    }
+
+    po6::pathname tmp = *prefix;
+    strncpy(prefix->m_path + len, "XXXXXX", PATH_MAX - len);
+    *fd = ::mkstemp(prefix->m_path);
+
+    if (fd->get() < 0)
+    {
+        *prefix = tmp;
+        return false;
+    }
+    else
+    {
+        return true;
+    }
 }
 
 } // namespace po6
