@@ -200,6 +200,50 @@ class socket : public po6::io::fd
             }
         }
 
+        size_t send(const void* buf, size_t size, int flags)
+        {
+            ssize_t ret = ::send(get(), buf, size, flags);
+
+            if (ret < 0)
+            {
+                throw po6::error(errno);
+            }
+
+            return ret;
+        }
+
+        size_t xsend(const void* buf, size_t size, int flags)
+        {
+            size_t rem;
+            ssize_t amt;
+            amt = 0;
+            rem = size;
+
+            while (rem > 0)
+            {
+                if ((amt = ::send(get(), buf, rem, flags)) < 0)
+                {
+                    if (rem == size)
+                    {
+                        throw po6::error(errno);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                else if (amt == 0)
+                {
+                    break;
+                }
+
+                rem -= amt;
+                buf = static_cast<const char*>(buf) + amt;
+            }
+
+            return size - rem;
+        }
+
     public:
         socket& operator = (int f)
         {
