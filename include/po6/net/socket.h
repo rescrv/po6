@@ -200,6 +200,38 @@ class socket : public po6::io::fd
             }
         }
 
+        void sndbuf(size_t size)
+        {
+            if (setsockopt(get(), SOL_SOCKET, SO_SNDBUF, &size, sizeof(size)) < 0)
+            {
+                throw po6::error(errno);
+            }
+        }
+
+        void rcvbuf(size_t size)
+        {
+            if (setsockopt(get(), SOL_SOCKET, SO_RCVBUF, &size, sizeof(size)) < 0)
+            {
+                throw po6::error(errno);
+            }
+        }
+
+        void sndlowat(size_t size)
+        {
+            if (setsockopt(get(), SOL_SOCKET, SO_SNDLOWAT, &size, sizeof(size)) < 0)
+            {
+                throw po6::error(errno);
+            }
+        }
+
+        void rcvlowat(size_t size)
+        {
+            if (setsockopt(get(), SOL_SOCKET, SO_RCVLOWAT, &size, sizeof(size)) < 0)
+            {
+                throw po6::error(errno);
+            }
+        }
+
         size_t send(const void* buf, size_t size, int flags)
         {
             ssize_t ret = ::send(get(), buf, size, flags);
