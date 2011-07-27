@@ -136,6 +136,20 @@ class location
             }
         }
 
+        bool operator > (const location& rhs) const
+        {
+            const location& lhs(*this);
+
+            if (lhs.address == rhs.address)
+            {
+                return lhs.port > rhs.port;
+            }
+            else
+            {
+                return lhs.address > rhs.address;
+            }
+        }
+
         bool operator == (const location& rhs) const
         {
             const location& lhs(*this);

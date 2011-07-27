@@ -261,6 +261,11 @@ class ipaddr
             return compare(rhs) < 0;
         }
 
+        bool operator > (const ipaddr& rhs) const
+        {
+            return compare(rhs) > 0;
+        }
+
         bool operator == (const ipaddr& rhs) const
         {
             return compare(rhs) == 0;
