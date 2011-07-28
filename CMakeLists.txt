@@ -63,6 +63,7 @@ set(po6_net_headers
 )
 
 set(po6_threads_headers
+    include/po6/threads/barrier.h
     include/po6/threads/cond.h
     include/po6/threads/mutex.h
     include/po6/threads/rwlock.h
