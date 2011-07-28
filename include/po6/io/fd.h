@@ -185,9 +185,9 @@ class fd
             return size - rem;
         }
 
-        void nonblocking()
+        void nonblocking(bool enabled = true)
         {
-            long flags = O_NONBLOCK;
+            long flags = enabled ? O_NONBLOCK : 0;
 
             if (fcntl(get(), F_SETFL, flags) < 0)
             {
