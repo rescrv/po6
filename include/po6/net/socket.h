@@ -232,6 +232,18 @@ class socket : public po6::io::fd
             }
         }
 
+        size_t recv(void* buf, size_t size, int flags)
+        {
+            ssize_t ret = ::recv(get(), buf, size, flags);
+
+            if (ret < 0)
+            {
+                throw po6::error(errno);
+            }
+
+            return ret;
+        }
+
         size_t send(const void* buf, size_t size, int flags)
         {
             ssize_t ret = ::send(get(), buf, size, flags);
