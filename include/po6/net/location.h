@@ -122,49 +122,33 @@ class location
         }
 
     public:
-        bool operator < (const location& rhs) const
-        {
-            const location& lhs(*this);
-
-            if (lhs.address == rhs.address)
-            {
-                return lhs.port < rhs.port;
-            }
-            else
-            {
-                return lhs.address < rhs.address;
-            }
-        }
-
-        bool operator > (const location& rhs) const
-        {
-            const location& lhs(*this);
-
-            if (lhs.address == rhs.address)
-            {
-                return lhs.port > rhs.port;
-            }
-            else
-            {
-                return lhs.address > rhs.address;
-            }
-        }
-
-        bool operator == (const location& rhs) const
-        {
-            const location& lhs(*this);
-            return (lhs.address == rhs.address) && (lhs.port == rhs.port);
-        }
-
-        bool operator != (const location& rhs) const
-        {
-            const location& lhs(*this);
-            return !(lhs == rhs);
-        }
+        bool operator < (const location& rhs) const { return compare(rhs) < 0; }
+        bool operator <= (const location& rhs) const { return compare(rhs) <= 0; }
+        bool operator == (const location& rhs) const { return compare(rhs) == 0; }
+        bool operator != (const location& rhs) const { return compare(rhs) != 0; }
+        bool operator >= (const location& rhs) const { return compare(rhs) >= 0; }
+        bool operator > (const location& rhs) const { return compare(rhs) > 0; }
 
     public:
         ipaddr address;
         in_port_t port;
+
+    private:
+        int compare(const location& rhs) const
+        {
+            const location& lhs(*this);
+
+            if (lhs.address < rhs.address)
+            {
+                return -1;
+            }
+            else if (lhs.address > rhs.address)
+            {
+                return 1;
+            }
+
+            return lhs.port - rhs.port;
+        }
 };
 
 inline std::ostream&
