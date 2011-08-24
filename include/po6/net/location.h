@@ -62,6 +62,12 @@ class location
         {
         }
 
+        location(const char* _address, in_port_t _port = 0)
+            : address(_address)
+            , port(_port)
+        {
+        }
+
         location(const sockaddr* sa, socklen_t salen)
             : address()
             , port()
