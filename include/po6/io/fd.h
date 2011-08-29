@@ -79,7 +79,7 @@ class fd
         }
 
     public:
-        int get()
+        int get() const
         {
             return m_fd;
         }
