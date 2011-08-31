@@ -5,5 +5,5 @@ testrunner_SOURCES = runner.cc error.cc io/fd.cc net/ipaddr.cc net/location.cc \
 					 net/socket.cc pathname.cc threads/cond.cc \
 					 threads/mutex.cc threads/rwlock.cc \
 					 threads/spinlock.cc threads/thread.cc
-testrunner_CPPFLAGS = -I../include
-testrunner_LDFLAGS = -lpthread -lgtest
+testrunner_CPPFLAGS = $(CPPFLAGS) -I$(abs_top_srcdir)/include
+testrunner_LDFLAGS = $(LDFLAGS) -lpthread -lgtest
