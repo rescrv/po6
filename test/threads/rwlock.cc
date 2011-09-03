@@ -123,8 +123,6 @@ TEST(RwlockTest, Holding)
     {
         po6::threads::rwlock::wrhold h(&rwl);
     }
-
-    rwl.unlock();
 }
 
 } // namespace
