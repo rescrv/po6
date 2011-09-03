@@ -146,6 +146,7 @@ TEST(PathnameTest, Join)
     EXPECT_EQ(po6::pathname("./bar"), po6::join(po6::pathname(""), po6::pathname("bar")));
     EXPECT_EQ(po6::pathname("foo/bar"), po6::join(po6::pathname("foo/"), po6::pathname("bar")));
     EXPECT_EQ(po6::pathname("foo/bar/baz"), po6::join(po6::pathname("foo"), po6::pathname("bar"), po6::pathname("baz")));
+    EXPECT_EQ(po6::pathname("foo/bar/baz/quux"), po6::join(po6::pathname("foo"), po6::pathname("bar"), po6::pathname("baz"), po6::pathname("quux")));
 }
 
 } // namespace
