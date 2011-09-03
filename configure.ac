@@ -12,7 +12,7 @@ AC_PROG_CXX
 AC_PROG_CC
 
 # Checks for libraries.
-AC_CHECK_LIB(gtest)
+GTEST_LIB_CHECK
 
 # Checks for header files.
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h sys/socket.h])

@@ -10,11 +10,11 @@
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
 
+/* Defined when Google Test is available. */
+#undef HAVE_GTEST
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
-
-/* Define to 1 if you have the `gtest' library (-lgtest). */
-#undef HAVE_LIBGTEST
 
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
