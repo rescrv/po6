@@ -31,5 +31,7 @@ AC_FUNC_STRERROR_R
 AC_FUNC_STRNLEN
 AC_CHECK_FUNCS([memmove memset socket])
 
-AC_CONFIG_FILES([Makefile include/Makefile test/Makefile])
+AC_CONFIG_FILES([Makefile
+                 include/Makefile
+                 test/Makefile])
 AC_OUTPUT
