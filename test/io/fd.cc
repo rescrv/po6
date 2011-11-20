@@ -35,7 +35,7 @@
 #include <gtest/gtest.h>
 
 // po6
-#include "po6/io/fd.h"
+#include "../include/po6/io/fd.h"
 
 #pragma GCC diagnostic ignored "-Wswitch-default"
 
