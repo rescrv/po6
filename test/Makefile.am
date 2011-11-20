@@ -1,10 +1,12 @@
 if HAVE_GTEST
 AM_CPPFLAGS = -I$(abs_top_srcdir)/include $(GTEST_CPPFLAGS)
 AM_LDFLAGS = $(GTEST_LDFLAGS)
+
 TESTS = $(check_PROGRAMS)
 check_PROGRAMS = error io_fd net_ipaddr net_location net_socket pathname \
 				 threads_cond threads_mutex threads_rwlock threads_spinlock \
 				 threads_thread
+
 error_SOURCES = runner.cc error.cc
 error_LDADD = $(GTEST_LIBS)
 io_fd_SOURCES = runner.cc io/fd.cc
