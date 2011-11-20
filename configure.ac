@@ -10,13 +10,19 @@ AC_CONFIG_MACRO_DIR([m4])
 
 # Checks for programs.
 AC_PROG_CXX
+AC_PROG_AWK
 AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
 
 # Checks for libraries.
 GTEST_LIB_CHECK
 
 # Checks for header files.
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h sys/socket.h])
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h netinet/in.h limits.h sys/socket.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
@@ -29,7 +35,6 @@ AC_TYPE_UINT8_T
 # Checks for library functions.
 AC_FUNC_ERROR_AT_LINE
 AC_FUNC_STRERROR_R
-AC_FUNC_STRNLEN
 AC_CHECK_FUNCS([memmove memset socket])
 
 AC_CONFIG_FILES([Makefile
