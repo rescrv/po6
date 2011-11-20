@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.66])
 AC_INIT([po6], [0.1.dev], [escriva@cs.cornell.edu])
-AM_INIT_AUTOMAKE([foreign])
+AM_INIT_AUTOMAKE([foreign dist-bzip2 dist-lzma])
 AC_CONFIG_SRCDIR([include/po6/error.h])
 AC_CONFIG_HEADERS([config.h])
 
