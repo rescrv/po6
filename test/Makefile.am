@@ -1,5 +1,5 @@
 if HAVE_GTEST
-AM_CPPFLAGS = -I$(abs_top_srcdir)/include $(GTEST_CPPFLAGS) -O0 -ggdb
+AM_CPPFLAGS = -I$(abs_top_srcdir)/include $(GTEST_CPPFLAGS)
 AM_LDFLAGS = $(GTEST_LDFLAGS)
 TESTS = $(check_PROGRAMS)
 check_PROGRAMS = error io_fd net_ipaddr net_location net_socket pathname \
