@@ -50,7 +50,7 @@ TEST(LocationTest, Comparison)
     po6::net::location locB("127.1.1.127", 1234);
 
     EXPECT_LT(locA, locB);
-    locA.address = "127.1.1.127";
+    locA.address = po6::net::ipaddr("127.1.1.127");
     EXPECT_EQ(locA, locB);
     ++ locB.port;
     EXPECT_LT(locA, locB);

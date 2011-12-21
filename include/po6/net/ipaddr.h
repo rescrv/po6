@@ -49,233 +49,39 @@ class ipaddr
 {
     public:
         static ipaddr ANY() { return ipaddr(INADDR_ANY); }
-        static uint64_t hash(const ipaddr& ip)
-        {
-            uint64_t ret = 0;
-
-            if (ip.m_family == AF_INET)
-            {
-                ret = ip.m_ip.v4.s_addr;
-            }
-            else if (ip.m_family == AF_INET6)
-            {
-                const uint8_t* addr = &ip.m_ip.v6.s6_addr[0];
-                uint64_t low = 0;
-                uint64_t high = 0;
-                memmove(&low, addr, sizeof(uint64_t));
-                memmove(&high, addr + 8, sizeof(uint64_t));
-                return low ^ high;
-            }
-
-            return ret;
-        }
-
+        static uint64_t hash(const ipaddr& ip);
 
     public:
-        ipaddr()
-            : m_family(AF_UNSPEC)
-            , m_ip()
-        {
-        }
-
-        ipaddr(const char* addr)
-            : m_family(AF_UNSPEC)
-            , m_ip()
-        {
-            set(addr);
-        }
-
-        ipaddr(const std::string& addr)
-            : m_family(AF_UNSPEC)
-            , m_ip()
-        {
-            set(addr);
-        }
-
-        ipaddr(const in_addr& ipv4)
-            : m_family(AF_UNSPEC)
-            , m_ip()
-        {
-            set(ipv4);
-        }
-        ipaddr(const in_addr_t& ipv4)
-            : m_family(AF_UNSPEC)
-            , m_ip()
-        {
-            in_addr ia;
-            ia.s_addr = ipv4;
-            set(ia);
-        }
-
-        ipaddr(const in6_addr& ipv6)
-            : m_family(AF_UNSPEC)
-            , m_ip()
-        {
-            set(ipv6);
-        }
-
-        ipaddr(const ipaddr& other)
-            : m_family(other.m_family)
-            , m_ip(other.m_ip)
-        {
-        }
-
-        ~ipaddr() throw ()
-        {
-        }
+        ipaddr();
+        explicit ipaddr(const char* addr);
+        explicit ipaddr(const std::string& addr);
+        explicit ipaddr(const in_addr& ipv4);
+        explicit ipaddr(const in_addr_t& ipv4);
+        explicit ipaddr(const in6_addr& ipv6);
+        ipaddr(const ipaddr& other);
+        ~ipaddr() throw ();
 
     public:
-        int family() const
-        {
-            return m_family;
-        }
-
-        void pack(struct sockaddr* addr, socklen_t* addrlen, in_port_t port) const
-        {
-            memset(addr, 0, *addrlen);
-
-            if (m_family == AF_UNSPEC)
-            {
-                throw std::logic_error("cannot pack a sockaddr with AF_UNSPEC");
-            }
-            else if (m_family == AF_INET && *addrlen >= sizeof(sockaddr_in))
-            {
-                pack(reinterpret_cast<sockaddr_in*>(addr), port);
-                *addrlen = sizeof(sockaddr_in);
-            }
-            else if (m_family == AF_INET6 && *addrlen >= sizeof(sockaddr_in6))
-            {
-                pack(reinterpret_cast<sockaddr_in6*>(addr), port);
-                *addrlen = sizeof(sockaddr_in6);
-            }
-            else
-            {
-                throw std::length_error("insufficiently sized sockaddr");
-            }
-        }
-
-        void pack(struct sockaddr_in* addr, in_port_t port) const
-        {
-            if (m_family != AF_INET)
-            {
-                throw std::logic_error("Cannot pack non-AF_INET sockaddr into sockaddr_in.");
-            }
-
-            addr->sin_family = AF_INET;
-            addr->sin_port = htons(port);
-            memmove(&addr->sin_addr, &m_ip.v4, sizeof(in_addr));
-        }
-
-        void pack(struct sockaddr_in6* addr, in_port_t port) const
-        {
-            if (m_family != AF_INET6)
-            {
-                throw std::logic_error("Cannot pack non-AF_INET6 sockaddr into sockaddr_in6.");
-            }
-
-            addr->sin6_family = AF_INET6;
-            addr->sin6_port = htons(port);
-            memmove(&addr->sin6_addr, &m_ip.v6, sizeof(in6_addr));
-        }
-
-        int compare(const ipaddr& rhs) const
-        {
-            const ipaddr& lhs(*this);
-
-            if (lhs.m_family != rhs.m_family)
-            {
-                return lhs.m_family - rhs.m_family;
-            }
-
-            if (lhs.m_family == AF_INET)
-            {
-                return memcmp(&lhs.m_ip.v4, &rhs.m_ip.v4, sizeof(in_addr));
-            }
-            else if (lhs.m_family == AF_INET6)
-            {
-                return memcmp(&lhs.m_ip.v6, &rhs.m_ip.v6, sizeof(in6_addr));
-            }
-            else
-            {
-                return 0;
-            }
-        }
+        int family() const;
+        void pack(struct sockaddr* addr, socklen_t* addrlen, in_port_t port) const;
+        void pack(struct sockaddr_in* addr, in_port_t port) const;
+        void pack(struct sockaddr_in6* addr, in_port_t port) const;
+        int compare(const ipaddr& rhs) const;
 
     public:
-        void set(const char* addr)
-        {
-            in_addr ipv4;
-            in6_addr ipv6;
-
-            if (inet_pton(AF_INET, addr, &ipv4) > 0)
-            {
-                set(ipv4);
-            }
-            else if (inet_pton(AF_INET6, addr, &ipv6) > 0)
-            {
-                set(ipv6);
-            }
-            else
-            {
-                if (errno != 0 && errno != EAFNOSUPPORT)
-                {
-                    throw po6::error(errno);
-                }
-                else
-                {
-                    throw std::invalid_argument("malformed address");
-                }
-            }
-        }
-
-        void set(const std::string& s)
-        {
-            set(s.c_str());
-        }
-
-        void set(const in_addr& ipv4)
-        {
-            m_family = AF_INET;
-            memmove(&m_ip.v4, &ipv4, sizeof(in_addr));
-        }
-
-        void set(const in6_addr& ipv6)
-        {
-            m_family = AF_INET6;
-            memmove(&m_ip.v6, &ipv6, sizeof(in6_addr));
-        }
+        void set(const char* addr);
+        void set(const std::string& s);
+        void set(const in_addr& ipv4);
+        void set(const in6_addr& ipv6);
 
     public:
-        ipaddr& operator = (const ipaddr& rhs)
-        {
-            if (this != &rhs)
-            {
-                m_family = rhs.m_family;
-                memmove(&m_ip, &rhs.m_ip, sizeof(m_ip));
-            }
-
-            return *this;
-        }
-
-        bool operator < (const ipaddr& rhs) const
-        {
-            return compare(rhs) < 0;
-        }
-
-        bool operator > (const ipaddr& rhs) const
-        {
-            return compare(rhs) > 0;
-        }
-
-        bool operator == (const ipaddr& rhs) const
-        {
-            return compare(rhs) == 0;
-        }
-
-        bool operator != (const ipaddr& rhs) const
-        {
-            return compare(rhs) != 0;
-        }
+        ipaddr& operator = (const ipaddr& rhs);
+        bool operator < (const ipaddr& rhs) const;
+        bool operator <= (const ipaddr& rhs) const;
+        bool operator == (const ipaddr& rhs) const;
+        bool operator != (const ipaddr& rhs) const;
+        bool operator >= (const ipaddr& rhs) const;
+        bool operator > (const ipaddr& rhs) const;
 
     private:
         friend std::ostream& operator << (std::ostream& lhs, const ipaddr& rhs);
@@ -288,6 +94,265 @@ class ipaddr
             in6_addr v6;
         } m_ip;
 };
+
+inline uint64_t
+ipaddr :: hash(const ipaddr& ip)
+{
+    uint64_t ret = 0;
+
+    if (ip.m_family == AF_INET)
+    {
+        ret = ip.m_ip.v4.s_addr;
+    }
+    else if (ip.m_family == AF_INET6)
+    {
+        const uint8_t* addr = &ip.m_ip.v6.s6_addr[0];
+        uint64_t low = 0;
+        uint64_t high = 0;
+        memmove(&low, addr, sizeof(uint64_t));
+        memmove(&high, addr + 8, sizeof(uint64_t));
+        return low ^ high;
+    }
+
+    return ret;
+}
+
+inline
+ipaddr :: ipaddr()
+    : m_family(AF_UNSPEC)
+    , m_ip()
+{
+}
+
+inline
+ipaddr :: ipaddr(const char* addr)
+    : m_family(AF_UNSPEC)
+    , m_ip()
+{
+    set(addr);
+}
+
+inline
+ipaddr :: ipaddr(const std::string& addr)
+    : m_family(AF_UNSPEC)
+    , m_ip()
+{
+    set(addr);
+}
+
+inline
+ipaddr :: ipaddr(const in_addr& ipv4)
+    : m_family(AF_UNSPEC)
+    , m_ip()
+{
+    set(ipv4);
+}
+
+inline
+ipaddr :: ipaddr(const in_addr_t& ipv4)
+    : m_family(AF_UNSPEC)
+    , m_ip()
+{
+    in_addr ia;
+    ia.s_addr = ipv4;
+    set(ia);
+}
+
+inline
+ipaddr :: ipaddr(const in6_addr& ipv6)
+    : m_family(AF_UNSPEC)
+    , m_ip()
+{
+    set(ipv6);
+}
+
+inline
+ipaddr :: ipaddr(const ipaddr& other)
+    : m_family(other.m_family)
+    , m_ip(other.m_ip)
+{
+}
+
+inline
+ipaddr :: ~ipaddr() throw ()
+{
+}
+
+inline int
+ipaddr :: family() const
+{
+    return m_family;
+}
+
+inline void
+ipaddr :: pack(struct sockaddr* addr, socklen_t* addrlen, in_port_t port) const
+{
+    memset(addr, 0, *addrlen);
+
+    if (m_family == AF_UNSPEC)
+    {
+        throw std::logic_error("cannot pack a sockaddr with AF_UNSPEC");
+    }
+    else if (m_family == AF_INET && *addrlen >= sizeof(sockaddr_in))
+    {
+        pack(reinterpret_cast<sockaddr_in*>(addr), port);
+        *addrlen = sizeof(sockaddr_in);
+    }
+    else if (m_family == AF_INET6 && *addrlen >= sizeof(sockaddr_in6))
+    {
+        pack(reinterpret_cast<sockaddr_in6*>(addr), port);
+        *addrlen = sizeof(sockaddr_in6);
+    }
+    else
+    {
+        throw std::length_error("insufficiently sized sockaddr");
+    }
+}
+
+inline void
+ipaddr :: pack(struct sockaddr_in* addr, in_port_t port) const
+{
+    if (m_family != AF_INET)
+    {
+        throw std::logic_error("Cannot pack non-AF_INET sockaddr into sockaddr_in.");
+    }
+
+    addr->sin_family = AF_INET;
+    addr->sin_port = htons(port);
+    memmove(&addr->sin_addr, &m_ip.v4, sizeof(in_addr));
+}
+
+inline void
+ipaddr :: pack(struct sockaddr_in6* addr, in_port_t port) const
+{
+    if (m_family != AF_INET6)
+    {
+        throw std::logic_error("Cannot pack non-AF_INET6 sockaddr into sockaddr_in6.");
+    }
+
+    addr->sin6_family = AF_INET6;
+    addr->sin6_port = htons(port);
+    memmove(&addr->sin6_addr, &m_ip.v6, sizeof(in6_addr));
+}
+
+inline int
+ipaddr :: compare(const ipaddr& rhs) const
+{
+    const ipaddr& lhs(*this);
+
+    if (lhs.m_family != rhs.m_family)
+    {
+        return lhs.m_family - rhs.m_family;
+    }
+
+    if (lhs.m_family == AF_INET)
+    {
+        return memcmp(&lhs.m_ip.v4, &rhs.m_ip.v4, sizeof(in_addr));
+    }
+    else if (lhs.m_family == AF_INET6)
+    {
+        return memcmp(&lhs.m_ip.v6, &rhs.m_ip.v6, sizeof(in6_addr));
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+inline void
+ipaddr :: set(const char* addr)
+{
+    in_addr ipv4;
+    in6_addr ipv6;
+
+    if (inet_pton(AF_INET, addr, &ipv4) > 0)
+    {
+        set(ipv4);
+    }
+    else if (inet_pton(AF_INET6, addr, &ipv6) > 0)
+    {
+        set(ipv6);
+    }
+    else
+    {
+        if (errno != 0 && errno != EAFNOSUPPORT)
+        {
+            throw po6::error(errno);
+        }
+        else
+        {
+            throw std::invalid_argument("malformed address");
+        }
+    }
+}
+
+inline void
+ipaddr :: set(const std::string& s)
+{
+    set(s.c_str());
+}
+
+inline void
+ipaddr :: set(const in_addr& ipv4)
+{
+    m_family = AF_INET;
+    memmove(&m_ip.v4, &ipv4, sizeof(in_addr));
+}
+
+inline void
+ipaddr :: set(const in6_addr& ipv6)
+{
+    m_family = AF_INET6;
+    memmove(&m_ip.v6, &ipv6, sizeof(in6_addr));
+}
+
+inline ipaddr&
+ipaddr :: operator = (const ipaddr& rhs)
+{
+    if (this != &rhs)
+    {
+        m_family = rhs.m_family;
+        memmove(&m_ip, &rhs.m_ip, sizeof(m_ip));
+    }
+
+    return *this;
+}
+
+inline bool
+ipaddr :: operator < (const ipaddr& rhs) const
+{
+    return compare(rhs) < 0;
+}
+
+inline bool
+ipaddr :: operator <= (const ipaddr& rhs) const
+{
+    return compare(rhs) <= 0;
+}
+
+inline bool
+ipaddr :: operator == (const ipaddr& rhs) const
+{
+    return compare(rhs) == 0;
+}
+
+inline bool
+ipaddr :: operator != (const ipaddr& rhs) const
+{
+    return compare(rhs) != 0;
+}
+
+inline bool
+ipaddr :: operator >= (const ipaddr& rhs) const
+{
+    return compare(rhs) >= 0;
+}
+
+inline bool
+ipaddr :: operator > (const ipaddr& rhs) const
+{
+    return compare(rhs) > 0;
+}
 
 inline std::ostream&
 operator << (std::ostream& lhs, const ipaddr& rhs)

@@ -25,81 +25,11 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef po6_threads_barrier_h_
-#define po6_threads_barrier_h_
+#ifndef po6_noncopyable_h_
+#define po6_noncopyable_h_
 
-// POSIX
-#include <errno.h>
-#include <pthread.h>
+#define PO6_NONCOPYABLE(T) \
+    T(const T&); \
+    T& operator = (const T&)
 
-// po6
-#include <po6/error.h>
-#include <po6/noncopyable.h>
-
-namespace po6
-{
-namespace threads
-{
-
-class barrier
-{
-    public:
-        barrier(size_t count);
-        ~barrier() throw ();
-
-    public:
-        bool wait();
-
-    private:
-        PO6_NONCOPYABLE(barrier);
-
-    private:
-        pthread_barrier_t m_barrier;
-};
-
-inline
-barrier :: barrier(size_t count)
-    : m_barrier()
-{
-    int ret = pthread_barrier_init(&m_barrier, NULL, count);
-
-    if (ret != 0)
-    {
-        throw po6::error(ret);
-    }
-}
-
-inline
-barrier :: ~barrier() throw ()
-{
-    int ret = pthread_barrier_destroy(&m_barrier);
-
-    if (ret != 0)
-    {
-        try
-        {
-            PO6_DTOR_ERROR("Could not destroy barrier.");
-        }
-        catch (...)
-        {
-        }
-    }
-}
-
-inline bool
-barrier :: wait()
-{
-    int ret = pthread_barrier_wait(&m_barrier);
-
-    if (ret != 0 && ret != PTHREAD_BARRIER_SERIAL_THREAD)
-    {
-        throw po6::error(ret);
-    }
-
-    return ret == PTHREAD_BARRIER_SERIAL_THREAD;
-}
-
-} // namespace threads
-} // namespace po6
-
-#endif // po6_threads_barrier_h_
+#endif // po6_noncopyable_h_

@@ -33,7 +33,8 @@
 #include <pthread.h>
 
 // po6
-#include "po6/error.h"
+#include <po6/error.h>
+#include <po6/noncopyable.h>
 
 namespace po6
 {
@@ -43,122 +44,135 @@ namespace threads
 class mutex
 {
     public:
-        class hold
-        {
-            public:
-                hold(mutex* mtx)
-                    : m_mtx(mtx)
-                {
-                    m_mtx->lock();
-                }
-
-                ~hold() throw ()
-                {
-                    try
-                    {
-                        m_mtx->unlock();
-                    }
-                    catch (...)
-                    {
-                        try
-                        {
-                            PO6_DTOR_ERROR("Unable to release mutex with RAII.");
-                        }
-                        catch (...)
-                        {
-                        }
-                    }
-                }
-
-            private:
-                hold(const hold&);
-
-            private:
-                hold& operator = (const hold&);
-
-            private:
-                mutex* m_mtx;
-        };
+        class hold;
 
     public:
-        mutex()
-            : m_mutex()
-        {
-            int ret = pthread_mutex_init(&m_mutex, NULL);
-
-            if (ret != 0)
-            {
-                throw po6::error(ret);
-            }
-        }
-
-        ~mutex() throw ()
-        {
-            int ret = pthread_mutex_destroy(&m_mutex);
-
-            if (ret != 0)
-            {
-                try
-                {
-                    PO6_DTOR_ERROR("Could not destroy mutex.");
-                }
-                catch (...)
-                {
-                }
-            }
-        }
+        mutex();
+        ~mutex() throw ();
 
     public:
-        void lock()
-        {
-            int ret = pthread_mutex_lock(&m_mutex);
-
-            if (ret != 0)
-            {
-                throw po6::error(ret);
-            }
-        }
-
-        bool trylock()
-        {
-            int ret = pthread_mutex_trylock(&m_mutex);
-
-            if (ret == 0)
-            {
-                return true;
-            }
-            else if (ret == EBUSY)
-            {
-                return false;
-            }
-            else
-            {
-                throw po6::error(ret);
-            }
-        }
-
-        void unlock()
-        {
-            int ret = pthread_mutex_unlock(&m_mutex);
-
-            if (ret != 0)
-            {
-                throw po6::error(ret);
-            }
-        }
+        void lock();
+        bool trylock();
+        void unlock();
 
     private:
         friend class cond;
 
     private:
-        mutex(const mutex&);
-
-    private:
-        mutex& operator = (const mutex&);
+        PO6_NONCOPYABLE(mutex);
 
     private:
         pthread_mutex_t m_mutex;
 };
+
+class mutex::hold
+{
+    public:
+        hold(mutex* mtx);
+        ~hold() throw ();
+
+    private:
+        PO6_NONCOPYABLE(hold);
+
+    private:
+        mutex* m_mtx;
+};
+
+inline
+mutex :: mutex()
+    : m_mutex()
+{
+    int ret = pthread_mutex_init(&m_mutex, NULL);
+
+    if (ret != 0)
+    {
+        throw po6::error(ret);
+    }
+}
+
+inline
+mutex :: ~mutex() throw ()
+{
+    int ret = pthread_mutex_destroy(&m_mutex);
+
+    if (ret != 0)
+    {
+        try
+        {
+            PO6_DTOR_ERROR("Could not destroy mutex.");
+        }
+        catch (...)
+        {
+        }
+    }
+}
+
+inline void
+mutex :: lock()
+{
+    int ret = pthread_mutex_lock(&m_mutex);
+
+    if (ret != 0)
+    {
+        throw po6::error(ret);
+    }
+}
+
+inline bool
+mutex :: trylock()
+{
+    int ret = pthread_mutex_trylock(&m_mutex);
+
+    if (ret == 0)
+    {
+        return true;
+    }
+    else if (ret == EBUSY)
+    {
+        return false;
+    }
+    else
+    {
+        throw po6::error(ret);
+    }
+}
+
+inline void
+mutex :: unlock()
+{
+    int ret = pthread_mutex_unlock(&m_mutex);
+
+    if (ret != 0)
+    {
+        throw po6::error(ret);
+    }
+}
+
+inline
+mutex :: hold :: hold(mutex* mtx)
+    : m_mtx(mtx)
+{
+    m_mtx->lock();
+}
+
+inline
+mutex :: hold :: ~hold() throw ()
+{
+    try
+    {
+        m_mtx->unlock();
+    }
+    catch (...)
+    {
+        try
+        {
+            PO6_DTOR_ERROR("Unable to release mutex with RAII.");
+        }
+        catch (...)
+        {
+        }
+    }
+}
 
 } // namespace threads
 } // namespace po6

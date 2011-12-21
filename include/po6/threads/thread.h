@@ -32,7 +32,8 @@
 #include <tr1/functional>
 
 // po6
-#include "po6/error.h"
+#include <po6/error.h>
+#include <po6/noncopyable.h>
 
 namespace po6
 {
@@ -42,82 +43,18 @@ namespace threads
 class thread
 {
     public:
-        thread(std::tr1::function<void (void)> func)
-            : m_started(false)
-            , m_joined(false)
-            , m_func(func)
-            , m_thread()
-        {
-        }
-
-        ~thread() throw ()
-        {
-            if (m_started && !m_joined)
-            {
-                try
-                {
-                    PO6_DTOR_ERROR("Destructing unjoind thread.");
-                }
-                catch (...)
-                {
-                }
-            }
-        }
+        thread(std::tr1::function<void (void)> func);
+        ~thread() throw ();
 
     public:
-        void start()
-        {
-            if (m_started)
-            {
-                throw std::logic_error("Cannot start thread twice.");
-            }
-
-            int ret = pthread_create(&m_thread, NULL, thread::start_routine, &m_func);
-
-            if (ret != 0)
-            {
-                throw po6::error(ret);
-            }
-
-            m_started = true;
-        }
-
-        void join()
-        {
-            if (!m_started)
-            {
-                throw std::logic_error("Cannot join unstarted thread.");
-            }
-
-            if (m_joined)
-            {
-                throw std::logic_error("Cannot join already-joined thread.");
-            }
-
-            int ret = pthread_join(m_thread, NULL);
-
-            if (ret != 0)
-            {
-                throw po6::error(ret);
-            }
-
-            m_joined = true;
-        }
+        void start();
+        void join();
 
     private:
-        static void* start_routine(void * arg)
-        {
-            std::tr1::function<void (void)>* f;
-            f = static_cast<std::tr1::function<void (void)>*>(arg);
-            (*f)();
-            return NULL;
-        }
+        static void* start_routine(void * arg);
 
     private:
-        thread(const thread&);
-
-    private:
-        thread& operator = (const thread&);
+        PO6_NONCOPYABLE(thread);
 
     private:
         bool m_started;
@@ -125,6 +62,80 @@ class thread
         std::tr1::function<void (void)> m_func;
         pthread_t m_thread;
 };
+
+inline
+thread :: thread(std::tr1::function<void (void)> func)
+    : m_started(false)
+    , m_joined(false)
+    , m_func(func)
+    , m_thread()
+{
+}
+
+inline
+thread :: ~thread() throw ()
+{
+    if (m_started && !m_joined)
+    {
+        try
+        {
+            PO6_DTOR_ERROR("Destructing unjoind thread.");
+        }
+        catch (...)
+        {
+        }
+    }
+}
+
+inline void
+thread :: start()
+{
+    if (m_started)
+    {
+        throw std::logic_error("Cannot start thread twice.");
+    }
+
+    int ret = pthread_create(&m_thread, NULL, thread::start_routine, &m_func);
+
+    if (ret != 0)
+    {
+        throw po6::error(ret);
+    }
+
+    m_started = true;
+}
+
+inline void
+thread :: join()
+{
+    if (!m_started)
+    {
+        throw std::logic_error("Cannot join unstarted thread.");
+    }
+
+    if (m_joined)
+    {
+        throw std::logic_error("Cannot join already-joined thread.");
+    }
+
+    int ret = pthread_join(m_thread, NULL);
+
+    if (ret != 0)
+    {
+        throw po6::error(ret);
+    }
+
+    m_joined = true;
+}
+
+inline void*
+thread :: start_routine(void * arg)
+{
+    std::tr1::function<void (void)>* f;
+    f = static_cast<std::tr1::function<void (void)>*>(arg);
+    (*f)();
+    return NULL;
+}
 
 } // namespace threads
 } // namespace po6

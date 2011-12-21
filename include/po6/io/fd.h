@@ -33,7 +33,8 @@
 #include <fcntl.h>
 
 // po6
-#include "po6/error.h"
+#include <po6/error.h>
+#include <po6/noncopyable.h>
 
 #define PO6_IO_CLOSE_ACTION(e) \
     do \
@@ -50,179 +51,181 @@ namespace io
 class fd
 {
     public:
-        fd()
-            : m_fd(-1)
-        {
-        }
-
-        explicit fd(int f)
-            : m_fd(f)
-        {
-        }
-
-        virtual ~fd() throw ()
-        {
-            try
-            {
-                close();
-            }
-            catch (...)
-            {
-                try
-                {
-                    PO6_DTOR_ERROR("Unable to close file descriptor.");
-                }
-                catch (...)
-                {
-                }
-            }
-        }
+        fd();
+        explicit fd(int f);
+        virtual ~fd() throw ();
 
     public:
-        int get() const
-        {
-            return m_fd;
-        }
-
-        void close()
-        {
-            if (m_fd >= 0)
-            {
-                if (::close(m_fd) < 0)
-                {
-                    throw po6::error(errno);
-                }
-
-                m_fd = -1;
-            }
-        }
-
-        size_t read(void* buf, size_t size)
-        {
-            ssize_t ret = ::read(m_fd, buf, size);
-
-            if (ret < 0)
-            {
-                throw po6::error(errno);
-            }
-
-            return ret;
-        }
-
-        size_t xread(void* buf, size_t size)
-        {
-            size_t rem;
-            ssize_t amt;
-            amt = 0;
-            rem = size;
-
-            while (rem > 0)
-            {
-                if ((amt = ::read(m_fd, buf, rem)) < 0)
-                {
-                    if (rem == size)
-                    {
-                        throw po6::error(errno);
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                else if (amt == 0)
-                {
-                    break;
-                }
-
-                rem -= amt;
-                buf = static_cast<char*>(buf) + amt;
-            }
-
-            return size - rem;
-        }
-
-        size_t write(const void* buf, size_t size)
-        {
-            ssize_t ret = ::write(m_fd, buf, size);
-
-            if (ret < 0)
-            {
-                throw po6::error(errno);
-            }
-
-            return ret;
-        }
-
-        size_t xwrite(const void* buf, size_t size)
-        {
-            size_t rem;
-            ssize_t amt;
-            amt = 0;
-            rem = size;
-
-            while (rem > 0)
-            {
-                if ((amt = ::write(m_fd, buf, rem)) < 0)
-                {
-                    if (rem == size)
-                    {
-                        throw po6::error(errno);
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                else if (amt == 0)
-                {
-                    break;
-                }
-
-                rem -= amt;
-                buf = static_cast<const char*>(buf) + amt;
-            }
-
-            return size - rem;
-        }
-
-        void nonblocking(bool enabled = true)
-        {
-            long flags = enabled ? O_NONBLOCK : 0;
-
-            if (fcntl(get(), F_SETFL, flags) < 0)
-            {
-                throw po6::error(errno);
-            }
-        }
-
-        void swap(fd* other) throw ()
-        {
-            int tmp = this->m_fd;
-            this->m_fd = other->m_fd;
-            other->m_fd = tmp;
-        }
+        int get() const;
+        void close();
+        ssize_t read(void *buf, size_t nbytes);
+        ssize_t xread(void* buf, size_t nbytes);
+        ssize_t write(const void *buf, size_t nbytes);
+        ssize_t xwrite(const void *buf, size_t nbytes);
+        void set_nonblocking();
+        void swap(fd* other) throw ();
 
     public:
-        fd& operator = (int f)
-        {
-            if (m_fd >= 0)
-            {
-                throw std::logic_error("Cannot assign to fd which represents an open file.");
-            }
-
-            m_fd = f;
-            return *this;
-        }
+        fd& operator = (int f);
 
     private:
-        fd(const fd&);
-
-    private:
-        fd& operator = (const fd&);
+        PO6_NONCOPYABLE(fd);
 
     private:
         int m_fd;
 };
+
+inline
+fd :: fd()
+    : m_fd(-1)
+{
+}
+
+inline
+fd :: fd(int f)
+    : m_fd(f)
+{
+}
+
+inline
+fd :: ~fd() throw ()
+{
+    try
+    {
+        close();
+    }
+    catch (...)
+    {
+        try
+        {
+            PO6_DTOR_ERROR("Unable to close file descriptor.");
+        }
+        catch (...)
+        {
+        }
+    }
+}
+
+inline int
+fd :: get() const
+{
+    return m_fd;
+}
+
+inline void
+fd :: close()
+{
+    if (m_fd >= 0)
+    {
+        if (::close(m_fd) < 0)
+        {
+            throw po6::error(errno);
+        }
+
+        m_fd = -1;
+    }
+}
+
+inline ssize_t
+fd :: read(void *buf, size_t nbytes)
+{
+    return ::read(m_fd, buf, nbytes);
+}
+
+inline ssize_t
+fd :: xread(void* buf, size_t nbytes)
+{
+    size_t rem = nbytes;
+    ssize_t amt = 0;
+
+    while (rem > 0)
+    {
+        if ((amt = read(buf, rem)) < 0)
+        {
+            if (rem == nbytes)
+            {
+                return -1;
+            }
+            else
+            {
+                break;
+            }
+        }
+        else if (amt == 0)
+        {
+            break;
+        }
+
+        rem -= amt;
+        buf = static_cast<char*>(buf) + amt;
+    }
+
+    return nbytes - rem;
+}
+
+inline ssize_t
+fd :: write(const void *buf, size_t nbytes)
+{
+    return ::write(m_fd, buf, nbytes);
+}
+
+inline ssize_t
+fd :: xwrite(const void *buf, size_t nbytes)
+{
+    size_t rem = nbytes;
+    ssize_t amt = 0;
+
+    while (rem > 0)
+    {
+        if ((amt = write(buf, rem)) < 0)
+        {
+            if (rem == nbytes)
+            {
+                return -1;
+            }
+            else
+            {
+                break;
+            }
+        }
+        else if (amt == 0)
+        {
+            break;
+        }
+
+        rem -= amt;
+        buf = static_cast<const char*>(buf) + amt;
+    }
+
+    return nbytes - rem;
+}
+
+inline void
+fd :: set_nonblocking()
+{
+    long flags = O_NONBLOCK;
+
+    if (fcntl(get(), F_SETFL, flags) < 0)
+    {
+        throw po6::error(errno);
+    }
+}
+
+inline void
+fd :: swap(fd* other) throw ()
+{
+    int tmp = this->m_fd;
+    this->m_fd = other->m_fd;
+    other->m_fd = tmp;
+}
+
+inline fd&
+fd :: operator = (int f)
+{
+    close();
+    m_fd = f;
+    return *this;
+}
 
 } // namespace io
 } // namespace po6

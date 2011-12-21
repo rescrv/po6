@@ -43,89 +43,22 @@ namespace net
 class location
 {
     public:
-        static uint64_t hash(const location& loc)
-        {
-            uint64_t ip_hash = ipaddr::hash(loc.address);
-            return ip_hash ^ loc.port;
-        }
+        static uint64_t hash(const location& loc);
 
     public:
-        location()
-            : address()
-            , port()
-        {
-        }
-
-        location(const ipaddr& _address, in_port_t _port = 0)
-            : address(_address)
-            , port(_port)
-        {
-        }
-
-        location(const char* _address, in_port_t _port = 0)
-            : address(_address)
-            , port(_port)
-        {
-        }
-
-        location(const sockaddr* sa, socklen_t salen)
-            : address()
-            , port()
-        {
-            set(sa, salen);
-        }
-
-        location(const sockaddr_in* sa)
-            : address()
-            , port()
-        {
-            set(sa);
-        }
-
-        location(const sockaddr_in6* sa)
-            : address()
-            , port()
-        {
-            set(sa);
-        }
-
-        ~location()
-        {
-        }
+        location();
+        location(const ipaddr& _address, in_port_t _port = 0);
+        location(const char* _address, in_port_t _port = 0);
+        location(const sockaddr* sa, socklen_t salen);
+        explicit location(const sockaddr_in* sa);
+        explicit location(const sockaddr_in6* sa);
+        ~location() throw ();
 
     public:
-        void pack(struct sockaddr* addr, socklen_t* addrlen) const
-        {
-            address.pack(addr, addrlen, port);
-        }
-
-        void set(const sockaddr* sa, socklen_t salen)
-        {
-            if (sa->sa_family == AF_INET && salen >= sizeof(sockaddr_in))
-            {
-                set(reinterpret_cast<const sockaddr_in*>(sa));
-            }
-            else if (sa->sa_family == AF_INET6 && salen >= sizeof(sockaddr_in6))
-            {
-                set(reinterpret_cast<const sockaddr_in6*>(sa));
-            }
-            else
-            {
-                throw std::runtime_error("Socket address family unknown (or sockaddr too small).");
-            }
-        }
-
-        void set(const sockaddr_in* sa)
-        {
-            address = sa->sin_addr;
-            port = ntohs(sa->sin_port);
-        }
-
-        void set(const sockaddr_in6* sa)
-        {
-            address = sa->sin6_addr;
-            port = ntohs(sa->sin6_port);
-        }
+        void pack(struct sockaddr* addr, socklen_t* addrlen) const;
+        void set(const sockaddr* sa, socklen_t salen);
+        void set(const sockaddr_in* sa);
+        void set(const sockaddr_in6* sa);
 
     public:
         bool operator < (const location& rhs) const { return compare(rhs) < 0; }
@@ -156,6 +89,100 @@ class location
             return lhs.port - rhs.port;
         }
 };
+
+inline uint64_t
+location :: hash(const location& loc)
+{
+    uint64_t ip_hash = ipaddr::hash(loc.address);
+    return ip_hash ^ loc.port;
+}
+
+inline
+location :: location()
+    : address()
+    , port()
+{
+}
+
+inline
+location :: location(const ipaddr& _address, in_port_t _port)
+    : address(_address)
+    , port(_port)
+{
+}
+
+inline
+location :: location(const char* _address, in_port_t _port)
+    : address(_address)
+    , port(_port)
+{
+}
+
+inline
+location :: location(const sockaddr* sa, socklen_t salen)
+    : address()
+    , port()
+{
+    set(sa, salen);
+}
+
+inline
+location :: location(const sockaddr_in* sa)
+    : address()
+    , port()
+{
+    set(sa);
+}
+
+inline
+location :: location(const sockaddr_in6* sa)
+    : address()
+    , port()
+{
+    set(sa);
+}
+
+inline
+location :: ~location() throw ()
+{
+}
+
+inline void
+location :: pack(struct sockaddr* addr, socklen_t* addrlen) const
+{
+    address.pack(addr, addrlen, port);
+}
+
+inline void
+location :: set(const sockaddr* sa, socklen_t salen)
+{
+    if (sa->sa_family == AF_INET && salen >= sizeof(sockaddr_in))
+    {
+        set(reinterpret_cast<const sockaddr_in*>(sa));
+    }
+    else if (sa->sa_family == AF_INET6 && salen >= sizeof(sockaddr_in6))
+    {
+        set(reinterpret_cast<const sockaddr_in6*>(sa));
+    }
+    else
+    {
+        throw std::runtime_error("Socket address family unknown (or sockaddr too small).");
+    }
+}
+
+inline void
+location :: set(const sockaddr_in* sa)
+{
+    address = ipaddr(sa->sin_addr);
+    port = ntohs(sa->sin_port);
+}
+
+inline void
+location :: set(const sockaddr_in6* sa)
+{
+    address = ipaddr(sa->sin6_addr);
+    port = ntohs(sa->sin6_port);
+}
 
 inline std::ostream&
 operator << (std::ostream& lhs, const location& rhs)

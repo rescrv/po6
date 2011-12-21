@@ -48,149 +48,22 @@ namespace po6
 class pathname
 {
     public:
-        pathname()
-            : m_path()
-        {
-            initialize("");
-        }
-
-        pathname(const char* path)
-            : m_path()
-        {
-            initialize(path);
-        }
-
-        pathname(const std::string& path)
-            : m_path()
-        {
-            initialize(path.c_str());
-        }
-
-        pathname(const pathname& path)
-            : m_path()
-        {
-            initialize(path.m_path);
-        }
+        pathname();
+        pathname(const char* path);
+        pathname(const std::string& path);
+        pathname(const pathname& path);
+        ~pathname() throw ();
 
     public:
-        pathname basename() const
-        {
-            pathname base;
-
-            // An empty path is just curdir
-            if (this->m_path[0] == '\0')
-            {
-                strncpy(base.m_path, ".", PATH_MAX);
-                return base;
-            }
-
-            size_t len = strlen(this->m_path);
-            const char* start;
-            const char* end = this->m_path + len - 1;
-
-            // Remove trailing slashes
-            while (end > this->m_path && *end == '/')
-            {
-                -- end;
-            }
-
-            // If we had all slashes
-            if (end == this->m_path && this->m_path[0] == '/')
-            {
-                strncpy(base.m_path, "/", PATH_MAX);
-            }
-
-            // Work backwords to find the start
-            start = end;
-
-            while (start > this->m_path && *(start - 1) != '/')
-            {
-                -- start;
-            }
-
-            strncpy(base.m_path, start, (end - start + 1));
-            base.m_path[end - start + 1] = '\0';
-            return base;
-        }
-
-        pathname dirname() const
-        {
-            pathname dir;
-
-            // An empty path is just curdir
-            if (this->m_path[0] == '\0')
-            {
-                strncpy(dir.m_path, ".", PATH_MAX);
-                return dir;
-            }
-
-            size_t len = strlen(this->m_path);
-            const char* end = this->m_path + len - 1;
-
-            // Remove trailing slashes
-            while (end > this->m_path && *end == '/')
-            {
-                -- end;
-            }
-
-            // Where do we divide the current directory and the last?
-            while (end > this->m_path && *end != '/')
-            {
-                -- end;
-            }
-
-            // If we have reduced ourself to one character.
-            if (end == this->m_path)
-            {
-                if (this->m_path[0] == '/')
-                {
-                    strncpy(dir.m_path, "/", PATH_MAX);
-                }
-                else
-                {
-                    strncpy(dir.m_path, ".", PATH_MAX);
-                }
-
-                return dir;
-            }
-
-            // Skip over the separator.
-            do
-            {
-                -- end;
-            }
-            while (end > this->m_path && *end == '/');
-
-            strncpy(dir.m_path, this->m_path, (end - this->m_path + 1));
-            dir.m_path[end - this->m_path + 1] = '\0';
-            return dir;
-        }
+        pathname basename() const;
+        pathname dirname() const;
 
     public:
         const char* get() const { return m_path; }
 
     public:
-        bool operator == (const pathname& rhs) const
-        {
-            const pathname& lhs(*this);
-
-            if (strncmp(lhs.m_path, rhs.m_path, PATH_MAX) == 0)
-            {
-                return true;
-            }
-
-            pathname lb = lhs.basename();
-            pathname rb = rhs.basename();
-            pathname ld = lhs.dirname();
-            pathname rd = rhs.dirname();
-            return strncmp(lb.m_path, rb.m_path, PATH_MAX) == 0 && ld == rd;
-        }
-
-        bool operator != (const pathname& rhs) const
-        {
-            const pathname& lhs(*this);
-            return !(lhs == rhs);
-        }
+        bool operator == (const pathname& rhs) const;
+        bool operator != (const pathname& rhs) const;
 
     private:
         friend std::ostream& operator << (std::ostream& lhs, const pathname& rhs);
@@ -198,26 +71,181 @@ class pathname
         friend bool mkstemp(po6::io::fd* fd, po6::pathname* prefix);
 
     private:
-        void initialize(const char* path)
-        {
-            if (path)
-            {
-                strncpy(m_path, path, PATH_MAX);
-
-                if (m_path[PATH_MAX - 1] != '\0')
-                {
-                    throw po6::error(ENAMETOOLONG);
-                }
-            }
-            else
-            {
-                strncpy(m_path, "", PATH_MAX);
-            }
-        }
+        void initialize(const char* path);
 
     private:
         char m_path[PATH_MAX];
 };
+
+inline
+pathname :: pathname()
+    : m_path()
+{
+    initialize("");
+}
+
+inline
+pathname :: pathname(const char* path)
+    : m_path()
+{
+    initialize(path);
+}
+
+inline
+pathname :: pathname(const std::string& path)
+    : m_path()
+{
+    initialize(path.c_str());
+}
+
+inline
+pathname :: pathname(const pathname& path)
+    : m_path()
+{
+    initialize(path.m_path);
+}
+
+inline
+pathname :: ~pathname() throw ()
+{
+}
+
+inline pathname
+pathname :: basename() const
+{
+    pathname base;
+
+    // An empty path is just curdir
+    if (this->m_path[0] == '\0')
+    {
+        strncpy(base.m_path, ".", PATH_MAX);
+        return base;
+    }
+
+    size_t len = strlen(this->m_path);
+    const char* start;
+    const char* end = this->m_path + len - 1;
+
+    // Remove trailing slashes
+    while (end > this->m_path && *end == '/')
+    {
+        -- end;
+    }
+
+    // If we had all slashes
+    if (end == this->m_path && this->m_path[0] == '/')
+    {
+        strncpy(base.m_path, "/", PATH_MAX);
+    }
+
+    // Work backwords to find the start
+    start = end;
+
+    while (start > this->m_path && *(start - 1) != '/')
+    {
+        -- start;
+    }
+
+    strncpy(base.m_path, start, (end - start + 1));
+    base.m_path[end - start + 1] = '\0';
+    return base;
+}
+
+inline pathname
+pathname :: dirname() const
+{
+    pathname dir;
+
+    // An empty path is just curdir
+    if (this->m_path[0] == '\0')
+    {
+        strncpy(dir.m_path, ".", PATH_MAX);
+        return dir;
+    }
+
+    size_t len = strlen(this->m_path);
+    const char* end = this->m_path + len - 1;
+
+    // Remove trailing slashes
+    while (end > this->m_path && *end == '/')
+    {
+        -- end;
+    }
+
+    // Where do we divide the current directory and the last?
+    while (end > this->m_path && *end != '/')
+    {
+        -- end;
+    }
+
+    // If we have reduced ourself to one character.
+    if (end == this->m_path)
+    {
+        if (this->m_path[0] == '/')
+        {
+            strncpy(dir.m_path, "/", PATH_MAX);
+        }
+        else
+        {
+            strncpy(dir.m_path, ".", PATH_MAX);
+        }
+
+        return dir;
+    }
+
+    // Skip over the separator.
+    do
+    {
+        -- end;
+    }
+    while (end > this->m_path && *end == '/');
+
+    strncpy(dir.m_path, this->m_path, (end - this->m_path + 1));
+    dir.m_path[end - this->m_path + 1] = '\0';
+    return dir;
+}
+
+inline bool
+pathname :: operator == (const pathname& rhs) const
+{
+    const pathname& lhs(*this);
+
+    if (strncmp(lhs.m_path, rhs.m_path, PATH_MAX) == 0)
+    {
+        return true;
+    }
+
+    pathname lb = lhs.basename();
+    pathname rb = rhs.basename();
+    pathname ld = lhs.dirname();
+    pathname rd = rhs.dirname();
+    return strncmp(lb.m_path, rb.m_path, PATH_MAX) == 0 && ld == rd;
+}
+
+inline bool
+pathname :: operator != (const pathname& rhs) const
+{
+    const pathname& lhs(*this);
+    return !(lhs == rhs);
+}
+
+inline void
+pathname :: initialize(const char* path)
+{
+    if (path)
+    {
+        strncpy(m_path, path, PATH_MAX);
+
+        if (m_path[PATH_MAX - 1] != '\0')
+        {
+            throw po6::error(ENAMETOOLONG);
+        }
+    }
+    else
+    {
+        strncpy(m_path, "", PATH_MAX);
+    }
+}
 
 inline po6::pathname
 join(const pathname& a, const pathname& b)

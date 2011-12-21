@@ -33,8 +33,9 @@
 #include <pthread.h>
 
 // po6
-#include "po6/error.h"
-#include "po6/threads/mutex.h"
+#include <po6/error.h>
+#include <po6/noncopyable.h>
+#include <po6/threads/mutex.h>
 
 namespace po6
 {
@@ -44,90 +45,105 @@ namespace threads
 class cond
 {
     public:
-        cond(mutex* mtx)
-            : m_mtx(mtx)
-            , m_cond()
-        {
-            int ret = pthread_cond_init(&m_cond, NULL);
-
-            if (ret != 0)
-            {
-                throw po6::error(ret);
-            }
-        }
-
-        ~cond() throw ()
-        {
-            int ret = pthread_cond_destroy(&m_cond);
-
-            if (ret != 0)
-            {
-                try
-                {
-                    PO6_DTOR_ERROR("Could not destroy condition variable.");
-                }
-                catch (...)
-                {
-                }
-            }
-        }
+        cond(mutex* mtx);
+        ~cond() throw ();
 
     public:
-        void lock()
-        {
-            m_mtx->lock();
-        }
-
-        void trylock()
-        {
-            m_mtx->trylock();
-        }
-
-        void unlock()
-        {
-            m_mtx->unlock();
-        }
-
-        void wait()
-        {
-            int ret = pthread_cond_wait(&m_cond, &m_mtx->m_mutex);
-
-            if (ret != 0)
-            {
-                throw po6::error(ret);
-            }
-        }
-
-        void signal()
-        {
-            int ret = pthread_cond_signal(&m_cond);
-
-            if (ret != 0)
-            {
-                throw po6::error(ret);
-            }
-        }
-
-        void broadcast()
-        {
-            int ret = pthread_cond_broadcast(&m_cond);
-
-            if (ret != 0)
-            {
-                throw po6::error(ret);
-            }
-        }
+        void lock();
+        void trylock();
+        void unlock();
+        void wait();
+        void signal();
+        void broadcast();
 
     private:
-        cond(const cond&);
-
-    private:
-        cond& operator = (const cond&);
+        PO6_NONCOPYABLE(cond);
 
     private:
         mutex* m_mtx;
         pthread_cond_t m_cond;
 };
+
+inline
+cond :: cond(mutex* mtx)
+            : m_mtx(mtx)
+            , m_cond()
+{
+    int ret = pthread_cond_init(&m_cond, NULL);
+
+    if (ret != 0)
+    {
+        throw po6::error(ret);
+    }
+}
+
+inline
+cond :: ~cond() throw ()
+{
+    int ret = pthread_cond_destroy(&m_cond);
+
+    if (ret != 0)
+    {
+        try
+        {
+            PO6_DTOR_ERROR("Could not destroy condition variable.");
+        }
+        catch (...)
+        {
+        }
+    }
+}
+
+inline void
+cond :: lock()
+{
+    m_mtx->lock();
+}
+
+inline void
+cond :: trylock()
+{
+    m_mtx->trylock();
+}
+
+inline void
+cond :: unlock()
+{
+    m_mtx->unlock();
+}
+
+inline void
+cond :: wait()
+{
+    int ret = pthread_cond_wait(&m_cond, &m_mtx->m_mutex);
+
+    if (ret != 0)
+    {
+        throw po6::error(ret);
+    }
+}
+
+inline void
+cond :: signal()
+{
+    int ret = pthread_cond_signal(&m_cond);
+
+    if (ret != 0)
+    {
+        throw po6::error(ret);
+    }
+}
+
+inline void
+cond :: broadcast()
+{
+    int ret = pthread_cond_broadcast(&m_cond);
+
+    if (ret != 0)
+    {
+        throw po6::error(ret);
+    }
+}
 
 } // namespace threads
 } // namespace po6

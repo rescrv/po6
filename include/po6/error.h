@@ -49,54 +49,71 @@ namespace po6
 class error : public std::exception
 {
     public:
-        error()
-            : m_errno(0)
-        {
-        }
-
-        error(int num)
-            : m_errno(num)
-        {
-        }
-
-        error(const error& e)
-            : m_errno(e.m_errno)
-        {
-        }
-
-        ~error() throw ()
-        {
-        }
+        error();
+        error(int num);
+        error(const error& e);
+        ~error() throw ();
 
     public:
-        const char* what() const throw ()
-        {
-#ifdef _GNU_SOURCE
-            if (_GNU_SOURCE)
-            {
-                return strerror_r(m_errno, m_msg, PO6_ERROR_MSG_LEN);
-            }
-#endif
-            strerror_r(m_errno, m_msg, PO6_ERROR_MSG_LEN);
-            return m_msg;
-        }
+        const char* what() const throw ();
 
     public:
-        operator int () const
-        {
-            return m_errno;
-        }
-
-        error& operator = (const error& rhs)
-        {
-            m_errno = rhs.m_errno;
-            return *this;
-        }
+        operator int () const;
+        error& operator = (const error& rhs);
 
     private:
         int m_errno;
         mutable char m_msg[PO6_ERROR_MSG_LEN];
 };
+
+inline
+error :: error()
+    : m_errno(0)
+{
+}
+
+inline
+error :: error(int num)
+    : m_errno(num)
+{
+}
+
+inline
+error :: error(const error& e)
+    : m_errno(e.m_errno)
+{
+}
+
+inline
+error :: ~error() throw ()
+{
+}
+
+inline const char*
+error :: what() const throw ()
+{
+#ifdef _GNU_SOURCE
+    if (_GNU_SOURCE)
+    {
+        return strerror_r(m_errno, m_msg, PO6_ERROR_MSG_LEN);
+    }
+#endif
+    strerror_r(m_errno, m_msg, PO6_ERROR_MSG_LEN);
+    return m_msg;
+}
+
+inline
+error :: operator int () const
+{
+    return m_errno;
+}
+
+inline error&
+error :: operator = (const error& rhs)
+{
+    m_errno = rhs.m_errno;
+    return *this;
+}
 
 #undef PO6_ERROR_MSG_LEN
 

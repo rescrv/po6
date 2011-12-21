@@ -33,7 +33,8 @@
 #include <pthread.h>
 
 // po6
-#include "po6/error.h"
+#include <po6/error.h>
+#include <po6/noncopyable.h>
 
 namespace po6
 {
@@ -43,122 +44,132 @@ namespace threads
 class spinlock
 {
     public:
-        class hold
-        {
-            public:
-                hold(spinlock* sp)
-                    : m_spin(sp)
-                {
-                    m_spin->lock();
-                }
-
-                ~hold() throw ()
-                {
-                    try
-                    {
-                        m_spin->unlock();
-                    }
-                    catch (...)
-                    {
-                        try
-                        {
-                            PO6_DTOR_ERROR("Unable to release spinlock with RAII.");
-                        }
-                        catch (...)
-                        {
-                        }
-                    }
-                }
-
-            private:
-                hold(const hold&);
-
-            private:
-                hold& operator = (const hold&);
-
-            private:
-                spinlock* m_spin;
-        };
+        class hold;
 
     public:
-        spinlock()
-            : m_spin()
-        {
-            int ret = pthread_spin_init(&m_spin, 0);
-
-            if (ret != 0)
-            {
-                throw po6::error(ret);
-            }
-        }
-
-        ~spinlock() throw ()
-        {
-            int ret = pthread_spin_destroy(&m_spin);
-
-            if (ret != 0)
-            {
-                try
-                {
-                    PO6_DTOR_ERROR("Could not destroy spinlock.");
-                }
-                catch (...)
-                {
-                }
-            }
-        }
+        spinlock();
+        ~spinlock() throw ();
 
     public:
-        void lock()
-        {
-            int ret = pthread_spin_lock(&m_spin);
-
-            if (ret != 0)
-            {
-                throw po6::error(ret);
-            }
-        }
-
-        bool trylock()
-        {
-            int ret = pthread_spin_trylock(&m_spin);
-
-            if (ret == 0)
-            {
-                return true;
-            }
-            else if (ret == EBUSY)
-            {
-                return false;
-            }
-            else
-            {
-                throw po6::error(ret);
-            }
-        }
-
-        void unlock()
-        {
-            int ret = pthread_spin_unlock(&m_spin);
-
-            if (ret != 0)
-            {
-                throw po6::error(ret);
-            }
-        }
+        void lock();
+        bool trylock();
+        void unlock();
 
     private:
-        friend class cond;
-
-    private:
-        spinlock(const spinlock&);
-
-    private:
-        spinlock& operator = (const spinlock&);
+        PO6_NONCOPYABLE(spinlock);
 
     private:
         pthread_spinlock_t m_spin;
 };
+
+class spinlock::hold
+{
+    public:
+        hold(spinlock* sp);
+        ~hold() throw ();
+
+    private:
+        PO6_NONCOPYABLE(hold);
+
+    private:
+        spinlock* m_spin;
+};
+
+inline
+spinlock :: spinlock()
+    : m_spin()
+{
+    int ret = pthread_spin_init(&m_spin, 0);
+
+    if (ret != 0)
+    {
+        throw po6::error(ret);
+    }
+}
+
+inline
+spinlock :: ~spinlock() throw ()
+{
+    int ret = pthread_spin_destroy(&m_spin);
+
+    if (ret != 0)
+    {
+        try
+        {
+            PO6_DTOR_ERROR("Could not destroy spinlock.");
+        }
+        catch (...)
+        {
+        }
+    }
+}
+
+inline void
+spinlock :: lock()
+{
+    int ret = pthread_spin_lock(&m_spin);
+
+    if (ret != 0)
+    {
+        throw po6::error(ret);
+    }
+}
+
+inline bool
+spinlock :: trylock()
+{
+    int ret = pthread_spin_trylock(&m_spin);
+
+    if (ret == 0)
+    {
+        return true;
+    }
+    else if (ret == EBUSY)
+    {
+        return false;
+    }
+    else
+    {
+        throw po6::error(ret);
+    }
+}
+
+inline void
+spinlock :: unlock()
+{
+    int ret = pthread_spin_unlock(&m_spin);
+
+    if (ret != 0)
+    {
+        throw po6::error(ret);
+    }
+}
+
+inline
+spinlock :: hold :: hold(spinlock* sp)
+    : m_spin(sp)
+{
+    m_spin->lock();
+}
+
+inline
+spinlock :: hold :: ~hold() throw ()
+{
+    try
+    {
+        m_spin->unlock();
+    }
+    catch (...)
+    {
+        try
+        {
+            PO6_DTOR_ERROR("Unable to release spinlock with RAII.");
+        }
+        catch (...)
+        {
+        }
+    }
+}
 
 } // namespace threads
 } // namespace po6
