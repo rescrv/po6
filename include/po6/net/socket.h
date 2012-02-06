@@ -300,7 +300,7 @@ socket :: xrecv(void *buf, size_t len, int flags)
 
     while (rem > 0)
     {
-        if ((amt = recv(buf, len, flags)) < 0)
+        if ((amt = recv(buf, rem, flags)) < 0)
         {
             if (rem == len)
             {
@@ -337,7 +337,7 @@ socket :: xsend(const void *buf, size_t len, int flags)
 
     while (rem > 0)
     {
-        if ((amt = send(buf, len, flags)) < 0)
+        if ((amt = send(buf, rem, flags)) < 0)
         {
             if (rem == len)
             {
