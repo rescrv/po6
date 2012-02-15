@@ -4,4 +4,4 @@ SUBDIRS = include test
 EXTRA_DIST = LICENSE
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = @PACKAGE_NAME@-@PACKAGE_VERSION@.pc
+pkgconfig_DATA = libpo6.pc

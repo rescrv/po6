@@ -41,5 +41,5 @@ AC_CHECK_FUNCS([memmove memset socket])
 AC_CONFIG_FILES([Makefile
                  include/Makefile
                  test/Makefile
-                 libpo6-${VERSION}.pc])
+                 libpo6.pc])
 AC_OUTPUT
