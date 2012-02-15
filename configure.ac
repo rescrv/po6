@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.66])
-AC_INIT([po6], [0.2.dev], [escriva@cs.cornell.edu])
+AC_INIT([libpo6], [0.2.dev], [escriva@cs.cornell.edu])
 AM_INIT_AUTOMAKE([foreign dist-bzip2 dist-lzma])
 AM_SILENT_RULES([yes])
 AC_CONFIG_SRCDIR([include/po6/error.h])
@@ -40,5 +40,6 @@ AC_CHECK_FUNCS([memmove memset socket])
 
 AC_CONFIG_FILES([Makefile
                  include/Makefile
-                 test/Makefile])
+                 test/Makefile
+                 libpo6-${VERSION}.pc])
 AC_OUTPUT
