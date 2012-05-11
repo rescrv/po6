@@ -40,10 +40,6 @@
 namespace po6
 {
 
-#ifndef PO6_DTOR_ERROR
-#define PO6_DTOR_ERROR(X) std::cerr << "Error:  " << X << std::endl;
-#endif
-
 #define PO6_ERROR_MSG_LEN 1024
 
 class error : public std::exception

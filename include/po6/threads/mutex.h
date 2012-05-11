@@ -97,13 +97,9 @@ mutex :: ~mutex() throw ()
 
     if (ret != 0)
     {
-        try
-        {
-            PO6_DTOR_ERROR("Could not destroy mutex.");
-        }
-        catch (...)
-        {
-        }
+#ifndef PO6_NDEBUG_LEAKS
+        abort();
+#endif
     }
 }
 
@@ -164,13 +160,9 @@ mutex :: hold :: ~hold() throw ()
     }
     catch (...)
     {
-        try
-        {
-            PO6_DTOR_ERROR("Unable to release mutex with RAII.");
-        }
-        catch (...)
-        {
-        }
+#ifndef PO6_NDEBUG_LEAKS
+        abort();
+#endif
     }
 }
 

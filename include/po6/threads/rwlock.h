@@ -108,13 +108,9 @@ rwlock :: ~rwlock() throw ()
 
     if (ret != 0)
     {
-        try
-        {
-            PO6_DTOR_ERROR("Could not destroy reader-writer lock");
-        }
-        catch (...)
-        {
-        }
+#ifndef PO6_NDEBUG_LEAKS
+        abort();
+#endif
     }
 }
 
@@ -167,13 +163,9 @@ rwlock :: rdhold :: ~rdhold() throw ()
     }
     catch (...)
     {
-        try
-        {
-            PO6_DTOR_ERROR("Unable to release reader-writer lock with RAII.");
-        }
-        catch (...)
-        {
-        }
+#ifndef PO6_NDEBUG_LEAKS
+        abort();
+#endif
     }
 }
 
@@ -193,13 +185,9 @@ rwlock :: wrhold :: ~wrhold() throw ()
     }
     catch (...)
     {
-        try
-        {
-            PO6_DTOR_ERROR("Unable to release reader-writer lock with RAII.");
-        }
-        catch (...)
-        {
-        }
+#ifndef PO6_NDEBUG_LEAKS
+        abort();
+#endif
     }
 }
 

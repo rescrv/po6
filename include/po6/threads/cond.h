@@ -84,13 +84,9 @@ cond :: ~cond() throw ()
 
     if (ret != 0)
     {
-        try
-        {
-            PO6_DTOR_ERROR("Could not destroy condition variable.");
-        }
-        catch (...)
-        {
-        }
+#ifndef PO6_NDEBUG_LEAKS
+        abort();
+#endif
     }
 }
 

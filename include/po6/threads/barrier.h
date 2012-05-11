@@ -76,13 +76,9 @@ barrier :: ~barrier() throw ()
 
     if (ret != 0)
     {
-        try
-        {
-            PO6_DTOR_ERROR("Could not destroy barrier.");
-        }
-        catch (...)
-        {
-        }
+#ifndef PO6_NDEBUG_LEAKS
+        abort();
+#endif
     }
 }
 
