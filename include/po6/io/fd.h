@@ -106,13 +106,10 @@ fd :: close()
 {
     if (m_fd >= 0)
     {
-        if (::close(m_fd) < 0)
-        {
-            throw po6::error(errno);
-        }
-
-        m_fd = -1;
+        ::close(m_fd);
     }
+
+    m_fd = -1;
 }
 
 inline ssize_t
