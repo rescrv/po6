@@ -94,13 +94,9 @@ spinlock :: ~spinlock() throw ()
 
     if (ret != 0)
     {
-        try
-        {
-            PO6_DTOR_ERROR("Could not destroy spinlock.");
-        }
-        catch (...)
-        {
-        }
+#ifndef PO6_NDEBUG_LEAKS
+        abort();
+#endif
     }
 }
 
@@ -161,13 +157,9 @@ spinlock :: hold :: ~hold() throw ()
     }
     catch (...)
     {
-        try
-        {
-            PO6_DTOR_ERROR("Unable to release spinlock with RAII.");
-        }
-        catch (...)
-        {
-        }
+#ifndef PO6_NDEBUG_LEAKS
+        abort();
+#endif
     }
 }
 

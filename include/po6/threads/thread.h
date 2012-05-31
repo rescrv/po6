@@ -77,13 +77,9 @@ thread :: ~thread() throw ()
 {
     if (m_started && !m_joined)
     {
-        try
-        {
-            PO6_DTOR_ERROR("Destructing unjoind thread.");
-        }
-        catch (...)
-        {
-        }
+#ifndef PO6_NDEBUG_LEAKS
+        abort();
+#endif
     }
 }
 

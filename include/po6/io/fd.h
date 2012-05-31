@@ -36,13 +36,6 @@
 #include <po6/error.h>
 #include <po6/noncopyable.h>
 
-#define PO6_IO_CLOSE_ACTION(e) \
-    do \
-    { \
-        std::cerr << e.what() << std::endl; \
-        abort(); \
-    } while (0)
-
 namespace po6
 {
 namespace io
@@ -96,13 +89,9 @@ fd :: ~fd() throw ()
     }
     catch (...)
     {
-        try
-        {
-            PO6_DTOR_ERROR("Unable to close file descriptor.");
-        }
-        catch (...)
-        {
-        }
+#ifndef PO6_NDEBUG_LEAKS
+        abort();
+#endif
     }
 }
 
@@ -117,13 +106,10 @@ fd :: close()
 {
     if (m_fd >= 0)
     {
-        if (::close(m_fd) < 0)
-        {
-            throw po6::error(errno);
-        }
-
-        m_fd = -1;
+        ::close(m_fd);
     }
+
+    m_fd = -1;
 }
 
 inline ssize_t
