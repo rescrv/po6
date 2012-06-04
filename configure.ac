@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.61])
 AC_INIT([libpo6], [0.3.dev], [escriva@cs.cornell.edu])
-AM_INIT_AUTOMAKE([foreign dist-bzip2 dist-lzma])
+AM_INIT_AUTOMAKE([foreign dist-bzip2])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 AC_CONFIG_SRCDIR([include/po6/error.h])
 AC_CONFIG_HEADERS([config.h])
