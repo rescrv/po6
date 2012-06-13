@@ -29,9 +29,9 @@
 #include <gtest/gtest.h>
 
 // po6
-#include "../include/po6/net/ipaddr.h"
-#include "../include/po6/net/location.h"
-#include "../include/po6/net/socket.h"
+#include "po6/net/ipaddr.h"
+#include "po6/net/location.h"
+#include "po6/net/socket.h"
 
 #pragma GCC diagnostic ignored "-Wswitch-default"
 

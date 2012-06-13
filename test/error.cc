@@ -32,7 +32,7 @@
 #include <gtest/gtest.h>
 
 // po6
-#include "../include/po6/error.h"
+#include "po6/error.h"
 
 #pragma GCC diagnostic ignored "-Wswitch-default"
 

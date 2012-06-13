@@ -29,7 +29,7 @@
 #include <gtest/gtest.h>
 
 // po6
-#include "../include/po6/threads/thread.h"
+#include "po6/threads/thread.h"
 
 #pragma GCC diagnostic ignored "-Wswitch-default"
 
