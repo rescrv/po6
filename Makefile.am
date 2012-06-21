@@ -13,8 +13,8 @@ nobase_include_HEADERS = po6/io/fd.h po6/error.h po6/noncopyable.h \
 						 po6/threads/rwlock.h po6/threads/cond.h \
 						 po6/threads/spinlock.h po6/threads/thread.h \
 						 po6/threads/mutex.h po6/threads/barrier.h \
-						 po6/pathname.h po6/net/ipaddr.h po6/net/location.h \
-						 po6/net/socket.h
+						 po6/pathname.h po6/net/hostname.h po6/net/ipaddr.h \
+						 po6/net/location.h po6/net/socket.h
 
 ##################################### Tests ####################################
 
@@ -26,6 +26,7 @@ TESTS = $(check_PROGRAMS)
 check_PROGRAMS = \
 			test/error \
 			test/io_fd \
+			test/net_hostname \
 			test/net_ipaddr \
 			test/net_location \
 			test/net_socket \
@@ -40,6 +41,8 @@ test_error_SOURCES = test/runner.cc test/error.cc
 test_error_LDADD = $(GTEST_LIBS)
 test_io_fd_SOURCES = test/runner.cc test/io/fd.cc
 test_io_fd_LDADD = $(GTEST_LIBS)
+test_net_hostname_SOURCES = test/runner.cc test/net/hostname.cc
+test_net_hostname_LDADD = $(GTEST_LIBS)
 test_net_ipaddr_SOURCES = test/runner.cc test/net/ipaddr.cc
 test_net_ipaddr_LDADD = $(GTEST_LIBS)
 test_net_location_SOURCES = test/runner.cc test/net/location.cc
