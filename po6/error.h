@@ -47,6 +47,7 @@ class error : public std::exception
     public:
         error();
         error(int num);
+        error(int num, const char* msg);
         error(const error& e);
         ~error() throw ();
 
@@ -58,26 +59,44 @@ class error : public std::exception
         error& operator = (const error& rhs);
 
     private:
+        void use_strerror();
+
+    private:
         int m_errno;
-        mutable char m_msg[PO6_ERROR_MSG_LEN];
+        char m_msg[PO6_ERROR_MSG_LEN];
 };
 
 inline
 error :: error()
     : m_errno(0)
+    , m_msg()
 {
+    use_strerror();
 }
 
 inline
 error :: error(int num)
     : m_errno(num)
+    , m_msg()
 {
+    use_strerror();
+}
+
+inline
+error :: error(int num, const char* msg)
+    : m_errno(num)
+    , m_msg()
+{
+    strncpy(m_msg, msg, PO6_ERROR_MSG_LEN);
+    m_msg[PO6_ERROR_MSG_LEN - 1] = '\0';
 }
 
 inline
 error :: error(const error& e)
     : m_errno(e.m_errno)
+    , m_msg()
 {
+    strncpy(m_msg, e.m_msg, PO6_ERROR_MSG_LEN);
 }
 
 inline
@@ -88,13 +107,6 @@ error :: ~error() throw ()
 inline const char*
 error :: what() const throw ()
 {
-#ifdef _GNU_SOURCE
-    if (_GNU_SOURCE)
-    {
-        return strerror_r(m_errno, m_msg, PO6_ERROR_MSG_LEN);
-    }
-#endif
-    strerror_r(m_errno, m_msg, PO6_ERROR_MSG_LEN);
     return m_msg;
 }
 
@@ -108,7 +120,21 @@ inline error&
 error :: operator = (const error& rhs)
 {
     m_errno = rhs.m_errno;
+    strncpy(m_msg, rhs.m_msg, PO6_ERROR_MSG_LEN);
     return *this;
+}
+
+inline void
+error :: use_strerror()
+{
+#ifdef _GNU_SOURCE
+    if (_GNU_SOURCE)
+    {
+        strerror_r(m_errno, m_msg, PO6_ERROR_MSG_LEN);
+    }
+#endif
+    strerror_r(m_errno, m_msg, PO6_ERROR_MSG_LEN);
+    m_msg[PO6_ERROR_MSG_LEN - 1] = '\0';
 }
 
 #undef PO6_ERROR_MSG_LEN
