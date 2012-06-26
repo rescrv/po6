@@ -64,6 +64,8 @@ class socket : public po6::io::fd
         location getpeername();
         location getsockname();
 
+        void set_sockopt(int level, int optname,
+                         const void *optval, socklen_t optlen);
         void set_reuseaddr();
         void set_tcp_nodelay();
         void sndbuf(size_t size);
@@ -229,61 +231,51 @@ socket :: getsockname()
 }
 
 inline void
-socket :: set_reuseaddr()
+socket :: set_sockopt(int level, int optname,
+                      const void *optval, socklen_t optlen)
 {
-    int yes = 1;
-
-    if (setsockopt(get(), SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) < 0)
+    if (setsockopt(get(), level, optname, optval, optlen) < 0)
     {
         throw po6::error(errno);
     }
+}
+
+inline void
+socket :: set_reuseaddr()
+{
+    int yes = 1;
+    set_sockopt(SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
 }
 
 inline void
 socket :: set_tcp_nodelay()
 {
     int yes = 1;
-
-    if (setsockopt(get(), IPPROTO_TCP, TCP_NODELAY, &yes, sizeof(yes)) < 0)
-    {
-        throw po6::error(errno);
-    }
+    set_sockopt(IPPROTO_TCP, TCP_NODELAY, &yes, sizeof(yes));
 }
 
 inline void
 socket :: sndbuf(size_t size)
 {
-    if (setsockopt(get(), SOL_SOCKET, SO_SNDBUF, &size, sizeof(size)) < 0)
-    {
-        throw po6::error(errno);
-    }
+    set_sockopt(SOL_SOCKET, SO_SNDBUF, &size, sizeof(size));
 }
 
 inline void
 socket :: rcvbuf(size_t size)
 {
-    if (setsockopt(get(), SOL_SOCKET, SO_RCVBUF, &size, sizeof(size)) < 0)
-    {
-        throw po6::error(errno);
-    }
+    set_sockopt(SOL_SOCKET, SO_RCVBUF, &size, sizeof(size));
 }
 
 inline void
 socket :: sndlowat(size_t size)
 {
-    if (setsockopt(get(), SOL_SOCKET, SO_SNDLOWAT, &size, sizeof(size)) < 0)
-    {
-        throw po6::error(errno);
-    }
+    set_sockopt(SOL_SOCKET, SO_SNDLOWAT, &size, sizeof(size));
 }
 
 inline void
 socket :: rcvlowat(size_t size)
 {
-    if (setsockopt(get(), SOL_SOCKET, SO_RCVLOWAT, &size, sizeof(size)) < 0)
-    {
-        throw po6::error(errno);
-    }
+    set_sockopt(SOL_SOCKET, SO_RCVLOWAT, &size, sizeof(size));
 }
 
 inline ssize_t
