@@ -31,7 +31,6 @@
 // POSIX
 #include <errno.h>
 #include <fcntl.h>
-#include <unistd.h>
 
 // po6
 #include <po6/error.h>
