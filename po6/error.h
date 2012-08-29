@@ -130,11 +130,17 @@ error :: use_strerror()
 #ifdef _GNU_SOURCE
     if (_GNU_SOURCE)
     {
+        strncpy(m_msg, strerror_r(m_errno, m_msg, PO6_ERROR_MSG_LEN), PO6_ERROR_MSG_LEN);
+        m_msg[PO6_ERROR_MSG_LEN - 1] = '\0';
+    }
+    else
+    {
+#endif
         strerror_r(m_errno, m_msg, PO6_ERROR_MSG_LEN);
+        m_msg[PO6_ERROR_MSG_LEN - 1] = '\0';
+#ifdef _GNU_SOURCE
     }
 #endif
-    strerror_r(m_errno, m_msg, PO6_ERROR_MSG_LEN);
-    m_msg[PO6_ERROR_MSG_LEN - 1] = '\0';
 }
 
 #undef PO6_ERROR_MSG_LEN
