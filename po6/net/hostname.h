@@ -53,6 +53,8 @@ class hostname
 
     public:
         location connect(int domain, int type, int protocol, po6::net::socket* sock) const;
+        // non-throwing, non-connecting version
+        location lookup(int type, int protocol) const;
 
     public:
         bool operator < (const hostname& rhs) const { return compare(rhs) < 0; }
@@ -167,6 +169,55 @@ hostname :: connect(int domain, int type, int protocol, po6::net::socket* sock) 
     }
 
     return loc;
+}
+
+inline po6::net::location
+hostname :: lookup(int type, int protocol) const
+{
+    // Convert the port to a C string
+    char port_cstr[6];
+    snprintf(port_cstr, 6, "%u", port);
+
+    // Setup the hints
+    addrinfo hints;
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_flags = AI_ADDRCONFIG | AI_NUMERICSERV;
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = type;
+    hints.ai_protocol = protocol;
+
+    // Make the call
+    addrinfo* res = NULL;
+    int gai_err = getaddrinfo(address.c_str(), port_cstr, &hints, &res);
+
+    if (gai_err)
+    {
+        return po6::net::location();
+    }
+
+    protect_addrinfo pai(res);
+    location loc;
+
+    for (addrinfo* ai = res; ai; ai = ai->ai_next)
+    {
+        if (ai->ai_family != AF_INET && ai->ai_family != AF_INET6)
+        {
+            errno = ECONNREFUSED;
+            continue;
+        }
+
+        loc = location(ai->ai_addr, ai->ai_addrlen);
+        break;
+    }
+
+    return loc;
+}
+
+inline std::ostream&
+operator << (std::ostream& lhs, const hostname& rhs)
+{
+    lhs << rhs.address << ":" << rhs.port;
+    return lhs;
 }
 
 } // namespace net
