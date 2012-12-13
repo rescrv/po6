@@ -213,6 +213,32 @@ hostname :: lookup(int type, int protocol) const
     return loc;
 }
 
+inline int
+hostname :: compare(const hostname& rhs) const
+{
+    if (address < rhs.address)
+    {
+        return -1;
+    }
+
+    if (address > rhs.address)
+    {
+        return 1;
+    }
+
+    if (port < rhs.port)
+    {
+        return -1;
+    }
+
+    if (port > rhs.port)
+    {
+        return -1;
+    }
+
+    return 0;
+}
+
 inline std::ostream&
 operator << (std::ostream& lhs, const hostname& rhs)
 {
