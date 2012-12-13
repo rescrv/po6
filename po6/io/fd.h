@@ -57,6 +57,7 @@ class fd
         ssize_t write(const void *buf, size_t nbytes);
         ssize_t xwrite(const void *buf, size_t nbytes);
         void set_nonblocking();
+        void set_blocking();
         void swap(fd* other) throw ();
 
     public:
@@ -191,6 +192,20 @@ inline void
 fd :: set_nonblocking()
 {
     long flags = O_NONBLOCK;
+
+    if (fcntl(get(), F_SETFL, flags) < 0)
+    {
+        throw po6::error(errno);
+    }
+}
+
+inline void
+fd :: set_blocking()
+{
+    long flags = fcntl(get(), F_GETFL);
+    long mask = O_NONBLOCK | O_ACCMODE;
+    mask = ~mask;
+    flags &= mask;
 
     if (fcntl(get(), F_SETFL, flags) < 0)
     {
