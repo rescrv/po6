@@ -1,7 +1,8 @@
 ACLOCAL_AMFLAGS = -I m4
 
 AM_CPPFLAGS =
-AM_CXXFLAGS = $(WANAL_CXXFLAGS)
+# -fpermissive needed for gtest
+AM_CXXFLAGS = $(WANAL_CXXFLAGS) -fpermissive
 AM_LDFLAGS =
 
 EXTRA_DIST = LICENSE README
@@ -52,13 +53,13 @@ test_net_socket_LDADD = $(GTEST_LIBS)
 test_pathname_SOURCES = test/runner.cc test/pathname.cc
 test_pathname_LDADD = $(GTEST_LIBS)
 test_threads_cond_SOURCES = test/runner.cc test/threads/cond.cc
-test_threads_cond_LDADD = $(GTEST_LIBS)
+test_threads_cond_LDADD = $(GTEST_LIBS) -lpthread
 test_threads_mutex_SOURCES = test/runner.cc test/threads/mutex.cc
-test_threads_mutex_LDADD = $(GTEST_LIBS)
+test_threads_mutex_LDADD = $(GTEST_LIBS) -lpthread
 test_threads_rwlock_SOURCES = test/runner.cc test/threads/rwlock.cc
-test_threads_rwlock_LDADD = $(GTEST_LIBS)
+test_threads_rwlock_LDADD = $(GTEST_LIBS) -lpthread
 test_threads_spinlock_SOURCES = test/runner.cc test/threads/spinlock.cc
-test_threads_spinlock_LDADD = $(GTEST_LIBS)
+test_threads_spinlock_LDADD = $(GTEST_LIBS) -lpthread
 test_threads_thread_SOURCES = test/runner.cc test/threads/thread.cc
-test_threads_thread_LDADD = $(GTEST_LIBS)
+test_threads_thread_LDADD = $(GTEST_LIBS) -lpthread
 endif
