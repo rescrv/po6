@@ -28,11 +28,19 @@
 #ifndef po6_net_ipaddr_h_
 #define po6_net_ipaddr_h_
 
+#ifdef _MSC_VER
+#include <WinSock2.h>
+#include <ws2tcpip.h>
+#include <stdint.h>
+typedef uint32_t in_addr_t;
+typedef uint16_t in_port_t;
+#else
 // POSIX
 #include <arpa/inet.h>
 #include <errno.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#endif
 
 // STL
 #include <string>
@@ -48,7 +56,11 @@ namespace net
 class ipaddr
 {
     public:
+#ifdef _MSC_VER
+        static ipaddr ANY() { return ipaddr((in_addr_t)INADDR_ANY); }
+#else
         static ipaddr ANY() { return ipaddr(INADDR_ANY); }
+#endif
         static uint64_t hash(const ipaddr& ip);
 
     public:
@@ -275,6 +287,9 @@ ipaddr :: set(const char* addr)
     }
     else
     {
+#ifdef _MSC_VER
+        errno = GetLastError();
+#endif
         if (errno != 0 && errno != EAFNOSUPPORT)
         {
             throw po6::error(errno);
@@ -365,7 +380,11 @@ operator << (std::ostream& lhs, const ipaddr& rhs)
     {
         char repr[INET_ADDRSTRLEN];
 
+#ifdef _MSC_VER
+        if (!inet_ntop(AF_INET, (PVOID)&rhs.m_ip.v4, repr, INET_ADDRSTRLEN))
+#else
         if (!inet_ntop(AF_INET, &rhs.m_ip.v4, repr, INET_ADDRSTRLEN))
+#endif
         {
             throw std::logic_error("inet_ntop failed, but should never fail.");
         }
@@ -376,7 +395,11 @@ operator << (std::ostream& lhs, const ipaddr& rhs)
     {
         char repr[INET6_ADDRSTRLEN];
 
+#ifdef _MSC_VER
+        if (!inet_ntop(AF_INET6, (PVOID)&rhs.m_ip.v6, repr, INET6_ADDRSTRLEN))
+#else
         if (!inet_ntop(AF_INET6, &rhs.m_ip.v6, repr, INET6_ADDRSTRLEN))
+#endif
         {
             throw std::logic_error("inet_ntop failed, but should never fail.");
         }

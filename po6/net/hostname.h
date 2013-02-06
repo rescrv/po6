@@ -32,7 +32,9 @@
 #include <cstdio>
 
 // POSIX
+#ifndef _MSC_VER
 #include <netdb.h>
+#else
 
 // po6
 #include <po6/net/location.h>
@@ -116,7 +118,11 @@ hostname :: connect(int domain, int type, int protocol, po6::net::socket* sock) 
 {
     // Convert the port to a C string
     char port_cstr[6];
+#ifdef _MSC_VER
+	sprintf_s(port_cstr,"%u", port);
+#else
     snprintf(port_cstr, 6, "%u", port);
+#endif
 
     // Setup the hints
     addrinfo hints;
