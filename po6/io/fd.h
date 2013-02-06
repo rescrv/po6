@@ -25,13 +25,20 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef po6_io_fd_h_
-#define po6_io_fd_h_
+#ifdef _MSC_VER
+#define _WINSOCKAPI_
+#include <windows.h>
+#include <io.h>
+#include <stdint>
+#define ssize_t int
+#endif
 
 // POSIX
 #include <errno.h>
 #include <fcntl.h>
+#ifndef _MSC_VER
 #include <unistd.h>
+#endif
 
 // po6
 #include <po6/error.h>
@@ -57,7 +64,6 @@ class fd
         ssize_t write(const void *buf, size_t nbytes);
         ssize_t xwrite(const void *buf, size_t nbytes);
         void set_nonblocking();
-        void set_blocking();
         void swap(fd* other) throw ();
 
     public:
@@ -108,7 +114,11 @@ fd :: close()
 {
     if (m_fd >= 0)
     {
+#ifdef _MSC_VER
+        ::closesocket(m_fd);
+#else
         ::close(m_fd);
+#endif
     }
 
     m_fd = -1;
@@ -154,7 +164,11 @@ fd :: xread(void* buf, size_t nbytes)
 inline ssize_t
 fd :: write(const void *buf, size_t nbytes)
 {
+#ifdef _MSC_VER
+    return ::send(m_fd, (const char*)buf, nbytes, 0);
+#else
     return ::write(m_fd, buf, nbytes);
+#endif
 }
 
 inline ssize_t
@@ -191,26 +205,16 @@ fd :: xwrite(const void *buf, size_t nbytes)
 inline void
 fd :: set_nonblocking()
 {
+#ifdef _MSC_VER
+	u_long mode = 1;
+	ioctlsocket(m_fd, FIONBIO, &mode);
+#else
     long flags = O_NONBLOCK;
-
     if (fcntl(get(), F_SETFL, flags) < 0)
     {
         throw po6::error(errno);
     }
-}
-
-inline void
-fd :: set_blocking()
-{
-    long flags = fcntl(get(), F_GETFL);
-    long mask = O_NONBLOCK | O_ACCMODE;
-    mask = ~mask;
-    flags &= mask;
-
-    if (fcntl(get(), F_SETFL, flags) < 0)
-    {
-        throw po6::error(errno);
-    }
+#endif
 }
 
 inline void
@@ -231,5 +235,3 @@ fd :: operator = (int f)
 
 } // namespace io
 } // namespace po6
-
-#endif // po6_io_fd_h_
