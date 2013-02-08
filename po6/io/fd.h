@@ -32,7 +32,6 @@
 #define _WINSOCKAPI_
 #include <windows.h>
 #include <io.h>
-#include <stdint>
 #define ssize_t int
 #endif
 

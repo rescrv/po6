@@ -55,8 +55,10 @@ class hostname
 
     public:
         location connect(int domain, int type, int protocol, po6::net::socket* sock) const;
+#ifndef _MSC_VER
         // non-throwing, non-connecting version
         location lookup(int type, int protocol) const;
+#endif
 
     public:
         bool operator < (const hostname& rhs) const { return compare(rhs) < 0; }
@@ -177,6 +179,7 @@ hostname :: connect(int domain, int type, int protocol, po6::net::socket* sock) 
     return loc;
 }
 
+#ifndef _MSC_VER
 inline po6::net::location
 hostname :: lookup(int type, int protocol) const
 {
@@ -218,6 +221,7 @@ hostname :: lookup(int type, int protocol) const
 
     return loc;
 }
+#endif
 
 inline int
 hostname :: compare(const hostname& rhs) const
