@@ -124,6 +124,7 @@ error :: operator = (const error& rhs)
     return *this;
 }
 
+#ifndef _MSC_VER
 inline void
 error :: use_strerror()
 {
@@ -142,6 +143,24 @@ error :: use_strerror()
     }
 #endif
 }
+
+#else /* _MSC_VER */
+inline void
+error :: use_strerror()
+{
+    char *msg = strerror(m_errno);
+    size_t l = strlen(m_msg);
+    if (l >= PO6_ERROR_MSG_LEN) {
+        if (PO6_ERROR_MSG_LEN) {
+            memcpy(m_msg, msg, PO6_ERROR_MSG_LEN-1);
+        }
+    }
+    else
+    {
+        memcpy(m_msg, msg, l+1);
+    }
+}
+#endif /* MSC_VER */
 
 #undef PO6_ERROR_MSG_LEN
 
