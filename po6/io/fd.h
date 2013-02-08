@@ -25,6 +25,9 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
+#ifndef po6_io_fd_h_
+#define po6_io_fd_h_
+
 #ifdef _MSC_VER
 #define _WINSOCKAPI_
 #include <windows.h>
@@ -235,3 +238,5 @@ fd :: operator = (int f)
 
 } // namespace io
 } // namespace po6
+
+#endif /* po6_io_fd_h_ */

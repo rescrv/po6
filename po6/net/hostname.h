@@ -34,7 +34,7 @@
 // POSIX
 #ifndef _MSC_VER
 #include <netdb.h>
-#else
+#endif
 
 // po6
 #include <po6/net/location.h>
