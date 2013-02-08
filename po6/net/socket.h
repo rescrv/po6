@@ -25,11 +25,22 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef po6_net_socket_h_
-#define po6_net_socket_h_
+#ifndef po6_net_socket_h
+#define po6_net_socket_h
 
+#ifdef _MSC_VER
+#define ssize_t int
+#endif
+
+#ifndef _MSC_VER
 // POSIX
 #include <netinet/tcp.h>
+#else /* _MSC_VER */
+#include <WinSock2.h>
+#define SHUT_RD SD_RECEIVE
+#define SHUT_WR SD_SEND
+#define SHUT_RDWR SD_BOTH
+#endif /* _MSC_VER */
 
 // po6
 #include <po6/error.h>
@@ -234,7 +245,7 @@ inline void
 socket :: set_sockopt(int level, int optname,
                       const void *optval, socklen_t optlen)
 {
-    if (setsockopt(get(), level, optname, optval, optlen) < 0)
+    if (setsockopt(get(), level, optname, static_cast<const char*>(optval), optlen) < 0)
     {
         throw po6::error(errno);
     }
@@ -281,7 +292,7 @@ socket :: rcvlowat(size_t size)
 inline ssize_t
 socket :: recv(void *buf, size_t len, int flags)
 {
-    return ::recv(get(), buf, len, flags);
+    return ::recv(get(), static_cast<char*>(buf), len, flags);
 }
 
 inline ssize_t
@@ -318,7 +329,7 @@ socket :: xrecv(void *buf, size_t len, int flags)
 inline ssize_t
 socket :: send(const void *buf, size_t len, int flags)
 {
-    return ::send(get(), buf, len, flags);
+    return ::send(get(), static_cast<const char*>(buf), len, flags);
 }
 
 inline ssize_t
@@ -361,5 +372,4 @@ socket :: operator = (int f)
 
 } // namespace net
 } // namespace po6
-
-#endif // po6_net_socket_h_
+#endif /* po6_net_socket_h */
