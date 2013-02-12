@@ -28,10 +28,6 @@
 #ifndef po6_threads_barrier_h_
 #define po6_threads_barrier_h_
 
-#if HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 // POSIX
 #include <errno.h>
 #include <pthread.h>
@@ -39,10 +35,8 @@
 // po6
 #include <po6/error.h>
 #include <po6/noncopyable.h>
-
-#ifndef HAVE_PTHREAD_BARRIER_INIT
-#include "barrier_portable.h"
-#endif
+#include <po6/threads/cond.h>
+#include <po6/threads/mutex.h>
 
 namespace po6
 {
@@ -62,45 +56,56 @@ class barrier
         PO6_NONCOPYABLE(barrier);
 
     private:
-        pthread_barrier_t m_barrier;
+        po6::threads::mutex m_lock;
+        po6::threads::cond m_cv;
+        uint64_t m_height;
+        uint64_t m_level;
+        uint64_t m_generation;
 };
 
 inline
 barrier :: barrier(size_t count)
-    : m_barrier()
+    : m_lock()
+    , m_cv(&m_lock)
+    , m_height(count)
+    , m_level(0)
+    , m_generation(0)
 {
-    int ret = pthread_barrier_init(&m_barrier, NULL, count);
-
-    if (ret != 0)
-    {
-        throw po6::error(ret);
-    }
 }
 
 inline
 barrier :: ~barrier() throw ()
 {
-    int ret = pthread_barrier_destroy(&m_barrier);
-
-    if (ret != 0)
-    {
-#ifndef PO6_NDEBUG_LEAKS
-        abort();
-#endif
-    }
 }
 
 inline bool
 barrier :: wait()
 {
-    int ret = pthread_barrier_wait(&m_barrier);
+    int cancelstate;
+    uint64_t gen;
+    po6::threads::mutex::hold hold(&m_lock);
+    gen = m_generation;
+    ++m_level;
 
-    if (ret != 0 && ret != PTHREAD_BARRIER_SERIAL_THREAD)
+    if (m_level == m_height)
     {
-        throw po6::error(ret);
+        m_level = 0;
+        ++m_generation;
+        m_cv.broadcast();
+        return true;
     }
+    else
+    {
+        pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &cancelstate);
 
-    return ret == PTHREAD_BARRIER_SERIAL_THREAD;
+        while (m_generation == gen)
+        {
+            m_cv.wait();
+        }
+
+        pthread_setcancelstate(cancelstate, NULL);
+        return false;
+    }
 }
 
 } // namespace threads
