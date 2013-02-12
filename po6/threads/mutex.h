@@ -25,12 +25,19 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef po6_threads_mutex_h_
-#define po6_threads_mutex_h_
+#ifndef po6_threads_mutex_h 
+#define po6_threads_mutex_h
 
 // POSIX
+#ifndef _MSC_VER
 #include <errno.h>
 #include <pthread.h>
+#else
+#ifndef _WINSOCKAPI_
+#define _WINSOCKAPI_
+#endif
+#include <Windows.h>
+#endif
 
 // po6
 #include <po6/error.h>
@@ -62,7 +69,12 @@ class mutex
         PO6_NONCOPYABLE(mutex);
 
     private:
+#ifdef _MSC_VER
+        HANDLE m_mutex;
+#else 
         pthread_mutex_t m_mutex;
+#endif 
+        
 };
 
 class mutex::hold
@@ -82,18 +94,33 @@ inline
 mutex :: mutex()
     : m_mutex()
 {
+#ifdef _MSC_VER
+    m_mutex = CreateMutex(NULL, false, NULL);
+#else
     int ret = pthread_mutex_init(&m_mutex, NULL);
+#endif
 
+#ifdef _MSC_VER
+    if (m_mutex == NULL)
+    {
+        throw po6::error(GetLastError());
+    }
+#else
     if (ret != 0)
     {
         throw po6::error(ret);
     }
+#endif
 }
 
 inline
 mutex :: ~mutex() throw ()
 {
+#ifdef _MSC_VER
+    int ret = CloseHandle(m_mutex);
+#else
     int ret = pthread_mutex_destroy(&m_mutex);
+#endif
 
     if (ret != 0)
     {
@@ -106,9 +133,15 @@ mutex :: ~mutex() throw ()
 inline void
 mutex :: lock()
 {
+#ifdef _MSC_VER
+    DWORD ret = WaitForSingleObject(m_mutex, INFINITE);
+
+    if (ret != WAIT_OBJECT_0)
+#else
     int ret = pthread_mutex_lock(&m_mutex);
 
     if (ret != 0)
+#endif
     {
         throw po6::error(ret);
     }
@@ -117,6 +150,22 @@ mutex :: lock()
 inline bool
 mutex :: trylock()
 {
+#ifdef _MSC_VER
+    DWORD ret = WaitForSingleObject(m_mutex, 0);
+
+    if (ret == WAIT_OBJECT_0)
+    {
+        return true;
+    }
+    else if (ret == WAIT_TIMEOUT)
+    {
+        return false;
+    }
+    else
+    {
+        throw po6::error(ret);
+    }
+#else
     int ret = pthread_mutex_trylock(&m_mutex);
 
     if (ret == 0)
@@ -131,12 +180,17 @@ mutex :: trylock()
     {
         throw po6::error(ret);
     }
+#endif
 }
 
 inline void
 mutex :: unlock()
 {
+#ifdef _MSC_VER
+    DWORD ret = ReleaseMutex(m_mutex);
+#else
     int ret = pthread_mutex_unlock(&m_mutex);
+#endif
 
     if (ret != 0)
     {
@@ -169,4 +223,4 @@ mutex :: hold :: ~hold() throw ()
 } // namespace threads
 } // namespace po6
 
-#endif // po6_threads_mutex_h_
+#endif /* po6_threads_mutex_h */ 

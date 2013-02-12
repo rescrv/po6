@@ -25,8 +25,8 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef po6_threads_cond_h_
-#define po6_threads_cond_h_
+#ifndef po6_threads_cond_h
+#define po6_threads_cond_h
 
 // POSIX
 #include <errno.h>
@@ -143,5 +143,4 @@ cond :: broadcast()
 
 } // namespace threads
 } // namespace po6
-
-#endif // po6_threads_cond_h_
+#endif /* po6_threads_cond_h */
