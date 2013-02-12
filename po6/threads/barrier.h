@@ -28,6 +28,10 @@
 #ifndef po6_threads_barrier_h_
 #define po6_threads_barrier_h_
 
+#if HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 // POSIX
 #include <errno.h>
 #include <pthread.h>
@@ -35,6 +39,10 @@
 // po6
 #include <po6/error.h>
 #include <po6/noncopyable.h>
+
+#ifndef HAVE_PTHREAD_BARRIER_INIT
+#include "barrier_portable.h"
+#endif
 
 namespace po6
 {
