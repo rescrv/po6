@@ -6,7 +6,6 @@ AC_INIT([libpo6], [0.4.dev], [robert@hyperdex.org])
 AM_INIT_AUTOMAKE([foreign subdir-objects dist-bzip2])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 AC_CONFIG_SRCDIR([po6/error.h])
-AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 # Checks for programs.
