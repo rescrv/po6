@@ -25,13 +25,9 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-// Google Test
-#include <gtest/gtest.h>
-
 // po6
+#include "th.h"
 #include "po6/threads/thread.h"
-
-#pragma GCC diagnostic ignored "-Wswitch-default"
 
 namespace
 {

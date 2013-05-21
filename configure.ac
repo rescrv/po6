@@ -22,7 +22,6 @@ AC_PROG_RANLIB
 ANAL_WARNINGS_CXX
 
 # Checks for libraries.
-GTEST_LIB_CHECK
 
 # Checks for header files.
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h netinet/in.h limits.h sys/socket.h])

@@ -28,13 +28,9 @@
 // C++
 #include <sstream>
 
-// Google Test
-#include <gtest/gtest.h>
-
 // po6
+#include "th.h"
 #include "po6/net/ipaddr.h"
-
-#pragma GCC diagnostic ignored "-Wswitch-default"
 
 namespace
 {
@@ -58,16 +54,16 @@ TEST(IpaddrTest, CreateAndCompare)
     po6::net::ipaddr dprime(d);
     po6::net::ipaddr eprime(e);
 
-    EXPECT_EQ(a, aprime);
-    EXPECT_EQ(b, bprime);
-    EXPECT_EQ(c, cprime);
-    EXPECT_EQ(d, dprime);
-    EXPECT_EQ(e, eprime);
+    ASSERT_EQ(a, aprime);
+    ASSERT_EQ(b, bprime);
+    ASSERT_EQ(c, cprime);
+    ASSERT_EQ(d, dprime);
+    ASSERT_EQ(e, eprime);
 
-    EXPECT_NE(a, b);
-    EXPECT_NE(b, c);
-    EXPECT_NE(c, d);
-    EXPECT_NE(d, e);
+    ASSERT_NE(a, b);
+    ASSERT_NE(b, c);
+    ASSERT_NE(c, d);
+    ASSERT_NE(d, e);
 }
 
 TEST(IpaddrTest, Assignment)
@@ -75,18 +71,18 @@ TEST(IpaddrTest, Assignment)
     po6::net::ipaddr lhs;
     po6::net::ipaddr rhs("127.0.0.1");
 
-    EXPECT_NE(lhs, rhs);
+    ASSERT_NE(lhs, rhs);
     lhs = rhs;
-    EXPECT_EQ(lhs, rhs);
+    ASSERT_EQ(lhs, rhs);
 }
 
 TEST(IpaddrTest, SelfAssignment)
 {
     po6::net::ipaddr ip("127.0.0.1");
 
-    EXPECT_EQ(ip, po6::net::ipaddr("127.0.0.1"));
-    EXPECT_EQ(ip = ip, po6::net::ipaddr("127.0.0.1"));
-    EXPECT_EQ(ip, po6::net::ipaddr("127.0.0.1"));
+    ASSERT_EQ(ip, po6::net::ipaddr("127.0.0.1"));
+    ASSERT_EQ(ip = ip, po6::net::ipaddr("127.0.0.1"));
+    ASSERT_EQ(ip, po6::net::ipaddr("127.0.0.1"));
 }
 
 TEST(IpaddrTest, PackV4)
@@ -95,11 +91,11 @@ TEST(IpaddrTest, PackV4)
     socklen_t sz = sizeof(sa);
     po6::net::ipaddr ip("127.0.0.1");
 
-    EXPECT_EQ(ip.family(), AF_INET);
+    ASSERT_EQ(ip.family(), AF_INET);
     ip.pack(&sa, &sz, 1234);
-    EXPECT_EQ(reinterpret_cast<sockaddr_in*>(&sa)->sin_family, AF_INET);
-    EXPECT_EQ(reinterpret_cast<sockaddr_in*>(&sa)->sin_addr.s_addr, htonl(0x7f000001));
-    EXPECT_EQ(reinterpret_cast<sockaddr_in*>(&sa)->sin_port, htons(1234));
+    ASSERT_EQ(reinterpret_cast<sockaddr_in*>(&sa)->sin_family, AF_INET);
+    ASSERT_EQ(reinterpret_cast<sockaddr_in*>(&sa)->sin_addr.s_addr, htonl(0x7f000001));
+    ASSERT_EQ(reinterpret_cast<sockaddr_in*>(&sa)->sin_port, htons(1234));
 }
 
 TEST(IpaddrTest, PackV6)
@@ -111,11 +107,11 @@ TEST(IpaddrTest, PackV6)
 
     ASSERT_EQ(inet_pton(AF_INET6, "::1", &ipv6), 1);
 
-    EXPECT_EQ(ip.family(), AF_INET6);
+    ASSERT_EQ(ip.family(), AF_INET6);
     ip.pack(reinterpret_cast<sockaddr*>(&sa), &sz, 1234);
-    EXPECT_EQ(sa.sin6_family, AF_INET6);
-    EXPECT_EQ(sa.sin6_port, htons(1234));
-    EXPECT_EQ(memcmp(&sa.sin6_addr, &ipv6, sizeof(in6_addr)), 0);
+    ASSERT_EQ(sa.sin6_family, AF_INET6);
+    ASSERT_EQ(sa.sin6_port, htons(1234));
+    ASSERT_EQ(memcmp(&sa.sin6_addr, &ipv6, sizeof(in6_addr)), 0);
 }
 
 TEST(IpaddrTest, OutputStream)
@@ -135,10 +131,10 @@ TEST(IpaddrTest, OutputStream)
     sc << c;
     sd << d;
 
-    EXPECT_EQ("127.0.0.1", sa.str());
-    EXPECT_EQ("::", sb.str());
-    EXPECT_EQ("1::8", sc.str());
-    EXPECT_EQ("::ffff:204.152.189.116", sd.str());
+    ASSERT_EQ("127.0.0.1", sa.str());
+    ASSERT_EQ("::", sb.str());
+    ASSERT_EQ("1::8", sc.str());
+    ASSERT_EQ("::ffff:204.152.189.116", sd.str());
 }
 
 TEST(IpaddrTest, InputStream)
@@ -158,10 +154,10 @@ TEST(IpaddrTest, InputStream)
     sc >> c;
     sd >> d;
 
-    EXPECT_EQ(po6::net::ipaddr("127.0.0.1"), a);
-    EXPECT_EQ(po6::net::ipaddr("::"), b);
-    EXPECT_EQ(po6::net::ipaddr("1::8"), c);
-    EXPECT_EQ(po6::net::ipaddr("::ffff:204.152.189.116"), d);
+    ASSERT_EQ(po6::net::ipaddr("127.0.0.1"), a);
+    ASSERT_EQ(po6::net::ipaddr("::"), b);
+    ASSERT_EQ(po6::net::ipaddr("1::8"), c);
+    ASSERT_EQ(po6::net::ipaddr("::ffff:204.152.189.116"), d);
 }
 
 TEST(IpaddrTest, InputStreamErrors)
@@ -178,9 +174,9 @@ TEST(IpaddrTest, InputStreamErrors)
     sb >> b;
     sc >> c;
 
-    EXPECT_FALSE(sa.good());
-    EXPECT_FALSE(sb.good());
-    EXPECT_FALSE(sc.good());
+    ASSERT_FALSE(sa.good());
+    ASSERT_FALSE(sb.good());
+    ASSERT_FALSE(sc.good());
 }
 
 } // namespace

@@ -28,13 +28,9 @@
 // POSIX
 #include <errno.h>
 
-// Google Test
-#include <gtest/gtest.h>
-
 // po6
+#include "th.h"
 #include "po6/pathname.h"
-
-#pragma GCC diagnostic ignored "-Wswitch-default"
 
 namespace
 {
@@ -54,37 +50,37 @@ TEST(PathnameTest, Equality)
     {
         po6::pathname p1;
         po6::pathname p2("");
-        EXPECT_EQ(p1, p2);
+        ASSERT_EQ(p1, p2);
     }
 
     {
         po6::pathname p1("/foo");
         po6::pathname p2("/foo");
-        EXPECT_EQ(p1, p2);
+        ASSERT_EQ(p1, p2);
     }
 
     {
         po6::pathname p1("/foo");
         po6::pathname p2("/foo/");
-        EXPECT_EQ(p1, p2);
+        ASSERT_EQ(p1, p2);
     }
 
     {
         po6::pathname p1("/foo");
         po6::pathname p2("/foo/.");
-        EXPECT_NE(p1, p2);
+        ASSERT_NE(p1, p2);
     }
 
     {
         po6::pathname p1("//foo");
         po6::pathname p2("/foo");
-        EXPECT_EQ(p1, p2);
+        ASSERT_EQ(p1, p2);
     }
 
     {
         po6::pathname p1("./foo");
         po6::pathname p2("foo");
-        EXPECT_EQ(p1, p2);
+        ASSERT_EQ(p1, p2);
     }
 
 // I haven't made up my mind as to whether this should be "equal".
@@ -92,61 +88,61 @@ TEST(PathnameTest, Equality)
     {
         po6::pathname p1("foo/./bar");
         po6::pathname p2("foo/bar");
-        EXPECT_EQ(p1, p2);
+        ASSERT_EQ(p1, p2);
     }
 #endif
 
     {
         po6::pathname p1("foo/../bar");
         po6::pathname p2("foo/bar");
-        EXPECT_NE(p1, p2);
+        ASSERT_NE(p1, p2);
     }
 }
 
 TEST(PathnameTest, Basename)
 {
-    EXPECT_EQ(po6::pathname().basename(), po6::pathname("."));
-    EXPECT_EQ(po6::pathname(NULL).basename(), po6::pathname("."));
-    EXPECT_EQ(po6::pathname("").basename(), po6::pathname("."));
-    EXPECT_EQ(po6::pathname(".").basename(), po6::pathname("."));
-    EXPECT_EQ(po6::pathname("..").basename(), po6::pathname(".."));
-    EXPECT_EQ(po6::pathname("/").basename(), po6::pathname("/"));
-    EXPECT_EQ(po6::pathname("////////").basename(), po6::pathname("/"));
-    EXPECT_EQ(po6::pathname("bar").basename(), po6::pathname("bar"));
-    EXPECT_EQ(po6::pathname("/foo/bar").basename(), po6::pathname("bar"));
-    EXPECT_EQ(po6::pathname("/foo/bar/").basename(), po6::pathname("bar"));
-    EXPECT_EQ(po6::pathname("/foo/bar/.").basename(), po6::pathname("."));
-    EXPECT_EQ(po6::pathname("foo/bar").basename(), po6::pathname("bar"));
-    EXPECT_EQ(po6::pathname("foo/bar/").basename(), po6::pathname("bar"));
-    EXPECT_EQ(po6::pathname("foo/bar/.").basename(), po6::pathname("."));
+    ASSERT_EQ(po6::pathname().basename(), po6::pathname("."));
+    ASSERT_EQ(po6::pathname(NULL).basename(), po6::pathname("."));
+    ASSERT_EQ(po6::pathname("").basename(), po6::pathname("."));
+    ASSERT_EQ(po6::pathname(".").basename(), po6::pathname("."));
+    ASSERT_EQ(po6::pathname("..").basename(), po6::pathname(".."));
+    ASSERT_EQ(po6::pathname("/").basename(), po6::pathname("/"));
+    ASSERT_EQ(po6::pathname("////////").basename(), po6::pathname("/"));
+    ASSERT_EQ(po6::pathname("bar").basename(), po6::pathname("bar"));
+    ASSERT_EQ(po6::pathname("/foo/bar").basename(), po6::pathname("bar"));
+    ASSERT_EQ(po6::pathname("/foo/bar/").basename(), po6::pathname("bar"));
+    ASSERT_EQ(po6::pathname("/foo/bar/.").basename(), po6::pathname("."));
+    ASSERT_EQ(po6::pathname("foo/bar").basename(), po6::pathname("bar"));
+    ASSERT_EQ(po6::pathname("foo/bar/").basename(), po6::pathname("bar"));
+    ASSERT_EQ(po6::pathname("foo/bar/.").basename(), po6::pathname("."));
 }
 
 TEST(PathnameTest, Dirname)
 {
-    EXPECT_EQ(po6::pathname().dirname(), po6::pathname("."));
-    EXPECT_EQ(po6::pathname(NULL).dirname(), po6::pathname("."));
-    EXPECT_EQ(po6::pathname("").dirname(), po6::pathname("."));
-    EXPECT_EQ(po6::pathname(".").dirname(), po6::pathname("."));
-    EXPECT_EQ(po6::pathname("..").dirname(), po6::pathname("."));
-    EXPECT_EQ(po6::pathname("/").dirname(), po6::pathname("/"));
-    EXPECT_EQ(po6::pathname("////////").dirname(), po6::pathname("/"));
-    EXPECT_EQ(po6::pathname("bar").dirname(), po6::pathname("."));
-    EXPECT_EQ(po6::pathname("/foo/bar").dirname(), po6::pathname("/foo"));
-    EXPECT_EQ(po6::pathname("/foo/bar/").dirname(), po6::pathname("/foo"));
-    EXPECT_EQ(po6::pathname("/foo/bar/.").dirname(), po6::pathname("/foo/bar"));
-    EXPECT_EQ(po6::pathname("foo/bar").dirname(), po6::pathname("foo"));
-    EXPECT_EQ(po6::pathname("foo/bar/").dirname(), po6::pathname("foo"));
-    EXPECT_EQ(po6::pathname("foo/bar/.").dirname(), po6::pathname("foo/bar"));
+    ASSERT_EQ(po6::pathname().dirname(), po6::pathname("."));
+    ASSERT_EQ(po6::pathname(NULL).dirname(), po6::pathname("."));
+    ASSERT_EQ(po6::pathname("").dirname(), po6::pathname("."));
+    ASSERT_EQ(po6::pathname(".").dirname(), po6::pathname("."));
+    ASSERT_EQ(po6::pathname("..").dirname(), po6::pathname("."));
+    ASSERT_EQ(po6::pathname("/").dirname(), po6::pathname("/"));
+    ASSERT_EQ(po6::pathname("////////").dirname(), po6::pathname("/"));
+    ASSERT_EQ(po6::pathname("bar").dirname(), po6::pathname("."));
+    ASSERT_EQ(po6::pathname("/foo/bar").dirname(), po6::pathname("/foo"));
+    ASSERT_EQ(po6::pathname("/foo/bar/").dirname(), po6::pathname("/foo"));
+    ASSERT_EQ(po6::pathname("/foo/bar/.").dirname(), po6::pathname("/foo/bar"));
+    ASSERT_EQ(po6::pathname("foo/bar").dirname(), po6::pathname("foo"));
+    ASSERT_EQ(po6::pathname("foo/bar/").dirname(), po6::pathname("foo"));
+    ASSERT_EQ(po6::pathname("foo/bar/.").dirname(), po6::pathname("foo/bar"));
 }
 
 TEST(PathnameTest, Join)
 {
-    EXPECT_EQ(po6::pathname("foo/bar"), po6::join(po6::pathname("foo"), po6::pathname("bar")));
-    EXPECT_EQ(po6::pathname("/bar"), po6::join(po6::pathname("foo"), po6::pathname("/bar")));
-    EXPECT_EQ(po6::pathname("./bar"), po6::join(po6::pathname(""), po6::pathname("bar")));
-    EXPECT_EQ(po6::pathname("foo/bar"), po6::join(po6::pathname("foo/"), po6::pathname("bar")));
-    EXPECT_EQ(po6::pathname("foo/bar/baz"), po6::join(po6::pathname("foo"), po6::pathname("bar"), po6::pathname("baz")));
-    EXPECT_EQ(po6::pathname("foo/bar/baz/quux"), po6::join(po6::pathname("foo"), po6::pathname("bar"), po6::pathname("baz"), po6::pathname("quux")));
+    ASSERT_EQ(po6::pathname("foo/bar"), po6::join(po6::pathname("foo"), po6::pathname("bar")));
+    ASSERT_EQ(po6::pathname("/bar"), po6::join(po6::pathname("foo"), po6::pathname("/bar")));
+    ASSERT_EQ(po6::pathname("./bar"), po6::join(po6::pathname(""), po6::pathname("bar")));
+    ASSERT_EQ(po6::pathname("foo/bar"), po6::join(po6::pathname("foo/"), po6::pathname("bar")));
+    ASSERT_EQ(po6::pathname("foo/bar/baz"), po6::join(po6::pathname("foo"), po6::pathname("bar"), po6::pathname("baz")));
+    ASSERT_EQ(po6::pathname("foo/bar/baz/quux"), po6::join(po6::pathname("foo"), po6::pathname("bar"), po6::pathname("baz"), po6::pathname("quux")));
 }
 
 } // namespace

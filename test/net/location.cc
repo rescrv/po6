@@ -25,14 +25,10 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-// Google Test
-#include <gtest/gtest.h>
-
 // po6
+#include "th.h"
 #include "po6/net/ipaddr.h"
 #include "po6/net/location.h"
-
-#pragma GCC diagnostic ignored "-Wswitch-default"
 
 namespace
 {
@@ -49,11 +45,11 @@ TEST(LocationTest, Comparison)
     po6::net::location locA("127.0.0.127", 1234);
     po6::net::location locB("127.1.1.127", 1234);
 
-    EXPECT_LT(locA, locB);
+    ASSERT_LT(locA, locB);
     locA.address = po6::net::ipaddr("127.1.1.127");
-    EXPECT_EQ(locA, locB);
+    ASSERT_EQ(locA, locB);
     ++ locB.port;
-    EXPECT_LT(locA, locB);
+    ASSERT_LT(locA, locB);
 }
 
 TEST(LocationTest, FromSockaddrIn)
@@ -63,7 +59,7 @@ TEST(LocationTest, FromSockaddrIn)
     ip.pack(&sa, 1234);
 
     po6::net::location loc(&sa);
-    EXPECT_EQ(loc, po6::net::location("127.0.0.1", 1234));
+    ASSERT_EQ(loc, po6::net::location("127.0.0.1", 1234));
 }
 
 TEST(LocationTest, FromSockaddrIn6)
@@ -73,7 +69,7 @@ TEST(LocationTest, FromSockaddrIn6)
     ip.pack(&sa, 1234);
 
     po6::net::location loc(&sa);
-    EXPECT_EQ(loc, po6::net::location("::1", 1234));
+    ASSERT_EQ(loc, po6::net::location("::1", 1234));
 }
 
 TEST(LocationTest, FromSockaddrInCasted)
@@ -83,7 +79,7 @@ TEST(LocationTest, FromSockaddrInCasted)
     ip.pack(&sa, 1234);
 
     po6::net::location loc(reinterpret_cast<sockaddr*>(&sa), sizeof(sockaddr_in));
-    EXPECT_EQ(loc, po6::net::location("127.0.0.1", 1234));
+    ASSERT_EQ(loc, po6::net::location("127.0.0.1", 1234));
 }
 
 TEST(LocationTest, FromSockaddrIn6Casted)
@@ -93,7 +89,7 @@ TEST(LocationTest, FromSockaddrIn6Casted)
     ip.pack(&sa, 1234);
 
     po6::net::location loc(reinterpret_cast<sockaddr*>(&sa), sizeof(sockaddr_in6));
-    EXPECT_EQ(loc, po6::net::location("::1", 1234));
+    ASSERT_EQ(loc, po6::net::location("::1", 1234));
 }
 
 } // namespace

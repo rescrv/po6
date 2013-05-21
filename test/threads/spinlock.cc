@@ -28,14 +28,10 @@
 // C++
 #include <tr1/functional>
 
-// Google Test
-#include <gtest/gtest.h>
-
 // po6
+#include "th.h"
 #include "po6/threads/spinlock.h"
 #include "po6/threads/thread.h"
-
-#pragma GCC diagnostic ignored "-Wswitch-default"
 
 class SpinlockTestThread
 {
@@ -86,8 +82,8 @@ TEST(SpinlockTest, LockAndUnlock)
 TEST(SpinlockTest, TryLock)
 {
     po6::threads::spinlock sp;
-    EXPECT_TRUE(sp.trylock());
-    EXPECT_FALSE(sp.trylock());
+    ASSERT_TRUE(sp.trylock());
+    ASSERT_FALSE(sp.trylock());
     sp.unlock();
 }
 
@@ -110,10 +106,10 @@ TEST(SpinlockTest, Holding)
 
     {
         po6::threads::spinlock::hold h(&sp);
-        EXPECT_FALSE(sp.trylock());
+        ASSERT_FALSE(sp.trylock());
     }
 
-    EXPECT_TRUE(sp.trylock());
+    ASSERT_TRUE(sp.trylock());
     sp.unlock();
 }
 

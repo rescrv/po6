@@ -31,13 +31,9 @@
 // C++
 #include <iostream>
 
-// Google Test
-#include <gtest/gtest.h>
-
 // po6
+#include "th.h"
 #include "po6/io/fd.h"
-
-#pragma GCC diagnostic ignored "-Wswitch-default"
 
 namespace
 {
@@ -69,7 +65,7 @@ TEST(FdTest, OpenReadWriteClose)
 
     for (int i = 0; i < 4096; ++i)
     {
-        EXPECT_EQ(buf[i], '\0');
+        ASSERT_EQ(buf[i], '\0');
     }
 
     fd.write(buf, 4096);

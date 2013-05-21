@@ -28,15 +28,11 @@
 // C++
 #include <tr1/functional>
 
-// Google Test
-#include <gtest/gtest.h>
-
 // po6
+#include "th.h"
 #include "po6/threads/cond.h"
 #include "po6/threads/mutex.h"
 #include "po6/threads/thread.h"
-
-#pragma GCC diagnostic ignored "-Wswitch-default"
 
 class CondTestSimpleCond
 {

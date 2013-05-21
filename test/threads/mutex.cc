@@ -28,10 +28,8 @@
 // C++
 #include <tr1/functional>
 
-// Google Test
-#include <gtest/gtest.h>
-
 // po6
+#include "th.h"
 #include "po6/threads/mutex.h"
 #include "po6/threads/thread.h"
 
@@ -86,8 +84,8 @@ TEST(MutexTest, LockAndUnlock)
 TEST(MutexTest, TryLock)
 {
     po6::threads::mutex mtx;
-    EXPECT_TRUE(mtx.trylock());
-    EXPECT_FALSE(mtx.trylock());
+    ASSERT_TRUE(mtx.trylock());
+    ASSERT_FALSE(mtx.trylock());
     mtx.unlock();
 }
 
@@ -110,10 +108,10 @@ TEST(MutexTest, Holding)
 
     {
         po6::threads::mutex::hold h(&mtx);
-        EXPECT_FALSE(mtx.trylock());
+        ASSERT_FALSE(mtx.trylock());
     }
 
-    EXPECT_TRUE(mtx.trylock());
+    ASSERT_TRUE(mtx.trylock());
     mtx.unlock();
 }
 

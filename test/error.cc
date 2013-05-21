@@ -28,13 +28,9 @@
 // POSIX
 #include <errno.h>
 
-// Google Test
-#include <gtest/gtest.h>
-
 // po6
+#include "th.h"
 #include "po6/error.h"
-
-#pragma GCC diagnostic ignored "-Wswitch-default"
 
 namespace
 {
