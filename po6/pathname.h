@@ -28,6 +28,9 @@
 #ifndef po6_pathname_h_
 #define po6_pathname_h_
 
+// C
+#include <cassert>
+
 // POSIX
 #include <errno.h>
 #include <limits.h>
@@ -57,6 +60,7 @@ class pathname
     public:
         pathname basename() const;
         pathname dirname() const;
+        pathname realpath() const;
 
     public:
         const char* get() const { return m_path; }
@@ -203,6 +207,22 @@ pathname :: dirname() const
     strncpy(dir.m_path, this->m_path, (end - this->m_path + 1));
     dir.m_path[end - this->m_path + 1] = '\0';
     return dir;
+}
+
+inline pathname
+pathname :: realpath() const
+{
+    pathname tmp;
+    memset(tmp.m_path, 0, sizeof(tmp.m_path));
+    char* ret = ::realpath(m_path, tmp.m_path);
+
+    if (ret == NULL)
+    {
+        throw po6::error(errno);
+    }
+
+    assert(ret == tmp.m_path);
+    return tmp;
 }
 
 inline bool
