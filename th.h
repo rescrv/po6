@@ -1,9 +1,9 @@
 // Copyright (c) 2013, Robert Escriva
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright
@@ -12,7 +12,7 @@
 //     * Neither the name of th nor the names of its contributors may be used to
 //       endorse or promote products derived from this software without specific
 //       prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 // AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 // IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -42,6 +42,12 @@
 namespace th
 {
 
+int
+run_tests();
+
+void
+fail();
+
 class base
 {
     public:
@@ -49,7 +55,7 @@ class base
              const char* name,
              const char* file,
              size_t line);
-        virtual ~base() throw ();
+        virtual ~base() throw () {}
 
     public:
         void run(bool* failed);
@@ -80,15 +86,14 @@ class base
         if (!(a compiler b)) \
         { \
             std::cerr << "FAIL @ " << m_file << ":" << m_line << ": tested " << m_a << " " TH_XSTR(compiler) " " << m_b << "; got " << a << " " TH_XSTR(compiler) " " << b << std::endl; \
-            this->fail(); \
+            th::fail(); \
         } \
-    } 
+    }
 
 class predicate
 {
     public:
-        predicate(base* t,
-                  const char* file,
+        predicate(const char* file,
                   size_t line,
                   const char* a,
                   const char* b);
@@ -100,12 +105,9 @@ class predicate
         BINARY_PREDICATE(ne, !=)
         BINARY_PREDICATE(ge, >=)
         BINARY_PREDICATE(gt, >)
-
-    private:
         void fail();
 
     private:
-        base* m_base;
         const char* m_file;
         size_t m_line;
         const char* m_a;
@@ -113,9 +115,6 @@ class predicate
 };
 
 #undef BINARY_PREDICATE
-
-int
-run_tests();
 
 } // namespace th
 
@@ -132,13 +131,14 @@ run_tests();
         TH_CONCAT(_test_instance_, TH_CONCAT(GROUP, TH_CONCAT(_, TH_CONCAT(NAME, TH_CONCAT(_, __LINE__))))); \
     void TH_CONCAT(GROUP, TH_CONCAT(_, TH_CONCAT(NAME, TH_CONCAT(_, __LINE__)))) :: _run()
 
-#define ASSERT_TRUE(P)  th::predicate(this, __FILE__, __LINE__, TH_STR(P), NULL).assert_true(P)
-#define ASSERT_FALSE(P) th::predicate(this, __FILE__, __LINE__, TH_STR(P), NULL).assert_false(P)
-#define ASSERT_LT(a, b) th::predicate(this, __FILE__, __LINE__, TH_STR(a), TH_STR(b)).assert_lt(a, b)
-#define ASSERT_LE(a, b) th::predicate(this, __FILE__, __LINE__, TH_STR(a), TH_STR(b)).assert_le(a, b)
-#define ASSERT_EQ(a, b) th::predicate(this, __FILE__, __LINE__, TH_STR(a), TH_STR(b)).assert_eq(a, b)
-#define ASSERT_NE(a, b) th::predicate(this, __FILE__, __LINE__, TH_STR(a), TH_STR(b)).assert_ne(a, b)
-#define ASSERT_GE(a, b) th::predicate(this, __FILE__, __LINE__, TH_STR(a), TH_STR(b)).assert_ge(a, b)
-#define ASSERT_GT(a, b) th::predicate(this, __FILE__, __LINE__, TH_STR(a), TH_STR(b)).assert_gt(a, b)
+#define ASSERT_TRUE(P)  th::predicate(__FILE__, __LINE__, TH_STR(P), NULL).assert_true(P)
+#define ASSERT_FALSE(P) th::predicate(__FILE__, __LINE__, TH_STR(P), NULL).assert_false(P)
+#define ASSERT_LT(a, b) th::predicate(__FILE__, __LINE__, TH_STR(a), TH_STR(b)).assert_lt(a, b)
+#define ASSERT_LE(a, b) th::predicate(__FILE__, __LINE__, TH_STR(a), TH_STR(b)).assert_le(a, b)
+#define ASSERT_EQ(a, b) th::predicate(__FILE__, __LINE__, TH_STR(a), TH_STR(b)).assert_eq(a, b)
+#define ASSERT_NE(a, b) th::predicate(__FILE__, __LINE__, TH_STR(a), TH_STR(b)).assert_ne(a, b)
+#define ASSERT_GE(a, b) th::predicate(__FILE__, __LINE__, TH_STR(a), TH_STR(b)).assert_ge(a, b)
+#define ASSERT_GT(a, b) th::predicate(__FILE__, __LINE__, TH_STR(a), TH_STR(b)).assert_gt(a, b)
+#define FAIL() th::predicate(__FILE__, __LINE__, NULL, NULL).fail()
 
 #endif // th_h_

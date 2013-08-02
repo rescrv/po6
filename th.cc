@@ -1,9 +1,9 @@
 // Copyright (c) 2013, Robert Escriva
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
-// 
+//
 //     * Redistributions of source code must retain the above copyright notice,
 //       this list of conditions and the following disclaimer.
 //     * Redistributions in binary form must reproduce the above copyright
@@ -12,7 +12,7 @@
 //     * Neither the name of th nor the names of its contributors may be used to
 //       endorse or promote products derived from this software without specific
 //       prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 // AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 // IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -40,10 +40,10 @@
 
 static std::vector<th::base*>* _th_tests = NULL;
 
-class throw_this_on_test_failure
+class escape_from_test_failure
 {
     public:
-        throw_this_on_test_failure() {}
+        escape_from_test_failure() {}
 };
 
 th :: base :: base(const char* group,
@@ -63,10 +63,6 @@ th :: base :: base(const char* group,
     _th_tests->push_back(this);
 }
 
-th :: base :: ~base() throw ()
-{
-}
-
 void
 th :: base :: run(bool* failed)
 {
@@ -77,7 +73,7 @@ th :: base :: run(bool* failed)
         this->_run();
         *failed = false;
     }
-    catch (throw_this_on_test_failure& ttotf)
+    catch (escape_from_test_failure& ttotf)
     {
         *failed = true;
     }
@@ -144,9 +140,8 @@ th :: base :: compare(const base& rhs) const
     return 0;
 }
 
-th :: predicate :: predicate(base* t, const char* file, size_t line, const char* a, const char* b)
-    : m_base(t)
-    , m_file(file)
+th :: predicate :: predicate(const char* file, size_t line, const char* a, const char* b)
+    : m_file(file)
     , m_line(line)
     , m_a(a)
     , m_b(b)
@@ -159,7 +154,7 @@ th :: predicate :: assert_true(bool T)
     if (!T)
     {
         std::cerr << "FAIL @ " << m_file << ":" << m_line << ": tested " << m_a << "; expected true, but got false" << std::endl;
-        this->fail();
+        th::fail();
     }
 }
 
@@ -169,15 +164,15 @@ th :: predicate :: assert_false(bool F)
     if (F)
     {
         std::cerr << "FAIL @ " << m_file << ":" << m_line << ": tested " << m_a << "; expected false, but got true" << std::endl;
-        this->fail();
+        th::fail();
     }
 }
 
 void
 th :: predicate :: fail()
 {
-    throw_this_on_test_failure ttotf;
-    throw ttotf;
+    std::cerr << "FAIL @ " << m_file << ":" << m_line << ": forced fail" << std::endl;
+    th::fail();
 }
 
 static bool
@@ -210,4 +205,11 @@ th :: run_tests()
     }
 
     return failures;
+}
+
+void
+th :: fail()
+{
+    escape_from_test_failure eftf;
+    throw eftf;
 }
