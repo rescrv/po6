@@ -39,5 +39,6 @@ AC_FUNC_STRERROR_R
 AC_CHECK_FUNCS([memmove memset socket])
 
 AC_CONFIG_FILES([Makefile
-                 libpo6.pc])
+                 libpo6.pc
+                 libpo6.upack])
 AC_OUTPUT
