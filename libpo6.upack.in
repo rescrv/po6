@@ -1,6 +1,6 @@
 package libpo6
+| source="libpo6"
 | debian name="libpo60"
-| debian source="libpo6"
 | version="@VERSION@"
 | release="1"
 | license="BSD"
