@@ -69,7 +69,7 @@ class socket : public po6::io::fd
         void connect(const location& loc);
         void listen(int backlog);
         void accept(socket* newsock);
-        void shutdown(int how);
+        int shutdown(int how);
         void reset(int domain, int type, int protocol);
 
         location getpeername();
@@ -195,13 +195,10 @@ socket :: accept(socket* newsock)
     *newsock = ret;
 };
 
-inline void
+inline int
 socket :: shutdown(int how)
 {
-    if (::shutdown(get(), how) < 0)
-    {
-        throw po6::error(errno);
-    }
+    return ::shutdown(get(), how);
 }
 
 inline void
