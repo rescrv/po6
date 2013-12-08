@@ -226,7 +226,7 @@ pathname :: realpath() const
     return tmp;
 }
 
-pathname&
+inline pathname&
 pathname :: operator = (const pathname& rhs)
 {
     if (this != &rhs)
