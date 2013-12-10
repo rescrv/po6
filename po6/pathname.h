@@ -66,6 +66,7 @@ class pathname
         const char* get() const { return m_path; }
 
     public:
+        pathname& operator = (const pathname& rhs);
         bool operator == (const pathname& rhs) const;
         bool operator != (const pathname& rhs) const;
 
@@ -225,6 +226,17 @@ pathname :: realpath() const
     return tmp;
 }
 
+inline pathname&
+pathname :: operator = (const pathname& rhs)
+{
+    if (this != &rhs)
+    {
+        initialize(rhs.m_path);
+    }
+
+    return *this;
+}
+
 inline bool
 pathname :: operator == (const pathname& rhs) const
 {
@@ -282,8 +294,8 @@ join(const pathname& a, const pathname& b)
         ret = ".";
     }
 
-    size_t size_ret = strlen(ret.m_path);
-    size_t size_b = strlen(b.m_path);
+    size_t size_ret = strnlen(ret.m_path, PATH_MAX);
+    size_t size_b = strnlen(b.m_path, PATH_MAX);
 
     if (size_ret + 1 + size_b >= PATH_MAX)
     {
@@ -295,13 +307,13 @@ join(const pathname& a, const pathname& b)
     // Remove trailing slashes
     while (end_of_ret > ret.m_path && *end_of_ret == '/')
     {
-        -- end_of_ret;
+        --end_of_ret;
     }
 
-    ++ end_of_ret;
+    ++end_of_ret;
     *end_of_ret = '/';
-    ++ end_of_ret;
-    strncpy(end_of_ret, b.m_path, PATH_MAX - size_ret);
+    ++end_of_ret;
+    strncpy(end_of_ret, b.m_path, PATH_MAX - (end_of_ret - ret.m_path));
     return ret;
 }
 

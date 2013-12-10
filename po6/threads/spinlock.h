@@ -36,6 +36,15 @@
 #include <po6/error.h>
 #include <po6/noncopyable.h>
 
+#ifdef __APPLE__
+#define pthread_spinlock_t pthread_mutex_t
+#define pthread_spin_init pthread_mutex_init
+#define pthread_spin_destroy pthread_mutex_destroy
+#define pthread_spin_lock pthread_mutex_lock
+#define pthread_spin_unlock pthread_mutex_unlock
+#define pthread_spin_trylock pthread_mutex_trylock
+#endif
+
 namespace po6
 {
 namespace threads
