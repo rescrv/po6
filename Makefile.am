@@ -25,7 +25,7 @@ nobase_include_HEADERS += po6/threads/thread.h
 
 ##################################### Tests ####################################
 
-th_sources = test/runner.cc th.cc th.h
+th_sources = test/runner.cc th.cc th.h test/util.h
 
 TESTS = $(check_PROGRAMS)
 check_PROGRAMS =
