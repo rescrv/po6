@@ -25,13 +25,11 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-// C++
-#include <tr1/functional>
-
 // po6
 #include "th.h"
 #include "po6/threads/rwlock.h"
 #include "po6/threads/thread.h"
+#include "test/util.h"
 
 class RwlockTestThread
 {
@@ -42,7 +40,9 @@ class RwlockTestThread
         {
         }
 
-        ~RwlockTestThread()
+        RwlockTestThread(const RwlockTestThread& other)
+            : m_rwl(other.m_rwl)
+            , m_mode(other.m_mode)
         {
         }
 
@@ -62,9 +62,6 @@ class RwlockTestThread
                 m_rwl->unlock();
             }
         }
-
-    private:
-        RwlockTestThread(const RwlockTestThread&);
 
     private:
         RwlockTestThread& operator = (const RwlockTestThread&);
@@ -96,9 +93,9 @@ TEST(RwlockTest, TwoThreads)
     po6::threads::rwlock rwl;
     RwlockTestThread read(&rwl, true);
     RwlockTestThread write(&rwl, false);
-    po6::threads::thread t1(std::tr1::ref(read));
-    po6::threads::thread t2(std::tr1::ref(read));
-    po6::threads::thread t3(std::tr1::ref(write));
+    po6::threads::thread t1(REF(read));
+    po6::threads::thread t2(REF(read));
+    po6::threads::thread t3(REF(write));
 
     t1.start();
     t2.start();

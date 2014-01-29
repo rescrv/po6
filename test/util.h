@@ -25,88 +25,14 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-// po6
-#include "th.h"
-#include "po6/threads/spinlock.h"
-#include "po6/threads/thread.h"
-#include "test/util.h"
+#ifndef po6_test_util_h_
+#define po6_test_util_h_
 
-class SpinlockTestThread
-{
-    public:
-        SpinlockTestThread(po6::threads::spinlock* sp)
-            : m_sp(sp)
-        {
-        }
+// Use define because typedef doesn't work
+#ifdef _LIBCPP_VERSION
+#define REF std::ref
+#else
+#define REF std::tr1::ref
+#endif
 
-        SpinlockTestThread(const SpinlockTestThread& other)
-            : m_sp(other.m_sp)
-        {
-        }
-
-        void operator () ()
-        {
-            for (int i = 0; i < 1000000; ++i)
-            {
-                m_sp->lock();
-                m_sp->unlock();
-            }
-        }
-
-    private:
-        SpinlockTestThread& operator = (const SpinlockTestThread&);
-
-    private:
-        po6::threads::spinlock* m_sp;
-};
-
-namespace
-{
-
-TEST(SpinlockTest, CtorAndDtor)
-{
-    po6::threads::spinlock sp;
-}
-
-TEST(SpinlockTest, LockAndUnlock)
-{
-    po6::threads::spinlock sp;
-    sp.lock();
-    sp.unlock();
-}
-
-TEST(SpinlockTest, TryLock)
-{
-    po6::threads::spinlock sp;
-    ASSERT_TRUE(sp.trylock());
-    ASSERT_FALSE(sp.trylock());
-    sp.unlock();
-}
-
-TEST(SpinlockTest, TwoThreads)
-{
-    po6::threads::spinlock sp;
-    SpinlockTestThread mtt(&sp);
-    po6::threads::thread t1(REF(mtt));
-    po6::threads::thread t2(REF(mtt));
-
-    t1.start();
-    t2.start();
-    t1.join();
-    t2.join();
-}
-
-TEST(SpinlockTest, Holding)
-{
-    po6::threads::spinlock sp;
-
-    {
-        po6::threads::spinlock::hold h(&sp);
-        ASSERT_FALSE(sp.trylock());
-    }
-
-    ASSERT_TRUE(sp.trylock());
-    sp.unlock();
-}
-
-} // namespace
+#endif // po6_test_util_h_

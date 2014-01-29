@@ -25,13 +25,11 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-// C++
-#include <tr1/functional>
-
 // po6
 #include "th.h"
 #include "po6/threads/mutex.h"
 #include "po6/threads/thread.h"
+#include "test/util.h"
 
 #pragma GCC diagnostic ignored "-Wswitch-default"
 
@@ -42,8 +40,8 @@ class MutexTestThread
             : m_mtx(mtx)
         {
         }
-
-        ~MutexTestThread()
+        MutexTestThread(const MutexTestThread& other)
+            : m_mtx(other.m_mtx)
         {
         }
 
@@ -55,9 +53,6 @@ class MutexTestThread
                 m_mtx->unlock();
             }
         }
-
-    private:
-        MutexTestThread(const MutexTestThread&);
 
     private:
         MutexTestThread& operator = (const MutexTestThread&);
@@ -93,8 +88,8 @@ TEST(MutexTest, TwoThreads)
 {
     po6::threads::mutex mtx;
     MutexTestThread mtt(&mtx);
-    po6::threads::thread t1(std::tr1::ref(mtt));
-    po6::threads::thread t2(std::tr1::ref(mtt));
+    po6::threads::thread t1(REF(mtt));
+    po6::threads::thread t2(REF(mtt));
 
     t1.start();
     t2.start();

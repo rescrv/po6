@@ -25,21 +25,27 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-// C++
-#include <tr1/functional>
-
 // po6
 #include "th.h"
 #include "po6/threads/cond.h"
 #include "po6/threads/mutex.h"
 #include "po6/threads/thread.h"
+#include "test/util.h"
+
+#define ITERS 1000000
 
 class CondTestSimpleCond
 {
     public:
-        CondTestSimpleCond(po6::threads::cond* cnd)
-            : i(0)
+        CondTestSimpleCond(unsigned* counter, po6::threads::cond* cnd)
+            : m_counter(counter)
             , m_cnd(cnd)
+        {
+        }
+
+        CondTestSimpleCond(const CondTestSimpleCond& other)
+            : m_counter(other.m_counter)
+            , m_cnd(other.m_cnd)
         {
         }
 
@@ -48,7 +54,7 @@ class CondTestSimpleCond
         {
             m_cnd->lock();
 
-            while (i < 1000000)
+            while (*m_counter < ITERS)
             {
                 m_cnd->wait();
             }
@@ -56,16 +62,11 @@ class CondTestSimpleCond
             m_cnd->unlock();
         }
 
-    public:
-        int i;
-
-    private:
-        CondTestSimpleCond(const CondTestSimpleCond&);
-
     private:
         CondTestSimpleCond& operator = (const CondTestSimpleCond&);
 
     private:
+        unsigned* m_counter;
         po6::threads::cond* m_cnd;
 };
 
@@ -82,14 +83,15 @@ TEST(CondTest, SimpleCond)
 {
     po6::threads::mutex mtx;
     po6::threads::cond cnd(&mtx);
-    CondTestSimpleCond ctsc(&cnd);
-    po6::threads::thread t(std::tr1::ref(ctsc));
+    unsigned counter;
+    CondTestSimpleCond ctsc(&counter, &cnd);
+    po6::threads::thread t(REF(ctsc));
     t.start();
 
-    for (int i = 0; i <= 1000000; ++i)
+    for (unsigned i = 0; i <= ITERS; ++i)
     {
         cnd.lock();
-        ctsc.i = i;
+        counter = i;
 
         if (i % 2 == 0)
         {

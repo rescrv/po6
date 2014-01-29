@@ -28,6 +28,7 @@
 // po6
 #include "th.h"
 #include "po6/threads/thread.h"
+#include "test/util.h"
 
 namespace
 {
@@ -39,13 +40,13 @@ void func(void)
 
 TEST(ThreadTest, CtorAndDtor)
 {
-    std::tr1::function<void (void)> f = &func;
+    po6::threads::function f = &func;
     po6::threads::thread t(f);
 }
 
 TEST(ThreadTest, StartAndJoin)
 {
-    std::tr1::function<void (void)> f = &func;
+    po6::threads::function f = &func;
     po6::threads::thread t(f);
     t.start();
     t.join();
@@ -53,7 +54,7 @@ TEST(ThreadTest, StartAndJoin)
 
 TEST(ThreadTest, DoubleStart)
 {
-    std::tr1::function<void (void)> f = &func;
+    po6::threads::function f = &func;
     po6::threads::thread t(f);
     t.start();
     bool caught = false;
@@ -73,7 +74,7 @@ TEST(ThreadTest, DoubleStart)
 
 TEST(ThreadTest, DoubleJoin)
 {
-    std::tr1::function<void (void)> f = &func;
+    po6::threads::function f = &func;
     po6::threads::thread t(f);
     t.start();
     t.join();
@@ -93,7 +94,7 @@ TEST(ThreadTest, DoubleJoin)
 
 TEST(ThreadTest, JoinWithoutStart)
 {
-    std::tr1::function<void (void)> f = &func;
+    po6::threads::function f = &func;
     po6::threads::thread t(f);
     bool caught = false;
 

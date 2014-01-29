@@ -29,7 +29,11 @@
 #define po6_threads_thread_h_
 
 // C++
+#ifdef _LIBCPP_VERSION
+#include <functional>
+#else
 #include <tr1/functional>
+#endif
 
 // po6
 #include <po6/error.h>
@@ -39,11 +43,16 @@ namespace po6
 {
 namespace threads
 {
+#ifdef _LIBCPP_VERSION
+typedef std::function<void (void)> function;
+#else
+typedef std::tr1::function<void (void)> function;
+#endif
 
 class thread
 {
     public:
-        thread(std::tr1::function<void (void)> func);
+        thread(function func);
         ~thread() throw ();
 
     public:
@@ -59,12 +68,12 @@ class thread
     private:
         bool m_started;
         bool m_joined;
-        std::tr1::function<void (void)> m_func;
+        function m_func;
         pthread_t m_thread;
 };
 
 inline
-thread :: thread(std::tr1::function<void (void)> func)
+thread :: thread(function func)
     : m_started(false)
     , m_joined(false)
     , m_func(func)
@@ -127,8 +136,8 @@ thread :: join()
 inline void*
 thread :: start_routine(void * arg)
 {
-    std::tr1::function<void (void)>* f;
-    f = static_cast<std::tr1::function<void (void)>*>(arg);
+    function* f;
+    f = static_cast<function*>(arg);
     (*f)();
     return NULL;
 }
