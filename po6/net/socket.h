@@ -193,7 +193,7 @@ socket :: accept(socket* newsock)
     }
 
     *newsock = ret;
-};
+}
 
 inline int
 socket :: shutdown(int how)
