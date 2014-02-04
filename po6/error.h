@@ -137,7 +137,7 @@ error :: use_strerror()
     else
     {
 #endif
-        strerror_r(m_errno, m_msg, PO6_ERROR_MSG_LEN);
+        char* unused = strerror_r(m_errno, m_msg, PO6_ERROR_MSG_LEN);
         m_msg[PO6_ERROR_MSG_LEN - 1] = '\0';
 #ifdef _GNU_SOURCE
     }
