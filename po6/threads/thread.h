@@ -49,6 +49,92 @@ typedef std::function<void (void)> function;
 typedef std::tr1::function<void (void)> function;
 #endif
 
+template <class T>
+struct thread_wrapper0
+{
+    typedef void (T::*func)();
+    thread_wrapper0(func f, T* t)
+        : m_func(f), m_ptr(t) {}
+    thread_wrapper0(const thread_wrapper0& o)
+        : m_func(o.m_func), m_ptr(o.m_ptr) {}
+    void operator () () { (m_ptr->*m_func)(); }
+    func m_func;
+    T* m_ptr;
+};
+
+template <class T>
+thread_wrapper0<T>
+make_thread_wrapper(typename thread_wrapper0<T>::func f, T* t)
+{
+    return thread_wrapper0<T>(f, t);
+}
+
+template <class T, typename A1>
+struct thread_wrapper1
+{
+    typedef void (T::*func)(A1 a1);
+    thread_wrapper1(func f, T* t, const A1& a1)
+        : m_func(f), m_ptr(t), m_a1(a1) {}
+    thread_wrapper1(const thread_wrapper1& o)
+        : m_func(o.m_func), m_ptr(o.m_ptr), m_a1(o.m_a1) {}
+    void operator () () { (m_ptr->*m_func)(m_a1); }
+    func m_func;
+    T* m_ptr;
+    A1 m_a1;
+};
+
+template <class T, typename A1>
+thread_wrapper1<T, A1>
+make_thread_wrapper(typename thread_wrapper1<T, A1>::func f, T* t, const A1& a1)
+{
+    return thread_wrapper1<T, A1>(f, t, a1);
+}
+
+template <class T, typename A1, typename A2>
+struct thread_wrapper2
+{
+    typedef void (T::*func)(A1 a1, A2 a2);
+    thread_wrapper2(func f, T* t, const A1& a1, const A2& a2)
+        : m_func(f), m_ptr(t), m_a1(a1), m_a2(a2) {}
+    thread_wrapper2(const thread_wrapper2& o)
+        : m_func(o.m_func), m_ptr(o.m_ptr), m_a1(o.m_a1), m_a2(o.m_a2) {}
+    void operator () () { (m_ptr->*m_func)(m_a1, m_a2); }
+    func m_func;
+    T* m_ptr;
+    A1 m_a1;
+    A2 m_a2;
+};
+
+template <class T, typename A1, typename A2>
+thread_wrapper2<T, A1, A2>
+make_thread_wrapper(typename thread_wrapper2<T, A1, A2>::func f, T* t, const A1& a1, const A2& a2)
+{
+    return thread_wrapper2<T, A1, A2>(f, t, a1, a2);
+}
+
+template <class T, typename A1, typename A2, typename A3>
+struct thread_wrapper3
+{
+    typedef void (T::*func)(A1 a1, A2 a2, A3 a3);
+    thread_wrapper3(func f, T* t, const A1& a1, const A2& a2, const A3& a3)
+        : m_func(f), m_ptr(t), m_a1(a1), m_a2(a2), m_a3(a3) {}
+    thread_wrapper3(const thread_wrapper3& o)
+        : m_func(o.m_func), m_ptr(o.m_ptr), m_a1(o.m_a1), m_a2(o.m_a2), m_a3(o.m_a3) {}
+    void operator () () { (m_ptr->*m_func)(m_a1, m_a2, m_a3); }
+    func m_func;
+    T* m_ptr;
+    A1 m_a1;
+    A2 m_a2;
+    A3 m_a3;
+};
+
+template <class T, typename A1, typename A2, typename A3>
+thread_wrapper3<T, A1, A2, A3>
+make_thread_wrapper(typename thread_wrapper3<T, A1, A2, A3>::func f, T* t, const A1& a1, const A2& a2, const A3& a3)
+{
+    return thread_wrapper3<T, A1, A2, A3>(f, t, a1, a2, a3);
+}
+
 class thread
 {
     public:
