@@ -29,7 +29,6 @@
 #include "th.h"
 #include "po6/threads/mutex.h"
 #include "po6/threads/thread.h"
-#include "test/util.h"
 
 #pragma GCC diagnostic ignored "-Wswitch-default"
 
@@ -88,8 +87,8 @@ TEST(MutexTest, TwoThreads)
 {
     po6::threads::mutex mtx;
     MutexTestThread mtt(&mtx);
-    po6::threads::thread t1(REF(mtt));
-    po6::threads::thread t2(REF(mtt));
+    po6::threads::thread t1(mtt);
+    po6::threads::thread t2(mtt);
 
     t1.start();
     t2.start();

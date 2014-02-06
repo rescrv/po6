@@ -28,7 +28,6 @@
 // po6
 #include "th.h"
 #include "po6/threads/thread.h"
-#include "test/util.h"
 
 namespace
 {

@@ -30,7 +30,6 @@
 #include "po6/threads/cond.h"
 #include "po6/threads/mutex.h"
 #include "po6/threads/thread.h"
-#include "test/util.h"
 
 #define ITERS 1000000
 
@@ -85,7 +84,7 @@ TEST(CondTest, SimpleCond)
     po6::threads::cond cnd(&mtx);
     unsigned counter;
     CondTestSimpleCond ctsc(&counter, &cnd);
-    po6::threads::thread t(REF(ctsc));
+    po6::threads::thread t(ctsc);
     t.start();
 
     for (unsigned i = 0; i <= ITERS; ++i)

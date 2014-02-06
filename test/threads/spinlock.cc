@@ -29,7 +29,6 @@
 #include "th.h"
 #include "po6/threads/spinlock.h"
 #include "po6/threads/thread.h"
-#include "test/util.h"
 
 class SpinlockTestThread
 {
@@ -87,8 +86,8 @@ TEST(SpinlockTest, TwoThreads)
 {
     po6::threads::spinlock sp;
     SpinlockTestThread mtt(&sp);
-    po6::threads::thread t1(REF(mtt));
-    po6::threads::thread t2(REF(mtt));
+    po6::threads::thread t1(mtt);
+    po6::threads::thread t2(mtt);
 
     t1.start();
     t2.start();

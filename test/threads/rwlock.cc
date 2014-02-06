@@ -29,7 +29,6 @@
 #include "th.h"
 #include "po6/threads/rwlock.h"
 #include "po6/threads/thread.h"
-#include "test/util.h"
 
 class RwlockTestThread
 {
@@ -93,9 +92,9 @@ TEST(RwlockTest, TwoThreads)
     po6::threads::rwlock rwl;
     RwlockTestThread read(&rwl, true);
     RwlockTestThread write(&rwl, false);
-    po6::threads::thread t1(REF(read));
-    po6::threads::thread t2(REF(read));
-    po6::threads::thread t3(REF(write));
+    po6::threads::thread t1(read);
+    po6::threads::thread t2(read);
+    po6::threads::thread t3(write);
 
     t1.start();
     t2.start();
