@@ -28,6 +28,9 @@
 #ifndef po6_threads_mutex_h 
 #define po6_threads_mutex_h
 
+// C
+#include <cstdlib>
+
 // POSIX
 #ifndef _MSC_VER
 #include <errno.h>
@@ -40,7 +43,6 @@
 #endif
 
 // po6
-#include <po6/error.h>
 #include <po6/noncopyable.h>
 
 namespace po6
@@ -103,12 +105,12 @@ mutex :: mutex()
 #ifdef _MSC_VER
     if (m_mutex == NULL)
     {
-        throw po6::error(GetLastError());
+        abort();
     }
 #else
     if (ret != 0)
     {
-        throw po6::error(ret);
+        abort();
     }
 #endif
 }
@@ -124,9 +126,7 @@ mutex :: ~mutex() throw ()
 
     if (ret != 0)
     {
-#ifndef PO6_NDEBUG_LEAKS
         abort();
-#endif
     }
 }
 
@@ -143,7 +143,7 @@ mutex :: lock()
     if (ret != 0)
 #endif
     {
-        throw po6::error(ret);
+        abort();
     }
 }
 
@@ -163,7 +163,7 @@ mutex :: trylock()
     }
     else
     {
-        throw po6::error(ret);
+        abort();
     }
 #else
     int ret = pthread_mutex_trylock(&m_mutex);
@@ -178,7 +178,7 @@ mutex :: trylock()
     }
     else
     {
-        throw po6::error(ret);
+        abort();
     }
 #endif
 }
@@ -194,7 +194,7 @@ mutex :: unlock()
 
     if (ret != 0)
     {
-        throw po6::error(ret);
+        abort();
     }
 }
 
@@ -214,9 +214,7 @@ mutex :: hold :: ~hold() throw ()
     }
     catch (...)
     {
-#ifndef PO6_NDEBUG_LEAKS
         abort();
-#endif
     }
 }
 

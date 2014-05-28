@@ -33,7 +33,6 @@
 #include <pthread.h>
 
 // po6
-#include <po6/error.h>
 #include <po6/noncopyable.h>
 #include <po6/threads/mutex.h>
 
@@ -73,7 +72,7 @@ cond :: cond(mutex* mtx)
 
     if (ret != 0)
     {
-        throw po6::error(ret);
+        abort();
     }
 }
 
@@ -84,9 +83,7 @@ cond :: ~cond() throw ()
 
     if (ret != 0)
     {
-#ifndef PO6_NDEBUG_LEAKS
         abort();
-#endif
     }
 }
 
@@ -115,7 +112,7 @@ cond :: wait()
 
     if (ret != 0)
     {
-        throw po6::error(ret);
+        abort();
     }
 }
 
@@ -126,7 +123,7 @@ cond :: signal()
 
     if (ret != 0)
     {
-        throw po6::error(ret);
+        abort();
     }
 }
 
@@ -137,7 +134,7 @@ cond :: broadcast()
 
     if (ret != 0)
     {
-        throw po6::error(ret);
+        abort();
     }
 }
 
