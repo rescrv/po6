@@ -172,9 +172,7 @@ thread :: ~thread() throw ()
 {
     if (m_started && !m_joined)
     {
-#ifndef PO6_NDEBUG_LEAKS
         abort();
-#endif
     }
 }
 

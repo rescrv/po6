@@ -87,6 +87,8 @@ class hostname::protect_addrinfo
 
     private:
         addrinfo* m_ai;
+        protect_addrinfo(const protect_addrinfo&);
+        protect_addrinfo& operator = (const protect_addrinfo&);
 };
 
 inline
