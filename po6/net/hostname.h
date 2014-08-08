@@ -254,7 +254,15 @@ hostname :: compare(const hostname& rhs) const
 inline std::ostream&
 operator << (std::ostream& lhs, const hostname& rhs)
 {
-    lhs << rhs.address << ":" << rhs.port;
+    if (rhs.address.find(':') != std::string::npos)
+    {
+        lhs << "[" << rhs.address << "]:" << rhs.port;
+    }
+    else
+    {
+        lhs << rhs.address << ":" << rhs.port;
+    }
+
     return lhs;
 }
 

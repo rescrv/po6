@@ -187,7 +187,15 @@ location :: set(const sockaddr_in6* sa)
 inline std::ostream&
 operator << (std::ostream& lhs, const location& rhs)
 {
-    lhs << rhs.address << ":" << rhs.port;
+    if (rhs.address.family() == AF_INET6)
+    {
+        lhs << "[" << rhs.address << "]:" << rhs.port;
+    }
+    else
+    {
+        lhs << rhs.address << ":" << rhs.port;
+    }
+
     return lhs;
 }
 
