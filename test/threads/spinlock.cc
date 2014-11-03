@@ -74,14 +74,6 @@ TEST(SpinlockTest, LockAndUnlock)
     sp.unlock();
 }
 
-TEST(SpinlockTest, TryLock)
-{
-    po6::threads::spinlock sp;
-    ASSERT_TRUE(sp.trylock());
-    ASSERT_FALSE(sp.trylock());
-    sp.unlock();
-}
-
 TEST(SpinlockTest, TwoThreads)
 {
     po6::threads::spinlock sp;
@@ -101,11 +93,7 @@ TEST(SpinlockTest, Holding)
 
     {
         po6::threads::spinlock::hold h(&sp);
-        ASSERT_FALSE(sp.trylock());
     }
-
-    ASSERT_TRUE(sp.trylock());
-    sp.unlock();
 }
 
 } // namespace

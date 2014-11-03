@@ -61,7 +61,6 @@ class mutex
 
     public:
         void lock();
-        bool trylock();
         void unlock();
 
     private:
@@ -145,42 +144,6 @@ mutex :: lock()
     {
         abort();
     }
-}
-
-inline bool
-mutex :: trylock()
-{
-#ifdef _MSC_VER
-    DWORD ret = WaitForSingleObject(m_mutex, 0);
-
-    if (ret == WAIT_OBJECT_0)
-    {
-        return true;
-    }
-    else if (ret == WAIT_TIMEOUT)
-    {
-        return false;
-    }
-    else
-    {
-        abort();
-    }
-#else
-    int ret = pthread_mutex_trylock(&m_mutex);
-
-    if (ret == 0)
-    {
-        return true;
-    }
-    else if (ret == EBUSY)
-    {
-        return false;
-    }
-    else
-    {
-        abort();
-    }
-#endif
 }
 
 inline void

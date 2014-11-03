@@ -42,7 +42,6 @@
 #define pthread_spin_destroy pthread_mutex_destroy
 #define pthread_spin_lock pthread_mutex_lock
 #define pthread_spin_unlock pthread_mutex_unlock
-#define pthread_spin_trylock pthread_mutex_trylock
 #endif
 
 namespace po6
@@ -61,7 +60,6 @@ class spinlock
 
     public:
         void lock();
-        bool trylock();
         void unlock();
 
     private:
@@ -115,25 +113,6 @@ spinlock :: lock()
     int ret = pthread_spin_lock(&m_spin);
 
     if (ret != 0)
-    {
-        throw po6::error(ret);
-    }
-}
-
-inline bool
-spinlock :: trylock()
-{
-    int ret = pthread_spin_trylock(&m_spin);
-
-    if (ret == 0)
-    {
-        return true;
-    }
-    else if (ret == EBUSY)
-    {
-        return false;
-    }
-    else
     {
         throw po6::error(ret);
     }

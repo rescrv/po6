@@ -49,7 +49,6 @@ class cond
 
     public:
         void lock();
-        void trylock();
         void unlock();
         void wait();
         void signal();
@@ -91,12 +90,6 @@ inline void
 cond :: lock()
 {
     m_mtx->lock();
-}
-
-inline void
-cond :: trylock()
-{
-    m_mtx->trylock();
 }
 
 inline void

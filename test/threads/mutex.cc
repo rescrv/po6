@@ -75,14 +75,6 @@ TEST(MutexTest, LockAndUnlock)
     mtx.unlock();
 }
 
-TEST(MutexTest, TryLock)
-{
-    po6::threads::mutex mtx;
-    ASSERT_TRUE(mtx.trylock());
-    ASSERT_FALSE(mtx.trylock());
-    mtx.unlock();
-}
-
 TEST(MutexTest, TwoThreads)
 {
     po6::threads::mutex mtx;
@@ -102,11 +94,7 @@ TEST(MutexTest, Holding)
 
     {
         po6::threads::mutex::hold h(&mtx);
-        ASSERT_FALSE(mtx.trylock());
     }
-
-    ASSERT_TRUE(mtx.trylock());
-    mtx.unlock();
 }
 
 } // namespace
