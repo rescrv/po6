@@ -20,7 +20,6 @@ nobase_include_HEADERS += po6/threads/barrier.h
 nobase_include_HEADERS += po6/threads/cond.h
 nobase_include_HEADERS += po6/threads/mutex.h
 nobase_include_HEADERS += po6/threads/rwlock.h
-nobase_include_HEADERS += po6/threads/spinlock.h
 nobase_include_HEADERS += po6/threads/thread.h
 
 ##################################### Tests ####################################
@@ -39,7 +38,6 @@ check_PROGRAMS += test/pathname
 check_PROGRAMS += test/threads/cond
 check_PROGRAMS += test/threads/mutex
 check_PROGRAMS += test/threads/rwlock
-check_PROGRAMS += test/threads/spinlock
 check_PROGRAMS += test/threads/thread
 
 test_error_SOURCES = test/error.cc $(th_sources)
@@ -55,7 +53,5 @@ test_threads_mutex_SOURCES = test/threads/mutex.cc $(th_sources)
 test_threads_mutex_LDADD = -lpthread
 test_threads_rwlock_SOURCES = test/threads/rwlock.cc $(th_sources)
 test_threads_rwlock_LDADD = -lpthread
-test_threads_spinlock_SOURCES = test/threads/spinlock.cc $(th_sources)
-test_threads_spinlock_LDADD = -lpthread
 test_threads_thread_SOURCES = test/threads/thread.cc $(th_sources)
 test_threads_thread_LDADD = -lpthread
