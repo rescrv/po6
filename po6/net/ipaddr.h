@@ -42,6 +42,10 @@ typedef uint16_t in_port_t;
 #include <sys/socket.h>
 #endif
 
+#if defined(__FreeBSD__)
+#include <sys/types.h>
+#endif
+
 // STL
 #include <string>
 
