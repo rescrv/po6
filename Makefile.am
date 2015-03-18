@@ -10,6 +10,7 @@ pkgconfig_DATA = libpo6.pc
 nobase_include_HEADERS =
 nobase_include_HEADERS += po6/error.h
 nobase_include_HEADERS += po6/io/fd.h
+nobase_include_HEADERS += po6/io/mmap.h
 nobase_include_HEADERS += po6/net/hostname.h
 nobase_include_HEADERS += po6/net/ipaddr.h
 nobase_include_HEADERS += po6/net/location.h
