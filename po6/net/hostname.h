@@ -36,6 +36,9 @@
 #include <netdb.h>
 #endif
 
+// STL
+#include <sstream>
+
 // po6
 #include <po6/net/location.h>
 #include <po6/net/socket.h>
@@ -50,6 +53,7 @@ class hostname
     public:
         hostname();
         explicit hostname(const char* _address, in_port_t _port);
+        explicit hostname(const po6::net::location&);
         hostname(const hostname& other);
         ~hostname() throw ();
 
@@ -103,6 +107,16 @@ hostname :: hostname(const char* _hostname, in_port_t _port)
     : address(_hostname)
     , port(_port)
 {
+}
+
+inline
+hostname :: hostname(const po6::net::location& loc)
+    : address()
+    , port(loc.port)
+{
+    std::ostringstream ostr;
+    ostr << loc.address;
+    address = ostr.str();
 }
 
 inline
