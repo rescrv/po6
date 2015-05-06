@@ -29,7 +29,7 @@
 #define po6_net_hostname_h_
 
 // C
-#include <cstdio>
+#include <stdio.h>
 
 // POSIX
 #ifndef _MSC_VER

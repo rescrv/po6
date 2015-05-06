@@ -29,7 +29,7 @@
 #define po6_threads_mutex_h
 
 // C
-#include <cstdlib>
+#include <stdlib.h>
 
 // POSIX
 #ifndef _MSC_VER

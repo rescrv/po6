@@ -29,8 +29,8 @@
 #define po6_error_h_
 
 // C
-#include <cstdlib>
-#include <cstring>
+#include <stdlib.h>
+#include <string.h>
 
 // C++
 #include <iostream>

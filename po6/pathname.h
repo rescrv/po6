@@ -29,7 +29,7 @@
 #define po6_pathname_h_
 
 // C
-#include <cassert>
+#include <assert.h>
 
 // POSIX
 #include <errno.h>
