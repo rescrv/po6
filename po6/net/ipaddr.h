@@ -28,6 +28,9 @@
 #ifndef po6_net_ipaddr_h_
 #define po6_net_ipaddr_h_
 
+// C
+#include <assert.h>
+
 #ifdef _MSC_VER
 #include <WinSock2.h>
 #include <ws2tcpip.h>
@@ -82,6 +85,8 @@ class ipaddr
         void pack(struct sockaddr* addr, socklen_t* addrlen, in_port_t port) const;
         void pack(struct sockaddr_in* addr, in_port_t port) const;
         void pack(struct sockaddr_in6* addr, in_port_t port) const;
+        const in_addr& v4addr() const { assert(m_family == AF_INET); return m_ip.v4; }
+        const in6_addr& v6addr() const { assert(m_family == AF_INET6); return m_ip.v6; }
         int compare(const ipaddr& rhs) const;
 
     public:
