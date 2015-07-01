@@ -2,21 +2,24 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.61])
-AC_INIT([libpo6], [0.6.dev], [robert@hyperdex.org])
-AM_INIT_AUTOMAKE([foreign subdir-objects dist-bzip2])
+AC_INIT([libpo6], [0.8.dev], [robert@hyperdex.org])
+m4_define([serial_tests], [
+    m4_esyscmd([case `automake --version | head -n 1` in
+                *1.11*);;
+                *) echo serial-tests;;
+                esac])
+])
+AM_INIT_AUTOMAKE(foreign serial_tests subdir-objects dist-bzip2)
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
+LT_PREREQ([2.2])
+LT_INIT
 AC_CONFIG_SRCDIR([po6/error.h])
+AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 # Checks for programs.
 AC_PROG_CXX
-AC_PROG_AWK
 AC_PROG_CC
-AC_PROG_CPP
-AC_PROG_INSTALL
-AC_PROG_LN_S
-AC_PROG_MAKE_SET
-AC_PROG_RANLIB
 
 ANAL_WARNINGS
 

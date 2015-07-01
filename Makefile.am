@@ -8,6 +8,7 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libpo6.pc
 
 nobase_include_HEADERS =
+nobase_include_HEADERS += po6/errno.h
 nobase_include_HEADERS += po6/error.h
 nobase_include_HEADERS += po6/io/fd.h
 nobase_include_HEADERS += po6/io/mmap.h
@@ -22,6 +23,12 @@ nobase_include_HEADERS += po6/threads/cond.h
 nobase_include_HEADERS += po6/threads/mutex.h
 nobase_include_HEADERS += po6/threads/rwlock.h
 nobase_include_HEADERS += po6/threads/thread.h
+
+#################################### Source ####################################
+
+lib_LTLIBRARIES = libpo6.la
+libpo6_la_SOURCES =
+libpo6_la_SOURCES += errno.cc
 
 ##################################### Tests ####################################
 
