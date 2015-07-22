@@ -28,6 +28,9 @@
 #ifndef po6_errno_h_
 #define po6_errno_h_
 
+// POSIX
+#include <errno.h>
+
 // STL
 #include <string>
 
@@ -47,6 +50,18 @@ strerror(int err);
 // returns the string "EINVAL".
 const char*
 strerrno(int err);
+
+// Force a warning when a function that returns its success/failure is not
+// checked by the program.
+#define PO6_WARN_UNUSED __attribute((warn_unused_result))
+#define PO6_EXPLICITLY_IGNORE(T, X) \
+    do \
+    { \
+        T __attribute__((unused)) PO6_CONCAT(_po6_ignored_, __LINE__) = (X); \
+    } while (0)
+
+#define PO6_XCONCAT(x, y) x ## y
+#define PO6_CONCAT(x, y) PO6_XCONCAT(x, y)
 
 } // namespace po6
 

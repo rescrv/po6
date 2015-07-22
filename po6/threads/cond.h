@@ -1,4 +1,4 @@
-// Copyright (c) 2011, Robert Escriva
+// Copyright (c) 2011,2015, Robert Escriva
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,15 +25,13 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef po6_threads_cond_h
-#define po6_threads_cond_h
+#ifndef po6_threads_cond_h_
+#define po6_threads_cond_h_
 
 // POSIX
-#include <errno.h>
 #include <pthread.h>
 
 // po6
-#include <po6/noncopyable.h>
 #include <po6/threads/mutex.h>
 
 namespace po6
@@ -55,82 +53,15 @@ class cond
         void broadcast();
 
     private:
-        PO6_NONCOPYABLE(cond);
-
-    private:
         mutex* m_mtx;
         pthread_cond_t m_cond;
+
+    private:
+        cond(const cond&);
+        cond& operator = (const cond&);
 };
-
-inline
-cond :: cond(mutex* mtx)
-            : m_mtx(mtx)
-            , m_cond()
-{
-    int ret = pthread_cond_init(&m_cond, NULL);
-
-    if (ret != 0)
-    {
-        abort();
-    }
-}
-
-inline
-cond :: ~cond() throw ()
-{
-    int ret = pthread_cond_destroy(&m_cond);
-
-    if (ret != 0)
-    {
-        abort();
-    }
-}
-
-inline void
-cond :: lock()
-{
-    m_mtx->lock();
-}
-
-inline void
-cond :: unlock()
-{
-    m_mtx->unlock();
-}
-
-inline void
-cond :: wait()
-{
-    int ret = pthread_cond_wait(&m_cond, &m_mtx->m_mutex);
-
-    if (ret != 0)
-    {
-        abort();
-    }
-}
-
-inline void
-cond :: signal()
-{
-    int ret = pthread_cond_signal(&m_cond);
-
-    if (ret != 0)
-    {
-        abort();
-    }
-}
-
-inline void
-cond :: broadcast()
-{
-    int ret = pthread_cond_broadcast(&m_cond);
-
-    if (ret != 0)
-    {
-        abort();
-    }
-}
 
 } // namespace threads
 } // namespace po6
-#endif /* po6_threads_cond_h */
+
+#endif // po6_threads_cond_h_

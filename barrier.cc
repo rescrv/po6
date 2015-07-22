@@ -1,4 +1,4 @@
-// Copyright (c) 2012,2015, Robert Escriva
+// Copyright (c) 2011,2015, Robert Escriva
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,55 +25,50 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef po6_net_hostname_h_
-#define po6_net_hostname_h_
-
-// STL
-#include <iostream>
-
 // po6
-#include <po6/net/location.h>
-#include <po6/net/socket.h>
+#include "po6/threads/barrier.h"
 
-namespace po6
+using po6::threads::barrier;
+
+barrier :: barrier(uint64_t count)
+    : m_lock()
+    , m_cv(&m_lock)
+    , m_height(count)
+    , m_level(0)
+    , m_generation(0)
 {
-namespace net
+}
+
+barrier :: ~barrier() throw ()
 {
+}
 
-class hostname
+bool
+barrier :: wait()
 {
-    public:
-        hostname();
-        hostname(const char* _address, in_port_t _port);
-        explicit hostname(const location&);
-        hostname(const hostname& other);
-        ~hostname() throw ();
+    int cancelstate;
+    uint64_t gen;
+    po6::threads::mutex::hold hold(&m_lock);
+    gen = m_generation;
+    ++m_level;
 
-    public:
-        location connect(int domain, int type, int protocol, socket* sock) const;
-        // non-throwing, non-connecting version
-        location lookup(int type, int protocol) const;
+    if (m_level == m_height)
+    {
+        m_level = 0;
+        ++m_generation;
+        m_cv.broadcast();
+        return true;
+    }
+    else
+    {
+        pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &cancelstate);
 
-    public:
-        bool operator < (const hostname& rhs) const;
-        bool operator <= (const hostname& rhs) const;
-        bool operator == (const hostname& rhs) const;
-        bool operator != (const hostname& rhs) const;
-        bool operator >= (const hostname& rhs) const;
-        bool operator > (const hostname& rhs) const;
+        while (m_generation == gen)
+        {
+            m_cv.wait();
+        }
 
-    public:
-        std::string address;
-        in_port_t port;
-
-    private:
-        int compare(const hostname& rhs) const;
-};
-
-std::ostream&
-operator << (std::ostream& lhs, const hostname& rhs);
-
-} // namespace net
-} // namespace po6
-
-#endif // po6_net_hostname_h_
+        pthread_setcancelstate(cancelstate, NULL);
+        return false;
+    }
+}

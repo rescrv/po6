@@ -1,4 +1,4 @@
-// Copyright (c) 2011, Robert Escriva
+// Copyright (c) 2011,2015, Robert Escriva
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,29 +25,17 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef po6_net_socket_h
-#define po6_net_socket_h
+#ifndef po6_net_socket_h_
+#define po6_net_socket_h_
 
-#ifdef _MSC_VER
-#define ssize_t int
-#endif
-
-#ifndef _MSC_VER
 // POSIX
 #include <netinet/tcp.h>
-#else /* _MSC_VER */
-#include <WinSock2.h>
-#define SHUT_RD SD_RECEIVE
-#define SHUT_WR SD_SEND
-#define SHUT_RDWR SD_BOTH
-#endif /* _MSC_VER */
 
 // po6
-#include <po6/error.h>
+#include <po6/errno.h>
 #include <po6/io/fd.h>
 #include <po6/net/ipaddr.h>
 #include <po6/net/location.h>
-#include <po6/noncopyable.h>
 
 namespace po6
 {
@@ -58,315 +46,47 @@ class socket : public po6::io::fd
 {
     public:
         socket();
-        socket(int domain, int type, int protocol);
+        explicit socket(int fd);
         ~socket() throw ();
 
     public:
-        void bind(const ipaddr& addr, in_port_t port);
-        void bind(const ipaddr& addr);
-        void bind(const location& loc);
-        void connect(const ipaddr& addr, in_port_t port);
-        void connect(const location& loc);
-        void listen(int backlog);
-        void accept(socket* newsock);
-        int shutdown(int how);
-        void reset(int domain, int type, int protocol);
+        PO6_WARN_UNUSED bool reset(int domain, int type, int protocol);
 
-        location getpeername();
-        location getsockname();
+        PO6_WARN_UNUSED bool bind(const ipaddr& addr, in_port_t port);
+        PO6_WARN_UNUSED bool bind(const ipaddr& addr);
+        PO6_WARN_UNUSED bool bind(const location& loc);
+        PO6_WARN_UNUSED bool connect(const ipaddr& addr, in_port_t port);
+        PO6_WARN_UNUSED bool connect(const location& loc);
+        PO6_WARN_UNUSED bool listen(int backlog);
+        PO6_WARN_UNUSED bool accept(socket* newsock);
+        PO6_WARN_UNUSED bool shutdown(int how);
 
-        void set_sockopt(int level, int optname,
-                         const void *optval, socklen_t optlen);
-        void set_reuseaddr();
-        void set_tcp_nodelay();
-        void sndbuf(size_t size);
-        void rcvbuf(size_t size);
-        void sndlowat(size_t size);
-        void rcvlowat(size_t size);
+        PO6_WARN_UNUSED bool getpeername(location* loc);
+        PO6_WARN_UNUSED bool getsockname(location* loc);
 
-        ssize_t recv(void *buf, size_t len, int flags);
-        ssize_t xrecv(void *buf, size_t len, int flags);
-        ssize_t send(const void *buf, size_t len, int flags);
-        ssize_t xsend(const void *buf, size_t len, int flags);
+        PO6_WARN_UNUSED bool set_sockopt(int level, int optname,
+                                         const void *optval, socklen_t optlen);
+        PO6_WARN_UNUSED bool set_reuseaddr();
+        PO6_WARN_UNUSED bool set_tcp_nodelay();
+        PO6_WARN_UNUSED bool sndbuf(size_t size);
+        PO6_WARN_UNUSED bool rcvbuf(size_t size);
+        PO6_WARN_UNUSED bool sndlowat(size_t size);
+        PO6_WARN_UNUSED bool rcvlowat(size_t size);
+
+        PO6_WARN_UNUSED ssize_t recv(void *buf, size_t len, int flags);
+        PO6_WARN_UNUSED ssize_t xrecv(void *buf, size_t len, int flags);
+        PO6_WARN_UNUSED ssize_t send(const void *buf, size_t len, int flags);
+        PO6_WARN_UNUSED ssize_t xsend(const void *buf, size_t len, int flags);
 
     public:
         socket& operator = (int f);
 
     private:
-        PO6_NONCOPYABLE(socket);
+        socket(const socket&);
+        socket& operator = (const socket&);
 };
-
-inline
-socket :: socket()
-    : fd(-1)
-{
-}
-
-inline
-socket :: socket(int domain, int type, int protocol)
-    : fd(::socket(domain, type, protocol))
-{
-    if (get() < 0)
-    {
-        throw po6::error(errno);
-    }
-}
-
-inline
-socket :: ~socket() throw ()
-{
-}
-
-// On all platforms I checked, a sockaddr_in6 is larger than a
-// sockaddr, which in turn is larger than a sockaddr_in.  As a
-// result, we allocate the largest of the three and call it a
-// sockaddr.
-
-inline void
-socket :: bind(const ipaddr& addr, in_port_t port)
-{
-    sockaddr_in6 sa6;
-    socklen_t salen = sizeof(sa6);
-    sockaddr* sa = reinterpret_cast<sockaddr*>(&sa6);
-    addr.pack(sa, &salen, port);
-
-    if (::bind(get(), sa, salen) < 0)
-    {
-        throw po6::error(errno);
-    }
-}
-
-inline void
-socket :: bind(const ipaddr& addr)
-{
-    bind(addr, 0);
-}
-
-inline void
-socket :: bind(const location& loc)
-{
-    bind(loc.address, loc.port);
-}
-
-inline void
-socket :: connect(const ipaddr& addr, in_port_t port)
-{
-    sockaddr_in6 sa6;
-    socklen_t salen = sizeof(sa6);
-    sockaddr* sa = reinterpret_cast<sockaddr*>(&sa6);
-    addr.pack(sa, &salen, port);
-
-    if (::connect(get(), sa, salen) < 0)
-    {
-        throw po6::error(errno);
-    }
-}
-
-inline void
-socket :: connect(const location& loc)
-{
-    connect(loc.address, loc.port);
-}
-
-inline void
-socket :: listen(int backlog)
-{
-    if (::listen(get(), backlog) < 0)
-    {
-        throw po6::error(errno);
-    }
-}
-
-inline void
-socket :: accept(socket* newsock)
-{
-    if (newsock->get() != -1)
-    {
-        throw std::logic_error("Accepting would overwrite preexisting socket.");
-    }
-
-    int ret;
-
-    if ((ret = ::accept(get(), NULL, NULL)) < 0)
-    {
-        throw po6::error(errno);
-    }
-
-    *newsock = ret;
-}
-
-inline int
-socket :: shutdown(int how)
-{
-    return ::shutdown(get(), how);
-}
-
-inline void
-socket :: reset(int domain, int type, int protocol)
-{
-    socket s(domain, type, protocol);
-    this->swap(&s);
-}
-
-inline location
-socket :: getpeername()
-{
-    sockaddr_in6 sa6;
-    socklen_t salen = sizeof(sa6);
-    sockaddr* sa = reinterpret_cast<sockaddr*>(&sa6);
-
-    if (::getpeername(get(), sa, &salen) < 0)
-    {
-        throw po6::error(errno);
-    }
-
-    return location(sa, salen);
-}
-
-inline location
-socket :: getsockname()
-{
-    sockaddr_in6 sa6;
-    socklen_t salen = sizeof(sa6);
-    sockaddr* sa = reinterpret_cast<sockaddr*>(&sa6);
-
-    if (::getsockname(get(), sa, &salen) < 0)
-    {
-        throw po6::error(errno);
-    }
-
-    return location(sa, salen);
-}
-
-inline void
-socket :: set_sockopt(int level, int optname,
-                      const void *optval, socklen_t optlen)
-{
-    if (setsockopt(get(), level, optname, static_cast<const char*>(optval), optlen) < 0)
-    {
-        throw po6::error(errno);
-    }
-}
-
-inline void
-socket :: set_reuseaddr()
-{
-    int yes = 1;
-    set_sockopt(SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
-}
-
-inline void
-socket :: set_tcp_nodelay()
-{
-    int yes = 1;
-    set_sockopt(IPPROTO_TCP, TCP_NODELAY, &yes, sizeof(yes));
-}
-
-inline void
-socket :: sndbuf(size_t size)
-{
-    set_sockopt(SOL_SOCKET, SO_SNDBUF, &size, sizeof(size));
-}
-
-inline void
-socket :: rcvbuf(size_t size)
-{
-    set_sockopt(SOL_SOCKET, SO_RCVBUF, &size, sizeof(size));
-}
-
-inline void
-socket :: sndlowat(size_t size)
-{
-    set_sockopt(SOL_SOCKET, SO_SNDLOWAT, &size, sizeof(size));
-}
-
-inline void
-socket :: rcvlowat(size_t size)
-{
-    set_sockopt(SOL_SOCKET, SO_RCVLOWAT, &size, sizeof(size));
-}
-
-inline ssize_t
-socket :: recv(void *buf, size_t len, int flags)
-{
-    return ::recv(get(), static_cast<char*>(buf), len, flags);
-}
-
-inline ssize_t
-socket :: xrecv(void *buf, size_t len, int flags)
-{
-    size_t rem = len;
-    ssize_t amt = 0;
-
-    while (rem > 0)
-    {
-        if ((amt = recv(buf, rem, flags)) < 0)
-        {
-            if (rem == len)
-            {
-                return -1;
-            }
-            else
-            {
-                break;
-            }
-        }
-        else if (amt == 0)
-        {
-            break;
-        }
-
-        rem -= amt;
-        buf = static_cast<char*>(buf) + amt;
-    }
-
-    return len - rem;
-}
-
-inline ssize_t
-socket :: send(const void *buf, size_t len, int flags)
-{
-    return ::send(get(), static_cast<const char*>(buf), len, flags);
-}
-
-inline ssize_t
-socket :: xsend(const void *buf, size_t len, int flags)
-{
-    size_t rem = len;
-    ssize_t amt = 0;
-
-    while (rem > 0)
-    {
-        if ((amt = send(buf, rem, flags)) < 0)
-        {
-            if (rem == len)
-            {
-                return -1;
-            }
-            else
-            {
-                break;
-            }
-        }
-        else if (amt == 0)
-        {
-            break;
-        }
-
-        rem -= amt;
-        buf = static_cast<const char*>(buf) + amt;
-    }
-
-    return len - rem;
-}
-
-inline socket&
-socket :: operator = (int f)
-{
-    *dynamic_cast<fd*>(this) = f;
-    return *this;
-}
 
 } // namespace net
 } // namespace po6
-#endif /* po6_net_socket_h */
+
+#endif // po6_net_socket_h_

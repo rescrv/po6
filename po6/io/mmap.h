@@ -28,12 +28,8 @@
 #ifndef po6_io_mmap_h_
 #define po6_io_mmap_h_
 
-// POSIX
-#include <sys/mman.h>
-
-// po6
-#include <po6/error.h>
-#include <po6/noncopyable.h>
+// C
+#include <stdlib.h>
 
 namespace po6
 {
@@ -46,10 +42,10 @@ class mmap
         mmap(void* addr, size_t length,
              int prot, int flags,
              int fd, off_t offset);
-        ~mmap() throw () { close(); }
+        ~mmap() throw ();
 
     public:
-        void* get() const { return m_base; }
+        void* base() const { return m_base; }
         size_t size() const { return m_length; }
         bool valid() const { return m_base != NULL; }
         int error() const { return m_error; }
@@ -61,34 +57,9 @@ class mmap
         int m_error;
 
     private:
-        PO6_NONCOPYABLE(mmap);
+        mmap(const mmap&);
+        mmap& operator = (const mmap&);
 };
-
-inline
-mmap :: mmap(void* addr, size_t length,
-             int prot, int flags,
-             int fd, off_t offset)
-    : m_base(NULL)
-    , m_length(length)
-    , m_error(0)
-{
-    m_base = ::mmap(addr, length, prot, flags, fd, offset);
-
-    if (m_base == MAP_FAILED)
-    {
-        m_base = NULL;
-        m_error = errno;
-    }
-}
-
-inline void
-mmap :: close()
-{
-    if (m_base)
-    {
-        munmap(m_base, m_length);
-    }
-}
 
 } // namespace io
 } // namespace po6

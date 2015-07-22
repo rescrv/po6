@@ -1,4 +1,4 @@
-// Copyright (c) 2012,2015, Robert Escriva
+// Copyright (c) 2011,2015, Robert Escriva
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,55 +25,80 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef po6_net_hostname_h_
-#define po6_net_hostname_h_
+// C
+#include <stdlib.h>
 
 // STL
-#include <iostream>
+#include <stdexcept>
 
 // po6
-#include <po6/net/location.h>
-#include <po6/net/socket.h>
+#include "po6/threads/cond.h"
 
-namespace po6
+using po6::threads::cond;
+
+cond :: cond(mutex* mtx)
+    : m_mtx(mtx)
+    , m_cond()
 {
-namespace net
+    int ret = pthread_cond_init(&m_cond, NULL);
+
+    if (ret != 0)
+    {
+        abort();
+    }
+}
+
+cond :: ~cond() throw ()
 {
+    int ret = pthread_cond_destroy(&m_cond);
 
-class hostname
+    if (ret != 0)
+    {
+        abort();
+    }
+}
+
+void
+cond :: lock()
 {
-    public:
-        hostname();
-        hostname(const char* _address, in_port_t _port);
-        explicit hostname(const location&);
-        hostname(const hostname& other);
-        ~hostname() throw ();
+    m_mtx->lock();
+}
 
-    public:
-        location connect(int domain, int type, int protocol, socket* sock) const;
-        // non-throwing, non-connecting version
-        location lookup(int type, int protocol) const;
+void
+cond :: unlock()
+{
+    m_mtx->unlock();
+}
 
-    public:
-        bool operator < (const hostname& rhs) const;
-        bool operator <= (const hostname& rhs) const;
-        bool operator == (const hostname& rhs) const;
-        bool operator != (const hostname& rhs) const;
-        bool operator >= (const hostname& rhs) const;
-        bool operator > (const hostname& rhs) const;
+void
+cond :: wait()
+{
+    int ret = pthread_cond_wait(&m_cond, &m_mtx->m_mutex);
 
-    public:
-        std::string address;
-        in_port_t port;
+    if (ret != 0)
+    {
+        abort();
+    }
+}
 
-    private:
-        int compare(const hostname& rhs) const;
-};
+void
+cond :: signal()
+{
+    int ret = pthread_cond_signal(&m_cond);
 
-std::ostream&
-operator << (std::ostream& lhs, const hostname& rhs);
+    if (ret != 0)
+    {
+        abort();
+    }
+}
 
-} // namespace net
-} // namespace po6
+void
+cond :: broadcast()
+{
+    int ret = pthread_cond_broadcast(&m_cond);
 
-#endif // po6_net_hostname_h_
+    if (ret != 0)
+    {
+        abort();
+    }
+}

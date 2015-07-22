@@ -1,4 +1,4 @@
-// Copyright (c) 2011, Robert Escriva
+// Copyright (c) 2011,2015, Robert Escriva
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,25 +25,11 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef po6_threads_mutex_h 
-#define po6_threads_mutex_h
-
-// C
-#include <stdlib.h>
+#ifndef po6_threads_mutex_h_
+#define po6_threads_mutex_h_
 
 // POSIX
-#ifndef _MSC_VER
-#include <errno.h>
 #include <pthread.h>
-#else
-#ifndef _WINSOCKAPI_
-#define _WINSOCKAPI_
-#endif
-#include <Windows.h>
-#endif
-
-// po6
-#include <po6/noncopyable.h>
 
 namespace po6
 {
@@ -67,15 +53,11 @@ class mutex
         friend class cond;
 
     private:
-        PO6_NONCOPYABLE(mutex);
+        pthread_mutex_t m_mutex;
 
     private:
-#ifdef _MSC_VER
-        HANDLE m_mutex;
-#else 
-        pthread_mutex_t m_mutex;
-#endif 
-        
+        mutex(const mutex&);
+        mutex& operator = (const mutex&);
 };
 
 class mutex::hold
@@ -84,104 +66,19 @@ class mutex::hold
         hold(mutex* mtx);
         ~hold() throw ();
 
-    private:
-        PO6_NONCOPYABLE(hold);
+    public:
+        void release();
 
     private:
+        bool m_held;
         mutex* m_mtx;
+
+    private:
+        hold(const hold&);
+        hold& operator = (const hold&);
 };
-
-inline
-mutex :: mutex()
-    : m_mutex()
-{
-#ifdef _MSC_VER
-    m_mutex = CreateMutex(NULL, false, NULL);
-#else
-    int ret = pthread_mutex_init(&m_mutex, NULL);
-#endif
-
-#ifdef _MSC_VER
-    if (m_mutex == NULL)
-    {
-        abort();
-    }
-#else
-    if (ret != 0)
-    {
-        abort();
-    }
-#endif
-}
-
-inline
-mutex :: ~mutex() throw ()
-{
-#ifdef _MSC_VER
-    int ret = CloseHandle(m_mutex);
-#else
-    int ret = pthread_mutex_destroy(&m_mutex);
-#endif
-
-    if (ret != 0)
-    {
-        abort();
-    }
-}
-
-inline void
-mutex :: lock()
-{
-#ifdef _MSC_VER
-    DWORD ret = WaitForSingleObject(m_mutex, INFINITE);
-
-    if (ret != WAIT_OBJECT_0)
-#else
-    int ret = pthread_mutex_lock(&m_mutex);
-
-    if (ret != 0)
-#endif
-    {
-        abort();
-    }
-}
-
-inline void
-mutex :: unlock()
-{
-#ifdef _MSC_VER
-    DWORD ret = ReleaseMutex(m_mutex);
-#else
-    int ret = pthread_mutex_unlock(&m_mutex);
-#endif
-
-    if (ret != 0)
-    {
-        abort();
-    }
-}
-
-inline
-mutex :: hold :: hold(mutex* mtx)
-    : m_mtx(mtx)
-{
-    m_mtx->lock();
-}
-
-inline
-mutex :: hold :: ~hold() throw ()
-{
-    try
-    {
-        m_mtx->unlock();
-    }
-    catch (...)
-    {
-        abort();
-    }
-}
 
 } // namespace threads
 } // namespace po6
 
-#endif /* po6_threads_mutex_h */ 
+#endif // po6_threads_mutex_h_

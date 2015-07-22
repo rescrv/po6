@@ -36,8 +36,10 @@ namespace
 
 TEST(SocketTest, ClientAndServer)
 {
-    po6::net::socket server(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    po6::net::socket client(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    po6::net::socket server;
+    po6::net::socket client;
+    ASSERT_TRUE(server.reset(AF_INET, SOCK_STREAM, IPPROTO_TCP));
+    ASSERT_TRUE(client.reset(AF_INET, SOCK_STREAM, IPPROTO_TCP));
 
     // Create the sockaddr.
     sockaddr sa;
@@ -50,7 +52,8 @@ TEST(SocketTest, ClientAndServer)
     server.listen(10);
 
     // Create the client.
-    po6::net::location loc = server.getsockname();
+    po6::net::location loc;
+    ASSERT_TRUE(server.getsockname(&loc));
     client.connect(loc);
 
     // Close down the connection.

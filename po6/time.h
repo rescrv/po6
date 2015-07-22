@@ -1,4 +1,4 @@
-// Copyright (c) 2011, Robert Escriva
+// Copyright (c) 2015, Robert Escriva
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,11 +25,24 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef po6_noncopyable_h_
-#define po6_noncopyable_h_
+#ifndef po6_time_h_
+#define po6_time_h_
 
-#define PO6_NONCOPYABLE(T) \
-    T(const T&); \
-    T& operator = (const T&)
+// C
+#include <stdint.h>
 
-#endif // po6_noncopyable_h_
+namespace po6
+{
+
+uint64_t
+time();
+
+uint64_t
+monotonic_time();
+
+uint64_t
+wallclock_time();
+
+} // namespace po6
+
+#endif // po6_time_h_

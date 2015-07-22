@@ -1,4 +1,4 @@
-// Copyright (c) 2011, Robert Escriva
+// Copyright (c) 2011,2015, Robert Escriva
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -29,12 +29,7 @@
 #define po6_threads_rwlock_h_
 
 // POSIX
-#include <errno.h>
 #include <pthread.h>
-
-// po6
-#include <po6/error.h>
-#include <po6/noncopyable.h>
 
 namespace po6
 {
@@ -57,10 +52,11 @@ class rwlock
         void unlock();
 
     private:
-        PO6_NONCOPYABLE(rwlock);
+        pthread_rwlock_t m_rwlock;
 
     private:
-        pthread_rwlock_t m_rwlock;
+        rwlock(const rwlock&);
+        rwlock& operator = (const rwlock&);
 };
 
 class rwlock::rdhold
@@ -69,11 +65,16 @@ class rwlock::rdhold
         rdhold(rwlock* rwl);
         ~rdhold() throw ();
 
-    private:
-        PO6_NONCOPYABLE(rdhold);
+    public:
+        void release();
 
     private:
+        bool m_held;
         rwlock* m_rwl;
+
+    private:
+        rdhold(const rdhold&);
+        rdhold& operator = (const rdhold&);
 };
 
 class rwlock::wrhold
@@ -82,114 +83,17 @@ class rwlock::wrhold
         wrhold(rwlock* rwl);
         ~wrhold() throw ();
 
-    private:
-        PO6_NONCOPYABLE(wrhold);
+    public:
+        void release();
 
     private:
+        bool m_held;
         rwlock* m_rwl;
+
+    private:
+        wrhold(const wrhold&);
+        wrhold& operator = (const wrhold&);
 };
-
-inline
-rwlock :: rwlock()
-    : m_rwlock()
-{
-    int ret = pthread_rwlock_init(&m_rwlock, NULL);
-
-    if (ret != 0)
-    {
-        throw po6::error(ret);
-    }
-}
-
-inline
-rwlock :: ~rwlock() throw ()
-{
-    int ret = pthread_rwlock_destroy(&m_rwlock);
-
-    if (ret != 0)
-    {
-#ifndef PO6_NDEBUG_LEAKS
-        abort();
-#endif
-    }
-}
-
-inline void
-rwlock :: rdlock()
-{
-    int ret = pthread_rwlock_rdlock(&m_rwlock);
-
-    if (ret != 0)
-    {
-        throw po6::error(ret);
-    }
-}
-
-inline void
-rwlock :: wrlock()
-{
-    int ret = pthread_rwlock_wrlock(&m_rwlock);
-
-    if (ret != 0)
-    {
-        throw po6::error(ret);
-    }
-}
-
-inline void
-rwlock :: unlock()
-{
-    int ret = pthread_rwlock_unlock(&m_rwlock);
-
-    if (ret != 0)
-    {
-        throw po6::error(ret);
-    }
-}
-
-inline
-rwlock :: rdhold :: rdhold(rwlock* rwl)
-    : m_rwl(rwl)
-{
-    m_rwl->rdlock();
-}
-
-inline
-rwlock :: rdhold :: ~rdhold() throw ()
-{
-    try
-    {
-        m_rwl->unlock();
-    }
-    catch (...)
-    {
-#ifndef PO6_NDEBUG_LEAKS
-        abort();
-#endif
-    }
-}
-
-inline
-rwlock :: wrhold :: wrhold(rwlock* rwl)
-    : m_rwl(rwl)
-{
-    m_rwl->wrlock();
-}
-
-inline
-rwlock :: wrhold :: ~wrhold() throw ()
-{
-    try
-    {
-        m_rwl->unlock();
-    }
-    catch (...)
-    {
-#ifndef PO6_NDEBUG_LEAKS
-        abort();
-#endif
-    }
-}
 
 } // namespace threads
 } // namespace po6

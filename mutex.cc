@@ -1,4 +1,4 @@
-// Copyright (c) 2012,2015, Robert Escriva
+// Copyright (c) 2011,2015, Robert Escriva
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,55 +25,78 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef po6_net_hostname_h_
-#define po6_net_hostname_h_
-
-// STL
-#include <iostream>
+// C
+#include <assert.h>
+#include <stdlib.h>
 
 // po6
-#include <po6/net/location.h>
-#include <po6/net/socket.h>
+#include "po6/threads/mutex.h"
 
-namespace po6
+using po6::threads::mutex;
+
+mutex :: mutex()
+    : m_mutex()
 {
-namespace net
+    int ret = pthread_mutex_init(&m_mutex, NULL);
+
+    if (ret != 0)
+    {
+        abort();
+    }
+}
+
+mutex :: ~mutex() throw ()
 {
+    int ret = pthread_mutex_destroy(&m_mutex);
 
-class hostname
+    if (ret != 0)
+    {
+        abort();
+    }
+}
+
+void
+mutex :: lock()
 {
-    public:
-        hostname();
-        hostname(const char* _address, in_port_t _port);
-        explicit hostname(const location&);
-        hostname(const hostname& other);
-        ~hostname() throw ();
+    int ret = pthread_mutex_lock(&m_mutex);
 
-    public:
-        location connect(int domain, int type, int protocol, socket* sock) const;
-        // non-throwing, non-connecting version
-        location lookup(int type, int protocol) const;
+    if (ret != 0)
+    {
+        abort();
+    }
+}
 
-    public:
-        bool operator < (const hostname& rhs) const;
-        bool operator <= (const hostname& rhs) const;
-        bool operator == (const hostname& rhs) const;
-        bool operator != (const hostname& rhs) const;
-        bool operator >= (const hostname& rhs) const;
-        bool operator > (const hostname& rhs) const;
+void
+mutex :: unlock()
+{
+    int ret = pthread_mutex_unlock(&m_mutex);
 
-    public:
-        std::string address;
-        in_port_t port;
+    if (ret != 0)
+    {
+        abort();
+    }
+}
 
-    private:
-        int compare(const hostname& rhs) const;
-};
+mutex :: hold :: hold(mutex* mtx)
+    : m_held(false)
+    , m_mtx(mtx)
+{
+    m_mtx->lock();
+    m_held = true;
+}
 
-std::ostream&
-operator << (std::ostream& lhs, const hostname& rhs);
+void
+mutex :: hold :: release()
+{
+    assert(m_held);
+    m_held = false;
+    m_mtx->unlock();
+}
 
-} // namespace net
-} // namespace po6
-
-#endif // po6_net_hostname_h_
+mutex :: hold :: ~hold() throw ()
+{
+    if (m_held)
+    {
+        release();
+    }
+}

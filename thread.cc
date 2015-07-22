@@ -1,4 +1,4 @@
-// Copyright (c) 2012,2015, Robert Escriva
+// Copyright (c) 2011,2015, Robert Escriva
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,55 +25,64 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef po6_net_hostname_h_
-#define po6_net_hostname_h_
-
-// STL
-#include <iostream>
+// C
+#include <assert.h>
+#include <stdlib.h>
 
 // po6
-#include <po6/net/location.h>
-#include <po6/net/socket.h>
+#include "po6/threads/thread.h"
 
-namespace po6
+using po6::threads::thread;
+
+thread :: thread(function func)
+    : m_started(false)
+    , m_joined(false)
+    , m_func(func)
+    , m_thread()
 {
-namespace net
+}
+
+thread :: ~thread() throw ()
 {
+    if (m_started && !m_joined)
+    {
+        abort();
+    }
+}
 
-class hostname
+void
+thread :: start()
 {
-    public:
-        hostname();
-        hostname(const char* _address, in_port_t _port);
-        explicit hostname(const location&);
-        hostname(const hostname& other);
-        ~hostname() throw ();
+    assert(!m_started);
+    int ret = pthread_create(&m_thread, NULL, thread::start_routine, &m_func);
 
-    public:
-        location connect(int domain, int type, int protocol, socket* sock) const;
-        // non-throwing, non-connecting version
-        location lookup(int type, int protocol) const;
+    if (ret != 0)
+    {
+        abort();
+    }
 
-    public:
-        bool operator < (const hostname& rhs) const;
-        bool operator <= (const hostname& rhs) const;
-        bool operator == (const hostname& rhs) const;
-        bool operator != (const hostname& rhs) const;
-        bool operator >= (const hostname& rhs) const;
-        bool operator > (const hostname& rhs) const;
+    m_started = true;
+}
 
-    public:
-        std::string address;
-        in_port_t port;
+void
+thread :: join()
+{
+    assert(m_started && !m_joined);
+    int ret = pthread_join(m_thread, NULL);
 
-    private:
-        int compare(const hostname& rhs) const;
-};
+    if (ret != 0)
+    {
+        abort();
+    }
 
-std::ostream&
-operator << (std::ostream& lhs, const hostname& rhs);
+    m_joined = true;
+}
 
-} // namespace net
-} // namespace po6
-
-#endif // po6_net_hostname_h_
+void*
+thread :: start_routine(void * arg)
+{
+    function* f;
+    f = static_cast<function*>(arg);
+    (*f)();
+    return NULL;
+}

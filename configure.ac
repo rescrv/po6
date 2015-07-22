@@ -13,7 +13,7 @@ AM_INIT_AUTOMAKE(foreign serial_tests subdir-objects dist-bzip2)
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 LT_PREREQ([2.2])
 LT_INIT
-AC_CONFIG_SRCDIR([po6/error.h])
+AC_CONFIG_SRCDIR([po6/errno.h])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -24,6 +24,12 @@ AC_PROG_CC
 ANAL_WARNINGS
 
 # Checks for libraries.
+AC_CHECK_LIB([rt], [clock_gettime], [needs_lrt=yes], [needs_lrt=no])
+if test x"${needs_lrt}" = xyes; then
+    AC_SUBST([RT_LIBS], ["-lrt"])
+else
+    AC_SUBST([RT_LIBS], [""])
+fi
 
 # Checks for header files.
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h netinet/in.h limits.h sys/socket.h])
@@ -36,10 +42,12 @@ AC_TYPE_SSIZE_T
 AC_TYPE_UINT64_T
 AC_TYPE_UINT8_T
 
+AX_PTHREAD
+
 # Checks for library functions.
 AC_FUNC_ERROR_AT_LINE
 AC_FUNC_STRERROR_R
-AC_CHECK_FUNCS([memmove memset socket])
+AC_CHECK_FUNCS([memmove memset socket clock_gettime])
 
 AC_CONFIG_FILES([Makefile
                  libpo6.pc])

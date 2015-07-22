@@ -1,4 +1,4 @@
-// Copyright (c) 2011, Robert Escriva
+// Copyright (c) 2015, Robert Escriva
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -30,21 +30,16 @@
 
 // po6
 #include "th.h"
-#include "po6/error.h"
+#include "po6/time.h"
 
 namespace
 {
 
-// Test the copying and assigning of errors
-TEST(ErrorTest, CopyingAndAssigning)
+TEST(TimeTest, NonZero)
 {
-    po6::error e0;
-    po6::error e1(EBUSY);
-    po6::error e2(e1);
-
-    ASSERT_EQ(e0, 0);
-    e0 = e2;
-    ASSERT_EQ(e0, e1);
+    ASSERT_NE(0, po6::time());
+    ASSERT_NE(0, po6::monotonic_time());
+    ASSERT_NE(0, po6::wallclock_time());
 }
 
 } // namespace

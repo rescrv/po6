@@ -1,4 +1,4 @@
-// Copyright (c) 2011, Robert Escriva
+// Copyright (c) 2011,2015, Robert Escriva
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -28,23 +28,13 @@
 #ifndef po6_io_fd_h_
 #define po6_io_fd_h_
 
-#ifdef _MSC_VER
-#define _WINSOCKAPI_
-#include <windows.h>
-#include <io.h>
-#define ssize_t int
-#endif
-
 // POSIX
 #include <errno.h>
 #include <fcntl.h>
-#ifndef _MSC_VER
 #include <unistd.h>
-#endif
 
 // po6
-#include <po6/error.h>
-#include <po6/noncopyable.h>
+#include <po6/errno.h>
 
 namespace po6
 {
@@ -59,183 +49,27 @@ class fd
         virtual ~fd() throw ();
 
     public:
-        int get() const;
+        int get() const { return m_fd; }
         void close();
-        ssize_t read(void *buf, size_t nbytes);
-        ssize_t xread(void* buf, size_t nbytes);
-        ssize_t write(const void *buf, size_t nbytes);
-        ssize_t xwrite(const void *buf, size_t nbytes);
-        void set_nonblocking();
+        PO6_WARN_UNUSED ssize_t read(void *buf, size_t nbytes);
+        PO6_WARN_UNUSED ssize_t xread(void* buf, size_t nbytes);
+        PO6_WARN_UNUSED ssize_t write(const void *buf, size_t nbytes);
+        PO6_WARN_UNUSED ssize_t xwrite(const void *buf, size_t nbytes);
+        PO6_WARN_UNUSED int set_nonblocking();
         void swap(fd* other) throw ();
 
     public:
         fd& operator = (int f);
 
     private:
-        PO6_NONCOPYABLE(fd);
+        int m_fd;
 
     private:
-        int m_fd;
+        fd(const fd&);
+        fd& operator = (const fd&);
 };
-
-inline
-fd :: fd()
-    : m_fd(-1)
-{
-}
-
-inline
-fd :: fd(int f)
-    : m_fd(f)
-{
-}
-
-inline
-fd :: ~fd() throw ()
-{
-    try
-    {
-        close();
-    }
-    catch (...)
-    {
-#ifndef PO6_NDEBUG_LEAKS
-        abort();
-#endif
-    }
-}
-
-inline int
-fd :: get() const
-{
-    return m_fd;
-}
-
-inline void
-fd :: close()
-{
-    if (m_fd >= 0)
-    {
-#ifdef _MSC_VER
-        ::closesocket(m_fd);
-#else
-        ::close(m_fd);
-#endif
-    }
-
-    m_fd = -1;
-}
-
-inline ssize_t
-fd :: read(void *buf, size_t nbytes)
-{
-    return ::read(m_fd, buf, nbytes);
-}
-
-inline ssize_t
-fd :: xread(void* buf, size_t nbytes)
-{
-    size_t rem = nbytes;
-    ssize_t amt = 0;
-
-    while (rem > 0)
-    {
-        if ((amt = read(buf, rem)) < 0)
-        {
-            if (rem == nbytes)
-            {
-                return -1;
-            }
-            else
-            {
-                break;
-            }
-        }
-        else if (amt == 0)
-        {
-            break;
-        }
-
-        rem -= amt;
-        buf = static_cast<char*>(buf) + amt;
-    }
-
-    return nbytes - rem;
-}
-
-inline ssize_t
-fd :: write(const void *buf, size_t nbytes)
-{
-#ifdef _MSC_VER
-    return ::send(m_fd, (const char*)buf, nbytes, 0);
-#else
-    return ::write(m_fd, buf, nbytes);
-#endif
-}
-
-inline ssize_t
-fd :: xwrite(const void *buf, size_t nbytes)
-{
-    size_t rem = nbytes;
-    ssize_t amt = 0;
-
-    while (rem > 0)
-    {
-        if ((amt = write(buf, rem)) < 0)
-        {
-            if (rem == nbytes)
-            {
-                return -1;
-            }
-            else
-            {
-                break;
-            }
-        }
-        else if (amt == 0)
-        {
-            break;
-        }
-
-        rem -= amt;
-        buf = static_cast<const char*>(buf) + amt;
-    }
-
-    return nbytes - rem;
-}
-
-inline void
-fd :: set_nonblocking()
-{
-#ifdef _MSC_VER
-	u_long mode = 1;
-	ioctlsocket(m_fd, FIONBIO, &mode);
-#else
-    long flags = O_NONBLOCK;
-    if (fcntl(get(), F_SETFL, flags) < 0)
-    {
-        throw po6::error(errno);
-    }
-#endif
-}
-
-inline void
-fd :: swap(fd* other) throw ()
-{
-    int tmp = this->m_fd;
-    this->m_fd = other->m_fd;
-    other->m_fd = tmp;
-}
-
-inline fd&
-fd :: operator = (int f)
-{
-    close();
-    m_fd = f;
-    return *this;
-}
 
 } // namespace io
 } // namespace po6
 
-#endif /* po6_io_fd_h_ */
+#endif // po6_io_fd_h_

@@ -47,9 +47,9 @@
 /test/net/socket
 /test/net/socket.log
 /test/net/socket.trs
-/test/pathname
-/test/pathname.log
-/test/pathname.trs
+/test/path
+/test/path.log
+/test/path.trs
 /test/threads/cond
 /test/threads/cond.log
 /test/threads/cond.trs
@@ -65,3 +65,6 @@
 /test/threads/thread
 /test/threads/thread.log
 /test/threads/thread.trs
+/test/time
+/test/time.log
+/test/time.trs

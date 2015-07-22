@@ -1,4 +1,4 @@
-// Copyright (c) 2012,2015, Robert Escriva
+// Copyright (c) 2011,2015, Robert Escriva
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,55 +25,58 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef po6_net_hostname_h_
-#define po6_net_hostname_h_
+#ifndef po6_pathname_h_
+#define po6_pathname_h_
 
 // STL
-#include <iostream>
-
-// po6
-#include <po6/net/location.h>
-#include <po6/net/socket.h>
+#include <string>
 
 namespace po6
 {
-namespace net
+namespace path
 {
 
-class hostname
-{
-    public:
-        hostname();
-        hostname(const char* _address, in_port_t _port);
-        explicit hostname(const location&);
-        hostname(const hostname& other);
-        ~hostname() throw ();
+// On some platforms, basename and dirname may use statically allocated storage,
+// or may modify the input string, neither of which are desirable.  These
+// basename and dirname calls will return a new string without modifying the
+// input.
 
-    public:
-        location connect(int domain, int type, int protocol, socket* sock) const;
-        // non-throwing, non-connecting version
-        location lookup(int type, int protocol) const;
+std::string
+basename(const std::string& path);
 
-    public:
-        bool operator < (const hostname& rhs) const;
-        bool operator <= (const hostname& rhs) const;
-        bool operator == (const hostname& rhs) const;
-        bool operator != (const hostname& rhs) const;
-        bool operator >= (const hostname& rhs) const;
-        bool operator > (const hostname& rhs) const;
+std::string
+dirname(const std::string& path);
 
-    public:
-        std::string address;
-        in_port_t port;
+// This corresponds to the realpath(3) library call.
+bool
+realpath(const std::string& path, std::string* real);
 
-    private:
-        int compare(const hostname& rhs) const;
-};
+// Concatenate pathnames in a manner that is reminiscent of os.path.join in
+// Python.
 
-std::ostream&
-operator << (std::ostream& lhs, const hostname& rhs);
+std::string
+join(const std::string& p1,
+     const std::string& p2);
 
-} // namespace net
+std::string
+join(const std::string& p1,
+     const std::string& p2,
+     const std::string& p3);
+
+std::string
+join(const std::string& p1,
+     const std::string& p2,
+     const std::string& p3,
+     const std::string& p4);
+
+std::string
+join(const std::string& p1,
+     const std::string& p2,
+     const std::string& p3,
+     const std::string& p4,
+     const std::string& p5);
+
+} // namespace path
 } // namespace po6
 
-#endif // po6_net_hostname_h_
+#endif // po6_pathname_h_

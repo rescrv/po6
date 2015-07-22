@@ -1,4 +1,4 @@
-// Copyright (c) 2012,2015, Robert Escriva
+// Copyright (c) 2011,2015, Robert Escriva
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,55 +25,113 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef po6_net_hostname_h_
-#define po6_net_hostname_h_
-
-// STL
-#include <iostream>
+// C
+#include <assert.h>
+#include <stdlib.h>
 
 // po6
-#include <po6/net/location.h>
-#include <po6/net/socket.h>
+#include "po6/threads/rwlock.h"
 
-namespace po6
+using po6::threads::rwlock;
+
+rwlock :: rwlock()
+    : m_rwlock()
 {
-namespace net
+    int ret = pthread_rwlock_init(&m_rwlock, NULL);
+
+    if (ret != 0)
+    {
+        abort();
+    }
+}
+
+rwlock :: ~rwlock() throw ()
 {
+    int ret = pthread_rwlock_destroy(&m_rwlock);
 
-class hostname
+    if (ret != 0)
+    {
+        abort();
+    }
+}
+
+void
+rwlock :: rdlock()
 {
-    public:
-        hostname();
-        hostname(const char* _address, in_port_t _port);
-        explicit hostname(const location&);
-        hostname(const hostname& other);
-        ~hostname() throw ();
+    int ret = pthread_rwlock_rdlock(&m_rwlock);
 
-    public:
-        location connect(int domain, int type, int protocol, socket* sock) const;
-        // non-throwing, non-connecting version
-        location lookup(int type, int protocol) const;
+    if (ret != 0)
+    {
+        abort();
+    }
+}
 
-    public:
-        bool operator < (const hostname& rhs) const;
-        bool operator <= (const hostname& rhs) const;
-        bool operator == (const hostname& rhs) const;
-        bool operator != (const hostname& rhs) const;
-        bool operator >= (const hostname& rhs) const;
-        bool operator > (const hostname& rhs) const;
+void
+rwlock :: wrlock()
+{
+    int ret = pthread_rwlock_wrlock(&m_rwlock);
 
-    public:
-        std::string address;
-        in_port_t port;
+    if (ret != 0)
+    {
+        abort();
+    }
+}
 
-    private:
-        int compare(const hostname& rhs) const;
-};
+void
+rwlock :: unlock()
+{
+    int ret = pthread_rwlock_unlock(&m_rwlock);
 
-std::ostream&
-operator << (std::ostream& lhs, const hostname& rhs);
+    if (ret != 0)
+    {
+        abort();
+    }
+}
 
-} // namespace net
-} // namespace po6
+rwlock :: rdhold :: rdhold(rwlock* rwl)
+    : m_held(false)
+    , m_rwl(rwl)
+{
+    m_rwl->rdlock();
+    m_held = true;
+}
 
-#endif // po6_net_hostname_h_
+void
+rwlock :: rdhold :: release()
+{
+    assert(m_held);
+    m_held = false;
+    m_rwl->unlock();
+}
+
+rwlock :: rdhold :: ~rdhold() throw ()
+{
+    if (m_held)
+    {
+        release();
+    }
+}
+
+rwlock :: wrhold :: wrhold(rwlock* rwl)
+    : m_held(false)
+    , m_rwl(rwl)
+{
+    m_rwl->wrlock();
+    m_held = true;
+}
+
+void
+rwlock :: wrhold :: release()
+{
+    assert(m_held);
+    m_held = false;
+    m_rwl->unlock();
+}
+
+rwlock :: wrhold :: ~wrhold() throw ()
+{
+    if (m_held)
+    {
+        release();
+    }
+}

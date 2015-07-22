@@ -1,4 +1,4 @@
-// Copyright (c) 2011, Robert Escriva
+// Copyright (c) 2011,2015, Robert Escriva
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,6 @@
 #include <iostream>
 
 // po6
-#include <po6/error.h>
 #include <po6/net/ipaddr.h>
 
 namespace po6
@@ -47,157 +46,39 @@ class location
 
     public:
         location();
-        location(const ipaddr& _address, in_port_t _port = 0);
-        location(const char* _address, in_port_t _port = 0);
+        location(const ipaddr& address, in_port_t port);
+        location(const char* address, in_port_t port);
         location(const sockaddr* sa, socklen_t salen);
         explicit location(const sockaddr_in* sa);
         explicit location(const sockaddr_in6* sa);
+        location(const location& other);
         ~location() throw ();
 
     public:
         void pack(struct sockaddr* addr, socklen_t* addrlen) const;
-        void set(const sockaddr* sa, socklen_t salen);
+        PO6_WARN_UNUSED bool set(const sockaddr* sa, socklen_t salen);
         void set(const sockaddr_in* sa);
         void set(const sockaddr_in6* sa);
 
     public:
-        bool operator < (const location& rhs) const { return compare(rhs) < 0; }
-        bool operator <= (const location& rhs) const { return compare(rhs) <= 0; }
-        bool operator == (const location& rhs) const { return compare(rhs) == 0; }
-        bool operator != (const location& rhs) const { return compare(rhs) != 0; }
-        bool operator >= (const location& rhs) const { return compare(rhs) >= 0; }
-        bool operator > (const location& rhs) const { return compare(rhs) > 0; }
+        location& operator = (const location& rhs);
+        bool operator < (const location& rhs) const;
+        bool operator <= (const location& rhs) const;
+        bool operator == (const location& rhs) const;
+        bool operator != (const location& rhs) const;
+        bool operator >= (const location& rhs) const;
+        bool operator > (const location& rhs) const;
 
     public:
         ipaddr address;
         in_port_t port;
 
     private:
-        int compare(const location& rhs) const
-        {
-            const location& lhs(*this);
-
-            if (lhs.address < rhs.address)
-            {
-                return -1;
-            }
-            else if (lhs.address > rhs.address)
-            {
-                return 1;
-            }
-
-            return lhs.port - rhs.port;
-        }
+        int compare(const location& rhs) const;
 };
 
-inline uint64_t
-location :: hash(const location& loc)
-{
-    uint64_t ip_hash = ipaddr::hash(loc.address);
-    return ip_hash ^ loc.port;
-}
-
-inline
-location :: location()
-    : address()
-    , port()
-{
-}
-
-inline
-location :: location(const ipaddr& _address, in_port_t _port)
-    : address(_address)
-    , port(_port)
-{
-}
-
-inline
-location :: location(const char* _address, in_port_t _port)
-    : address(_address)
-    , port(_port)
-{
-}
-
-inline
-location :: location(const sockaddr* sa, socklen_t salen)
-    : address()
-    , port()
-{
-    set(sa, salen);
-}
-
-inline
-location :: location(const sockaddr_in* sa)
-    : address()
-    , port()
-{
-    set(sa);
-}
-
-inline
-location :: location(const sockaddr_in6* sa)
-    : address()
-    , port()
-{
-    set(sa);
-}
-
-inline
-location :: ~location() throw ()
-{
-}
-
-inline void
-location :: pack(struct sockaddr* addr, socklen_t* addrlen) const
-{
-    address.pack(addr, addrlen, port);
-}
-
-inline void
-location :: set(const sockaddr* sa, socklen_t salen)
-{
-    if (sa->sa_family == AF_INET && salen >= sizeof(sockaddr_in))
-    {
-        set(reinterpret_cast<const sockaddr_in*>(sa));
-    }
-    else if (sa->sa_family == AF_INET6 && salen >= sizeof(sockaddr_in6))
-    {
-        set(reinterpret_cast<const sockaddr_in6*>(sa));
-    }
-    else
-    {
-        throw std::runtime_error("Socket address family unknown (or sockaddr too small).");
-    }
-}
-
-inline void
-location :: set(const sockaddr_in* sa)
-{
-    address = ipaddr(sa->sin_addr);
-    port = ntohs(sa->sin_port);
-}
-
-inline void
-location :: set(const sockaddr_in6* sa)
-{
-    address = ipaddr(sa->sin6_addr);
-    port = ntohs(sa->sin6_port);
-}
-
-inline std::ostream&
-operator << (std::ostream& lhs, const location& rhs)
-{
-    if (rhs.address.family() == AF_INET6)
-    {
-        lhs << "[" << rhs.address << "]:" << rhs.port;
-    }
-    else
-    {
-        lhs << rhs.address << ":" << rhs.port;
-    }
-
-    return lhs;
-}
+std::ostream&
+operator << (std::ostream& lhs, const location& rhs);
 
 } // namespace net
 } // namespace po6

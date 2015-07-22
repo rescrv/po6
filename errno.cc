@@ -27,7 +27,6 @@
 
 // C
 #include <string.h>
-#include <string.h>
 
 // POSIX
 #include <errno.h>
@@ -43,12 +42,12 @@ po6 :: strerror(int err)
     memset(buf, 0, sizeof(buf));
 
     errno = 0;
-#if (_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600) && ! _GNU_SOURCE
-    // XSI-compliant
-    errno = strerror_r(err, buf, sizeof(buf));
-#else
+#if _GNU_SOURCE
     // GNU
     strncpy(buf, strerror_r(err, buf, sizeof(buf)), sizeof(buf));
+#else
+    // XSI-compliant
+    errno = strerror_r(err, buf, sizeof(buf));
 #endif
     int obs = errno;
     errno = saved;
