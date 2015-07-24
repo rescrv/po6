@@ -28,11 +28,11 @@
 #ifndef po6_threads_thread_h_
 #define po6_threads_thread_h_
 
+// C
+#include <iso646.h>
+
 // POSIX
 #include <pthread.h>
-
-// C++
-#include <ciso646>
 
 // STL
 #ifdef _LIBCPP_VERSION
