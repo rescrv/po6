@@ -54,10 +54,10 @@ strerrno(int err);
 // Force a warning when a function that returns its success/failure is not
 // checked by the program.
 #define PO6_WARN_UNUSED __attribute((warn_unused_result))
-#define PO6_EXPLICITLY_IGNORE(T, X) \
+#define PO6_EXPLICITLY_IGNORE(X) \
     do \
     { \
-        T __attribute__((unused)) PO6_CONCAT(_po6_ignored_, __LINE__) = (X); \
+        if ((X)) {} \
     } while (0)
 
 #define PO6_XCONCAT(x, y) x ## y
