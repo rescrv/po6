@@ -55,7 +55,7 @@ class fd
         PO6_WARN_UNUSED ssize_t xread(void* buf, size_t nbytes);
         PO6_WARN_UNUSED ssize_t write(const void *buf, size_t nbytes);
         PO6_WARN_UNUSED ssize_t xwrite(const void *buf, size_t nbytes);
-        PO6_WARN_UNUSED int set_nonblocking();
+        PO6_WARN_UNUSED bool set_nonblocking();
         void swap(fd* other) throw ();
 
     public:

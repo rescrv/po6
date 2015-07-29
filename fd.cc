@@ -130,11 +130,11 @@ fd :: xwrite(const void *buf, size_t nbytes)
     return nbytes - rem;
 }
 
-int
+bool
 fd :: set_nonblocking()
 {
     long flags = O_NONBLOCK;
-    return fcntl(get(), F_SETFL, flags);
+    return fcntl(get(), F_SETFL, flags) >= 0;
 }
 
 void
