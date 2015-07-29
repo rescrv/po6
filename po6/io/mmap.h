@@ -31,6 +31,9 @@
 // C
 #include <stdlib.h>
 
+// POSIX
+#include <sys/mman.h>
+
 namespace po6
 {
 namespace io
