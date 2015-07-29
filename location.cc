@@ -43,9 +43,21 @@ location :: location()
 {
 }
 
+location :: location(const ipaddr& _address)
+    : address(_address)
+    , port()
+{
+}
+
 location :: location(const ipaddr& _address, in_port_t _port)
     : address(_address)
     , port(_port)
+{
+}
+
+location :: location(const char* _address)
+    : address(_address)
+    , port()
 {
 }
 

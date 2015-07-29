@@ -46,7 +46,9 @@ class location
 
     public:
         location();
+        explicit location(const ipaddr& address);
         location(const ipaddr& address, in_port_t port);
+        explicit location(const char* address);
         location(const char* address, in_port_t port);
         location(const sockaddr* sa, socklen_t salen);
         explicit location(const sockaddr_in* sa);
