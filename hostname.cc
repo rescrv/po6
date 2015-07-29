@@ -190,6 +190,42 @@ hostname :: lookup(int type, int protocol) const
     return loc;
 }
 
+bool
+hostname :: operator < (const hostname& rhs) const
+{
+    return compare(rhs) < 0;
+}
+
+bool
+hostname :: operator <= (const hostname& rhs) const
+{
+    return compare(rhs) <= 0;
+}
+
+bool
+hostname :: operator == (const hostname& rhs) const
+{
+    return compare(rhs) == 0;
+}
+
+bool
+hostname :: operator != (const hostname& rhs) const
+{
+    return compare(rhs) != 0;
+}
+
+bool
+hostname :: operator >= (const hostname& rhs) const
+{
+    return compare(rhs) >= 0;
+}
+
+bool
+hostname :: operator > (const hostname& rhs) const
+{
+    return compare(rhs) > 0;
+}
+
 int
 hostname :: compare(const hostname& rhs) const
 {
