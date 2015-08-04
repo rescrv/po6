@@ -27,6 +27,7 @@ ANAL_WARNINGS
 AC_CHECK_LIB([rt], [clock_gettime], [needs_lrt=yes], [needs_lrt=no])
 if test x"${needs_lrt}" = xyes; then
     AC_SUBST([RT_LIBS], ["-lrt"])
+    AC_DEFINE([HAVE_CLOCK_GETTIME])
 else
     AC_SUBST([RT_LIBS], [""])
 fi
