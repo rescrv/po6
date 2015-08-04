@@ -1,8 +1,8 @@
 ACLOCAL_AMFLAGS = -I m4
 
 AM_CPPFLAGS =
-AM_CFLAGS = $(PTHREAD_CFLAGS) $(WANAL_CFLAGS)
-AM_CXXFLAGS = $(PTHREAD_CFLAGS) $(WANAL_CXXFLAGS)
+AM_CFLAGS = $(WANAL_CFLAGS)
+AM_CXXFLAGS = $(WANAL_CXXFLAGS)
 AM_MAKEFLAGS = --no-print-directory
 
 EXTRA_DIST = LICENSE README
@@ -44,9 +44,7 @@ libpo6_la_SOURCES += rwlock.cc
 libpo6_la_SOURCES += socket.cc
 libpo6_la_SOURCES += thread.cc
 libpo6_la_SOURCES += time.cc
-libpo6_la_LIBADD =
-libpo6_la_LIBADD += $(RT_LIBS)
-libpo6_la_LIBADD += $(PTHREAD_LIBS)
+libpo6_la_LIBADD = $(RT_LIBS) -lpthread
 
 ##################################### Tests ####################################
 
