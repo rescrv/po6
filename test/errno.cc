@@ -25,41 +25,20 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef po6_errno_h_
-#define po6_errno_h_
+// C
+#include <string.h>
 
-// POSIX
-#include <errno.h>
+// po6
+#include "th.h"
+#include "po6/errno.h"
 
-// STL
-#include <string>
-
-namespace po6
+namespace
 {
 
-// strerror is not thread-safe
-// strerror_r is thread-safe, but the XSI and GNU do different things, and it
-//      requres that the application set feature test macros correctly.
-//
-// po6::strerror hides all this behind a simple function that is thread-safe and
-// always returns the expected error string.
-std::string
-strerror(int err);
+TEST(ErrnoTest, ErrnoTest)
+{
+    ASSERT_NE(po6::strerror(EINVAL), "");
+    ASSERT_EQ(std::string(po6::strerrno(EINVAL)), "EINVAL");
+}
 
-// convert the given errno into a c-string constant.  e.g. strerrno(EINVAL)
-// returns the string "EINVAL".
-const char*
-strerrno(int err);
-
-// Force a warning when a function that returns its success/failure is not
-// checked by the program.
-#define PO6_WARN_UNUSED __attribute((warn_unused_result))
-#define PO6_EXPLICITLY_IGNORE(X) \
-    do \
-    { \
-        if ((X)) {} \
-    } while (0)
-
-} // namespace po6
-
-#endif // po6_errno_h_
+} // namespace

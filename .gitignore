@@ -28,10 +28,9 @@
 /missing
 /stamp-h1
 /test-driver
-/test-suite.log
-/test/error
-/test/error.log
-/test/error.trs
+/test/errno
+/test/errno.log
+/test/errno.trs
 /test/io_fd
 /test/io_fd.log
 /test/io_fd.trs
@@ -50,6 +49,7 @@
 /test/path
 /test/path.log
 /test/path.trs
+/test-suite.log
 /test/threads/cond
 /test/threads/cond.log
 /test/threads/cond.trs

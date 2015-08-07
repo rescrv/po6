@@ -61,9 +61,7 @@ po6 :: strerror(int err)
     return std::string(buf);
 }
 
-#define XSTR(x) #x
-#define STR(x) XSTR(x)
-#define CSTRINGIFY(x) if ((x) == err) { return STR(x); }
+#define CSTRINGIFY(x) if ((x) == err) { return #x; }
 
 const char*
 po6 :: strerrno(int err)

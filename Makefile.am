@@ -52,6 +52,7 @@ th_sources = test/runner.cc th.cc th.h
 
 TESTS = $(check_PROGRAMS)
 check_PROGRAMS =
+check_PROGRAMS += test/errno
 check_PROGRAMS += test/io_fd
 check_PROGRAMS += test/net/hostname
 check_PROGRAMS += test/net/ipaddr
@@ -63,6 +64,9 @@ check_PROGRAMS += test/threads/mutex
 check_PROGRAMS += test/threads/rwlock
 check_PROGRAMS += test/threads/thread
 check_PROGRAMS += test/time
+
+test_errno_SOURCES = test/errno.cc $(th_sources)
+test_errno_LDADD = libpo6.la
 
 test_io_fd_SOURCES = test/io/fd.cc $(th_sources)
 test_io_fd_LDADD = libpo6.la
