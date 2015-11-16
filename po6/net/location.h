@@ -48,9 +48,6 @@ class location
         location();
         explicit location(const ipaddr& address);
         location(const ipaddr& address, in_port_t port);
-        explicit location(const char* address);
-        location(const char* address, in_port_t port);
-        location(const sockaddr* sa, socklen_t salen);
         explicit location(const sockaddr_in* sa);
         explicit location(const sockaddr_in6* sa);
         location(const location& other);
@@ -58,6 +55,8 @@ class location
 
     public:
         void pack(struct sockaddr* addr, socklen_t* addrlen) const;
+        PO6_WARN_UNUSED bool set(const char* address);
+        PO6_WARN_UNUSED bool set(const char* address, in_port_t port);
         PO6_WARN_UNUSED bool set(const sockaddr* sa, socklen_t salen);
         void set(const sockaddr_in* sa);
         void set(const sockaddr_in6* sa);

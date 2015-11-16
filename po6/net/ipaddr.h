@@ -57,8 +57,6 @@ class ipaddr
 
     public:
         ipaddr();
-        explicit ipaddr(const char* addr);
-        explicit ipaddr(const std::string& addr);
         explicit ipaddr(const in_addr& ipv4);
         explicit ipaddr(const in_addr_t& ipv4);
         explicit ipaddr(const in6_addr& ipv6);

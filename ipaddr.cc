@@ -43,20 +43,6 @@ ipaddr :: ipaddr()
 {
 }
 
-ipaddr :: ipaddr(const char* addr)
-    : m_family(AF_UNSPEC)
-    , m_ip()
-{
-    set(addr); // XXX
-}
-
-ipaddr :: ipaddr(const std::string& addr)
-    : m_family(AF_UNSPEC)
-    , m_ip()
-{
-    set(addr); // XXX
-}
-
 ipaddr :: ipaddr(const in_addr& ipv4)
     : m_family(AF_UNSPEC)
     , m_ip()

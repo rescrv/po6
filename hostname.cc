@@ -136,8 +136,12 @@ hostname :: connect(int domain, int type, int protocol, po6::net::socket* sock) 
             continue;
         }
 
-        loc = location(ai->ai_addr, ai->ai_addrlen);
-        break;
+        if (loc.set(ai->ai_addr, ai->ai_addrlen))
+        {
+            break;
+        }
+
+        loc = po6::net::location();
     }
 
     if (sock->get() < 0)
@@ -183,8 +187,12 @@ hostname :: lookup(int type, int protocol) const
             continue;
         }
 
-        loc = location(ai->ai_addr, ai->ai_addrlen);
-        break;
+        if (loc.set(ai->ai_addr, ai->ai_addrlen))
+        {
+            break;
+        }
+
+        loc = po6::net::location();
     }
 
     return loc;

@@ -55,37 +55,18 @@ location :: location(const ipaddr& _address, in_port_t _port)
 {
 }
 
-location :: location(const char* _address)
-    : address(_address)
-    , port()
-{
-}
-
-location :: location(const char* _address, in_port_t _port)
-    : address(_address)
-    , port(_port)
-{
-}
-
-location :: location(const sockaddr* sa, socklen_t salen)
-    : address()
-    , port()
-{
-    set(sa, salen); // XXX
-}
-
 location :: location(const sockaddr_in* sa)
     : address()
     , port()
 {
-    set(sa); // XXX
+    set(sa);
 }
 
 location :: location(const sockaddr_in6* sa)
     : address()
     , port()
 {
-    set(sa); // XXX
+    set(sa);
 }
 
 location :: location(const location& other)
@@ -102,6 +83,24 @@ void
 location :: pack(struct sockaddr* addr, socklen_t* addrlen) const
 {
     address.pack(addr, addrlen, port);
+}
+
+bool
+location :: set(const char* addr)
+{
+    return address.set(addr);
+}
+
+bool
+location :: set(const char* addr, in_port_t p)
+{
+    if (address.set(addr))
+    {
+        port = p;
+        return true;
+    }
+
+    return false;
 }
 
 bool

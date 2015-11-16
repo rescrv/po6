@@ -128,8 +128,7 @@ socket :: getpeername(location* loc)
         return false;
     }
 
-    *loc = location(sa, salen);
-    return true;
+    return loc->set(sa, salen);
 }
 
 bool
@@ -144,8 +143,7 @@ socket :: getsockname(location* loc)
         return false;
     }
 
-    *loc = location(sa, salen);
-    return true;
+    return loc->set(sa, salen);
 }
 
 bool

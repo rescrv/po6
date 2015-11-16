@@ -35,6 +35,15 @@
 #include "th.h"
 #include "po6/net/ipaddr.h"
 
+po6::net::ipaddr
+IPADDR(const char* address)
+{
+    po6::net::ipaddr ip;
+    bool ret = ip.set(address);
+    ASSERT_TRUE(ret);
+    return ip;
+}
+
 namespace
 {
 
@@ -47,8 +56,8 @@ TEST(IpaddrTest, CreateAndCompare)
     ASSERT_EQ(inet_pton(AF_INET6, "::1", &ipv6), 1);
 
     po6::net::ipaddr a;
-    po6::net::ipaddr b("127.0.0.1");
-    po6::net::ipaddr c("::1");
+    po6::net::ipaddr b = IPADDR("127.0.0.1");
+    po6::net::ipaddr c = IPADDR("::1");
     po6::net::ipaddr d(ipv4);
     po6::net::ipaddr e(ipv6);
     po6::net::ipaddr aprime(a);
@@ -72,7 +81,7 @@ TEST(IpaddrTest, CreateAndCompare)
 TEST(IpaddrTest, Assignment)
 {
     po6::net::ipaddr lhs;
-    po6::net::ipaddr rhs("127.0.0.1");
+    po6::net::ipaddr rhs = IPADDR("127.0.0.1");
 
     ASSERT_NE(lhs, rhs);
     lhs = rhs;
@@ -81,18 +90,18 @@ TEST(IpaddrTest, Assignment)
 
 TEST(IpaddrTest, SelfAssignment)
 {
-    po6::net::ipaddr ip("127.0.0.1");
+    po6::net::ipaddr ip = IPADDR("127.0.0.1");
 
-    ASSERT_EQ(ip, po6::net::ipaddr("127.0.0.1"));
-    ASSERT_EQ(ip = ip, po6::net::ipaddr("127.0.0.1"));
-    ASSERT_EQ(ip, po6::net::ipaddr("127.0.0.1"));
+    ASSERT_EQ(ip, IPADDR("127.0.0.1"));
+    ASSERT_EQ(ip = ip, IPADDR("127.0.0.1"));
+    ASSERT_EQ(ip, IPADDR("127.0.0.1"));
 }
 
 TEST(IpaddrTest, PackV4)
 {
     sockaddr sa;
     socklen_t sz = sizeof(sa);
-    po6::net::ipaddr ip("127.0.0.1");
+    po6::net::ipaddr ip = IPADDR("127.0.0.1");
 
     ASSERT_EQ(ip.family(), AF_INET);
     ip.pack(&sa, &sz, 1234);
@@ -105,7 +114,7 @@ TEST(IpaddrTest, PackV6)
 {
     sockaddr_in6 sa;
     socklen_t sz = sizeof(sa);
-    po6::net::ipaddr ip("::1");
+    po6::net::ipaddr ip = IPADDR("::1");
     in6_addr ipv6;
 
     ASSERT_EQ(inet_pton(AF_INET6, "::1", &ipv6), 1);
@@ -119,10 +128,10 @@ TEST(IpaddrTest, PackV6)
 
 TEST(IpaddrTest, OutputStream)
 {
-    po6::net::ipaddr a("127.0.0.1");
-    po6::net::ipaddr b("0:0:0:0:0:0:0:0");
-    po6::net::ipaddr c("1:0:0:0:0:0:0:8");
-    po6::net::ipaddr d("0:0:0:0:0:FFFF:204.152.189.116");
+    po6::net::ipaddr a = IPADDR("127.0.0.1");
+    po6::net::ipaddr b = IPADDR("0:0:0:0:0:0:0:0");
+    po6::net::ipaddr c = IPADDR("1:0:0:0:0:0:0:8");
+    po6::net::ipaddr d = IPADDR("0:0:0:0:0:FFFF:204.152.189.116");
 
     std::ostringstream sa;
     std::ostringstream sb;
@@ -157,10 +166,10 @@ TEST(IpaddrTest, InputStream)
     sc >> c;
     sd >> d;
 
-    ASSERT_EQ(po6::net::ipaddr("127.0.0.1"), a);
-    ASSERT_EQ(po6::net::ipaddr("::"), b);
-    ASSERT_EQ(po6::net::ipaddr("1::8"), c);
-    ASSERT_EQ(po6::net::ipaddr("::ffff:204.152.189.116"), d);
+    ASSERT_EQ(IPADDR("127.0.0.1"), a);
+    ASSERT_EQ(IPADDR("::"), b);
+    ASSERT_EQ(IPADDR("1::8"), c);
+    ASSERT_EQ(IPADDR("::ffff:204.152.189.116"), d);
 }
 
 TEST(IpaddrTest, InputStreamErrors)

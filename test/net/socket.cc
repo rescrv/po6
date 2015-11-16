@@ -31,6 +31,24 @@
 #include "po6/net/location.h"
 #include "po6/net/socket.h"
 
+po6::net::ipaddr
+IPADDR(const char* address)
+{
+    po6::net::ipaddr ip;
+    bool ret = ip.set(address);
+    ASSERT_TRUE(ret);
+    return ip;
+}
+
+po6::net::location
+LOCATION(const char* address, in_port_t port)
+{
+    po6::net::location loc;
+    bool ret = loc.set(address, port);
+    ASSERT_TRUE(ret);
+    return loc;
+}
+
 namespace
 {
 
@@ -44,7 +62,7 @@ TEST(SocketTest, ClientAndServer)
     // Create the sockaddr.
     sockaddr sa;
     socklen_t salen = sizeof(sa);
-    po6::net::ipaddr ip("127.0.0.1");
+    po6::net::ipaddr ip = IPADDR("127.0.0.1");
     ip.pack(&sa, &salen, INADDR_ANY);
 
     // Create the server.
