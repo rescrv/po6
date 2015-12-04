@@ -78,6 +78,15 @@ po6 :: wallclock_time()
     return ts.tv_sec * 1000000000 + ts.tv_nsec;
 }
 
+void
+po6 :: sleep(uint64_t x)
+{
+    struct timespec ts;
+    ts.tv_sec = x / PO6_SECONDS;
+    ts.tv_nsec = x % PO6_SECONDS;
+    nanosleep(&ts, NULL);
+}
+
 #elif __MACH__
 
 #include <mach/clock.h>

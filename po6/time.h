@@ -31,6 +31,10 @@
 // C
 #include <stdint.h>
 
+#define PO6_MICROS 1000ULL
+#define PO6_MILLIS (PO6_MICROS * 1000ULL)
+#define PO6_SECONDS (PO6_MILLIS * 1000ULL)
+
 namespace po6
 {
 
@@ -42,6 +46,9 @@ monotonic_time();
 
 uint64_t
 wallclock_time();
+
+void
+sleep(uint64_t);
 
 } // namespace po6
 
