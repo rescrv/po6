@@ -44,7 +44,12 @@ po6 :: strerror(int err)
     errno = 0;
 #if _GNU_SOURCE
     // GNU
-    strncpy(buf, strerror_r(err, buf, sizeof(buf)), sizeof(buf));
+    char* ret = strerror_r(err, buf, sizeof(buf));
+
+    if (ret != buf)
+    {
+        strncpy(buf, ret, sizeof(buf));
+    }
 #else
     // XSI-compliant
     errno = strerror_r(err, buf, sizeof(buf));
