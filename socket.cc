@@ -28,19 +28,17 @@
 // po6
 #include "po6/net/socket.h"
 
-using po6::net::socket;
-
-socket :: socket()
+po6 :: net :: socket :: socket()
     : fd(-1)
 {
 }
 
-socket :: ~socket() throw ()
+po6 :: net :: socket :: ~socket() throw ()
 {
 }
 
 bool
-socket :: reset(int domain, int type, int protocol)
+po6 :: net :: socket :: reset(int domain, int type, int protocol)
 {
     *this = ::socket(domain, type, protocol);
     return get() >= 0;
@@ -52,7 +50,7 @@ socket :: reset(int domain, int type, int protocol)
 // sockaddr.
 
 bool
-socket :: bind(const ipaddr& addr, in_port_t port)
+po6 :: net :: socket :: bind(const ipaddr& addr, in_port_t port)
 {
     sockaddr_in6 sa6;
     socklen_t salen = sizeof(sa6);
@@ -62,19 +60,19 @@ socket :: bind(const ipaddr& addr, in_port_t port)
 }
 
 bool
-socket :: bind(const ipaddr& addr)
+po6 :: net :: socket :: bind(const ipaddr& addr)
 {
     return bind(addr, 0);
 }
 
 bool
-socket :: bind(const location& loc)
+po6 :: net :: socket :: bind(const location& loc)
 {
     return bind(loc.address, loc.port);
 }
 
 bool
-socket :: connect(const ipaddr& addr, in_port_t port)
+po6 :: net :: socket :: connect(const ipaddr& addr, in_port_t port)
 {
     sockaddr_in6 sa6;
     socklen_t salen = sizeof(sa6);
@@ -84,19 +82,19 @@ socket :: connect(const ipaddr& addr, in_port_t port)
 }
 
 bool
-socket :: connect(const location& loc)
+po6 :: net :: socket :: connect(const location& loc)
 {
     return connect(loc.address, loc.port);
 }
 
 bool
-socket :: listen(int backlog)
+po6 :: net :: socket :: listen(int backlog)
 {
     return ::listen(get(), backlog) == 0;
 }
 
 bool
-socket :: accept(socket* newsock)
+po6 :: net :: socket :: accept(socket* newsock)
 {
     newsock->close();
     int ret;
@@ -111,13 +109,13 @@ socket :: accept(socket* newsock)
 }
 
 bool
-socket :: shutdown(int how)
+po6 :: net :: socket :: shutdown(int how)
 {
     return ::shutdown(get(), how) == 0;
 }
 
 bool
-socket :: getpeername(location* loc)
+po6 :: net :: socket :: getpeername(location* loc)
 {
     sockaddr_in6 sa6;
     socklen_t salen = sizeof(sa6);
@@ -132,7 +130,7 @@ socket :: getpeername(location* loc)
 }
 
 bool
-socket :: getsockname(location* loc)
+po6 :: net :: socket :: getsockname(location* loc)
 {
     sockaddr_in6 sa6;
     socklen_t salen = sizeof(sa6);
@@ -147,58 +145,58 @@ socket :: getsockname(location* loc)
 }
 
 bool
-socket :: set_sockopt(int level, int optname,
-                      const void *optval, socklen_t optlen)
+po6 :: net :: socket :: set_sockopt(int level, int optname,
+                                    const void *optval, socklen_t optlen)
 {
     return setsockopt(get(), level, optname, optval, optlen) == 0;
 }
 
 bool
-socket :: set_reuseaddr()
+po6 :: net :: socket :: set_reuseaddr()
 {
     int yes = 1;
     return set_sockopt(SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
 }
 
 bool
-socket :: set_tcp_nodelay()
+po6 :: net :: socket :: set_tcp_nodelay()
 {
     int yes = 1;
     return set_sockopt(IPPROTO_TCP, TCP_NODELAY, &yes, sizeof(yes));
 }
 
 bool
-socket :: sndbuf(size_t size)
+po6 :: net :: socket :: sndbuf(size_t size)
 {
     return set_sockopt(SOL_SOCKET, SO_SNDBUF, &size, sizeof(size));
 }
 
 bool
-socket :: rcvbuf(size_t size)
+po6 :: net :: socket :: rcvbuf(size_t size)
 {
     return set_sockopt(SOL_SOCKET, SO_RCVBUF, &size, sizeof(size));
 }
 
 bool
-socket :: sndlowat(size_t size)
+po6 :: net :: socket :: sndlowat(size_t size)
 {
     return set_sockopt(SOL_SOCKET, SO_SNDLOWAT, &size, sizeof(size));
 }
 
 bool
-socket :: rcvlowat(size_t size)
+po6 :: net :: socket :: rcvlowat(size_t size)
 {
     return set_sockopt(SOL_SOCKET, SO_RCVLOWAT, &size, sizeof(size));
 }
 
 ssize_t
-socket :: recv(void *buf, size_t len, int flags)
+po6 :: net :: socket :: recv(void *buf, size_t len, int flags)
 {
     return ::recv(get(), buf, len, flags);
 }
 
 ssize_t
-socket :: xrecv(void *buf, size_t len, int flags)
+po6 :: net :: socket :: xrecv(void *buf, size_t len, int flags)
 {
     size_t rem = len;
     ssize_t amt = 0;
@@ -229,13 +227,13 @@ socket :: xrecv(void *buf, size_t len, int flags)
 }
 
 ssize_t
-socket :: send(const void *buf, size_t len, int flags)
+po6 :: net :: socket :: send(const void *buf, size_t len, int flags)
 {
     return ::send(get(), buf, len, flags);
 }
 
 ssize_t
-socket :: xsend(const void *buf, size_t len, int flags)
+po6 :: net :: socket :: xsend(const void *buf, size_t len, int flags)
 {
     size_t rem = len;
     ssize_t amt = 0;
@@ -266,7 +264,7 @@ socket :: xsend(const void *buf, size_t len, int flags)
 }
 
 po6::net::socket&
-socket :: operator = (int f)
+po6 :: net :: socket :: operator = (int f)
 {
     *dynamic_cast<fd*>(this) = f;
     return *this;
