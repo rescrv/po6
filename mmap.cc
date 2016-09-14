@@ -32,11 +32,9 @@
 // po6
 #include "po6/io/mmap.h"
 
-using po6::io::mmap;
-
-mmap :: mmap(void* addr, size_t length,
-             int prot, int flags,
-             int fd, off_t offset)
+po6 :: io :: mmap :: mmap(void* addr, size_t length,
+                          int prot, int flags,
+                          int fd, off_t offset)
     : m_base(NULL)
     , m_length(length)
     , m_error(0)
@@ -50,13 +48,13 @@ mmap :: mmap(void* addr, size_t length,
     }
 }
 
-mmap :: ~mmap() throw ()
+po6 :: io :: mmap :: ~mmap() throw ()
 {
     close();
 }
 
 void
-mmap :: close()
+po6 :: io :: mmap :: close()
 {
     if (m_base)
     {
