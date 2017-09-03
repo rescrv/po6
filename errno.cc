@@ -66,15 +66,13 @@ po6 :: strerror(int err)
     return std::string(buf);
 }
 
-#define CSTRINGIFY(x) if ((x) == err) { return #x; }
+#define CSTRINGIFY(x) case x: return #x;
 
 const char*
 po6 :: strerrno(int err)
 {
-    if (err == 0)
-    {
-        return "";
-    }
+  switch (err) {
+    case 0: return "";
 #ifdef E2BIG
     CSTRINGIFY(E2BIG)
 #endif
@@ -90,7 +88,10 @@ po6 :: strerrno(int err)
 #ifdef EAFNOSUPPORT
     CSTRINGIFY(EAFNOSUPPORT)
 #endif
-#ifdef EAGAIN
+#ifdef EWOULDBLOCK
+    CSTRINGIFY(EWOULDBLOCK)
+#endif
+#if defined(EAGAIN) && EAGAIN != EWOULDBLOCK
     CSTRINGIFY(EAGAIN)
 #endif
 #ifdef EALREADY
@@ -152,9 +153,6 @@ po6 :: strerrno(int err)
 #endif
 #ifdef EDEADLK
     CSTRINGIFY(EDEADLK)
-#endif
-#ifdef EDEADLOCK
-    CSTRINGIFY(EDEADLOCK)
 #endif
 #ifdef EDESTADDRREQ
     CSTRINGIFY(EDESTADDRREQ)
@@ -363,6 +361,9 @@ po6 :: strerrno(int err)
 #ifdef ENOTSUP
     CSTRINGIFY(ENOTSUP)
 #endif
+#if defined(EOPNOTSUPP) && EOPNOTSUPP != ENOTSUP
+    CSTRINGIFY(EOPNOTSUPP)
+#endif
 #ifdef ENOTTY
     CSTRINGIFY(ENOTTY)
 #endif
@@ -371,9 +372,6 @@ po6 :: strerrno(int err)
 #endif
 #ifdef ENXIO
     CSTRINGIFY(ENXIO)
-#endif
-#ifdef EOPNOTSUPP
-    CSTRINGIFY(EOPNOTSUPP)
 #endif
 #ifdef EOVERFLOW
     CSTRINGIFY(EOVERFLOW)
@@ -465,14 +463,12 @@ po6 :: strerrno(int err)
 #ifdef EUSERS
     CSTRINGIFY(EUSERS)
 #endif
-#ifdef EWOULDBLOCK
-    CSTRINGIFY(EWOULDBLOCK)
-#endif
 #ifdef EXDEV
     CSTRINGIFY(EXDEV)
 #endif
 #ifdef EXFULL
     CSTRINGIFY(EXFULL)
 #endif
-    return "unknown error";
+    default: return "unknown error";
+  }
 }
